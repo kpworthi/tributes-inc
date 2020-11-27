@@ -13,9 +13,9 @@ const server = require('http').createServer(app);
 app.use(helmet());
 app.use(function (req, res, next){
   res.set({
-    'surrogate-control': 'no-store',
-    'cache-control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-    'pragma': 'no-cache',
+    //'surrogate-control': 'no-store',
+    //'cache-control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+    //'pragma': 'no-cache',
     'expires': '0',
     'x-powered-by': 'PHP 7.4.3'
   });
@@ -35,6 +35,10 @@ app.route('/')
   .get(function (req, res) {
     res.sendFile(process.cwd() + '/views/index.html');
   });
+
+app.use(function (req, res) {
+  res.redirect('/');
+});
 
 // Set up server to listen on 443
 const portNum = 443;

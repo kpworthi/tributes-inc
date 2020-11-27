@@ -1,0 +1,66 @@
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #dbceb0;
+}
+
+.navbar {
+  background-color: #7e4a35;
+}
+.navbar img {
+  border: 3px solid black;
+  border-radius: 8px;
+}
+.navbar button i {
+  font-size: 40px;
+}
+.navbar .navbar-nav {
+  background-color: #7e4a35;
+}
+@media (min-width: 992px) {
+  .navbar .navbar-nav {
+    height: 50px;
+  }
+}
+.navbar .navbar-nav a {
+  align-self: center;
+  color: white;
+  border: 1px solid #7e4a35;
+  border-radius: 5px;
+  min-width: 45px;
+}
+.navbar .navbar-nav a:hover {
+  animation-name: link-color;
+  animation-duration: 500ms;
+  animation-fill-mode: forwards;
+}
+@keyframes link-color {
+  100% {
+    color: #ccc;
+    border-color: white;
+  }
+}
+
+#mainBlock {
+  margin-top: 100px;
+  padding-top: 10px;
+  background-color: #cab577;
+  min-height: 80vh;
+  border-radius: 5px;
+}
+#mainBlock #title {
+  font-size: 3.7rem;
+  font-family: Times, serif;
+  text-align: center;
+}
+#mainBlock #subTitle {
+  font-size: 2.2rem;
+  text-align: center;
+}
+#mainBlock .plainText {
+  font-size: 1.3rem;
+}
+
+/*# sourceMappingURL=index.css.map */
