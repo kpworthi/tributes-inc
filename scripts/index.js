@@ -45,7 +45,7 @@ class Main extends React.Component {
     switch (page) {
       case 'home':
         import('../scripts/home.js').then(module => {
-          this.pageView = module;
+          this.pageView = module.default;
           this.setState({
             viewing: 'home'
           });
@@ -54,7 +54,7 @@ class Main extends React.Component {
 
       case 'products':
         import('../scripts/products.js').then(module => {
-          this.pageView = module;
+          this.pageView = module.default;
           this.setState({
             viewing: 'products'
           });
@@ -63,7 +63,7 @@ class Main extends React.Component {
 
       case 'directory':
         import('../scripts/directory.js').then(module => {
-          this.pageView = module;
+          this.pageView = module.default;
           this.setState({
             viewing: 'directory'
           });
@@ -72,7 +72,7 @@ class Main extends React.Component {
 
       case 'account':
         import('../scripts/account.js').then(module => {
-          this.pageView = module;
+          this.pageView = module.default;
           this.setState({
             viewing: 'account'
           });
@@ -81,7 +81,7 @@ class Main extends React.Component {
 
       case 'auth':
         import('../scripts/auth.js').then(module => {
-          this.pageView = module;
+          this.pageView = module.default;
           this.setState({
             viewing: 'auth'
           });
