@@ -4,12 +4,10 @@ const bodyParser = require('body-parser');
 const expect     = require('chai');
 const helmet     = require('helmet');
 
-
 const app    = express();
 const server = require('http').createServer(app);
 
-
-// helmet and other security headers
+// helmet and other custom headers
 app.use(helmet());
 app.use(function (req, res, next){
   res.set({
@@ -36,8 +34,10 @@ app.route('/')
     res.sendFile(process.cwd() + '/views/index.html');
   });
 
-app.use(function (req, res) {
-  res.redirect('/');
+app.use(function(req, res, next) {
+  res.status(404)
+    .type('text')
+    .send('Not Found');
 });
 
 // Set up server to listen on 443

@@ -1,21 +1,76 @@
-import Footer from './footer';
-import Header from './header';
+import Footer from '../scripts/footer.js';
+import Header from '../scripts/header.js';
 
 class Main extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      viewing: "Intro"
+      viewing: 'default'
     };
+
+    this.loadPage = this.loadPage.bind(this);
+    this.pageView = undefined;
     
   }
+
+  componentDidload(){
+    if (this.state.viewing === 'default'){
+      this.loadPage();
+      document.querySelector('#defaultLoad').style.display = 'none';
+    }
+  }
+
+  loadPage (thingToReceive = 'home') {
+    switch ( thingToReceive ) {
+      case 'home':
+        import('../scripts/home.js')
+          .then(module => {
+            this.pageView = module;
+            this.setState({ viewing: 'home' });
+          });
+        break;
+      case 'products':
+        import('../scripts/products.js')
+          .then(module => {
+            this.pageView = module;
+            this.setState({ viewing: 'products' });
+          });
+        break;
+      case 'directory':
+        import('../scripts/directory.js')
+          .then(module => {
+            this.pageView = module;
+            this.setState({ viewing: 'directory' });
+          });
+        break;
+      case 'account':
+        import('../scripts/account.js')
+          .then(module => {
+            this.pageView = module;
+            this.setState({ viewing: 'account' });
+          });
+        break;
+      case 'auth':
+        import('../scripts/auth.js')
+          .then(module => {
+            this.pageView = module;
+            this.setState({ viewing: 'auth' });
+          });
+        break;
+    }
+  }
+
+
   
   render() {
+    let View = this.pageView;
+
     return (
       <main id="main" class="container-fluid">
         <Header />
-        <div id="mainBlock" class="mx-3 mb-4">
+        <View />
+        <div id="defaultLoad" class="mx-3 mb-4">
           <h1 class="" id="title">Welcome to Tributes Inc.!</h1>
           <h2 class="" id="subTitle">We're glad you're here</h2>
         </div>
@@ -28,7 +83,6 @@ class Main extends React.Component {
 
 ReactDOM.render(<Main />, document.querySelector("body"));
 
-/*
 window.addEventListener("click",(event)=>{
   if(event.target.getAttribute("class").includes("nav-link")){
     for(let button of Array.from(document.getElementsByClassName("nav-link"))){
@@ -39,4 +93,3 @@ window.addEventListener("click",(event)=>{
     event.target.style.color="#ccc"
   }
 });
-*/
