@@ -1,8 +1,3 @@
 node_modules
-src/account.js
-src/auth.js
-src/directory.js
-src/header.js
-src/home.js
-src/index.js
-src/products.js
+src
+scss
