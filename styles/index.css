@@ -43,23 +43,23 @@ body {
   }
 }
 
-#mainBlock {
+.main-area {
   margin-top: 100px;
   padding-top: 10px;
   background-color: #cab577;
   min-height: 80vh;
   border-radius: 5px;
 }
-#mainBlock #title {
+.main-area #title {
   font-size: 3.7rem;
   font-family: Times, serif;
   text-align: center;
 }
-#mainBlock #subTitle {
+.main-area #subTitle {
   font-size: 2.2rem;
   text-align: center;
 }
-#mainBlock .plainText {
+.main-area .plainText {
   font-size: 1.3rem;
 }
 

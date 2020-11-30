@@ -4,6 +4,7 @@ class Header extends React.Component {
     this.state = {
       auth: false
     };
+    this.userArea = this.userArea.bind(this);
   }
 
   userArea() {

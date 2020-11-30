@@ -20,7 +20,7 @@ class Main extends React.Component {
     };
   }
 
-  componentDidload() {
+  componentDidMount() {
     if (this.state.viewing === 'default') {
       this.loadPage();
       window.addEventListener("click", this.handleClick);
