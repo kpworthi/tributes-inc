@@ -10,19 +10,34 @@ class Main extends React.Component {
     };
 
     this.loadPage = this.loadPage.bind(this);
-    this.pageView = undefined;
+    this.pageView = class View extends React.Component { constructor(){super();} render(){ return (<div></div>) } } ;
     
   }
 
   componentDidload(){
     if (this.state.viewing === 'default'){
       this.loadPage();
+      window.addEventListener("click", this.handleClick);
       document.querySelector('#defaultLoad').style.display = 'none';
     }
   }
 
-  loadPage (thingToReceive = 'home') {
-    switch ( thingToReceive ) {
+  handleClick ( event ) {
+    if(event.target.getAttribute("class").includes("nav-link")){
+      for(let button of Array.from(document.getElementsByClassName("nav-link"))){
+        button.style.borderColor="#7e4a35"
+        button.style.color = "white"
+      }
+      event.target.style.borderColor="white";
+      event.target.style.color="#ccc"
+      this.loadPage( event.target.id.split('-')[0] );
+    }
+    else return null;
+
+  }
+
+  loadPage ( page = 'home' ) {
+    switch ( page ) {
       case 'home':
         import('../scripts/home.js')
           .then(module => {
@@ -70,7 +85,7 @@ class Main extends React.Component {
       <main id="main" class="container-fluid">
         <Header />
         <View />
-        <div id="defaultLoad" class="mx-3 mb-4">
+        <div id="defaultLoad" class="mx-3 mb-4 main-area">
           <h1 class="" id="title">Welcome to Tributes Inc.!</h1>
           <h2 class="" id="subTitle">We're glad you're here</h2>
         </div>
@@ -82,14 +97,3 @@ class Main extends React.Component {
 }
 
 ReactDOM.render(<Main />, document.querySelector("body"));
-
-window.addEventListener("click",(event)=>{
-  if(event.target.getAttribute("class").includes("nav-link")){
-    for(let button of Array.from(document.getElementsByClassName("nav-link"))){
-      button.style.borderColor="#7e4a35"
-      button.style.color = "white"
-    }
-    event.target.style.borderColor="white";
-    event.target.style.color="#ccc"
-  }
-});
