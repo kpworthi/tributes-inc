@@ -11,3 +11,11 @@ Create a multi-page website incorporating multiple functionalaties learned over 
 1. Users can create up to two types of 'tribute' pages from pre-made templates
 1. MongoDB is utilized for account authentication and user-created content
 1. Server to be created using Node.js and Express.js
+
+### 0.2.0 changes
+1. Modified base html page for React.
+1. Added React main file (index) and subsequent components for header, footer, and the main pages (home, products, the directory and the log-in button).
+1. Created (mostly) placeholder information on each page
+1. Layout frameworks in place courtesy of Bootstrap
+1. Made modifications for better viewing on mobile
+1. Added the dependencies for Passport on the server in preparation for user account handling
