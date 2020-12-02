@@ -5,9 +5,11 @@ class Main extends React.Component {
   constructor() {
     super();
     this.state = {
-      viewing: 'default'
+      viewing: 'default',
+      auth: false
     };
     this.loadPage = this.loadPage.bind(this);
+    this.handleClick = this.handleClick.bind(this);
     this.pageView = class View extends React.Component {
       constructor() {
         super();
@@ -18,26 +20,38 @@ class Main extends React.Component {
       }
 
     };
+    this.pages = ['home', 'products', 'directory', 'auth', 'account'];
   }
 
   componentDidMount() {
-    if (this.state.viewing === 'default') {
+    if (window.location.hash && this.pages.includes(window.location.hash.slice(1))) {
+      this.loadPage(window.location.hash.slice(1));
+    } else if (this.state.viewing === 'default') {
       this.loadPage();
-      window.addEventListener("click", this.handleClick);
-      document.querySelector('#defaultLoad').style.display = 'none';
     }
+
+    $(window).click(this.handleClick);
+    $('#defaultLoad').css('display', 'none');
   }
 
   handleClick(event) {
-    if (event.target.getAttribute("class").includes("nav-link")) {
-      for (let button of Array.from(document.getElementsByClassName("nav-link"))) {
-        button.style.borderColor = "#7e4a35";
-        button.style.color = "white";
-      }
+    let clicked = event.target;
+    if (!clicked.href) return null;else if (clicked.getAttribute("class").includes("nav-link")) {
+      $(".nav-link").css('border-color', '#7e4a35');
+      $(".nav-link").css('color', 'white');
+      clicked.style.borderColor = "white";
+      clicked.style.color = "#ccc";
 
-      event.target.style.borderColor = "white";
-      event.target.style.color = "#ccc";
-      this.loadPage(event.target.id.split('-')[0]);
+      if (clicked.href.split('#')[1] !== this.state.viewing) {
+        this.loadPage(clicked.href.split('#')[1]);
+      }
+    } else if (clicked.href.includes('#')) {
+      $(".nav-link").css('border-color', '#7e4a35');
+      $(".nav-link").css('color', 'white');
+      let matchingNav = $(`${clicked.hash}-nav`)[0];
+      matchingNav.style.borderColor = "white";
+      matchingNav.style.color = "#ccc";
+      this.loadPage(clicked.href.split('#')[1]);
     } else return null;
   }
 

@@ -1,11 +1,21 @@
+
+"use strict";
 require('dotenv').config();
 const express    = require('express');
+const myDB       = require('./api/dbConnection');
 const bodyParser = require('body-parser');
-const expect     = require('chai');
 const helmet     = require('helmet');
+const passport   = require('passport');
+const session    = require('express-session');
 
-const app    = express();
-const server = require('http').createServer(app);
+const app          = express();
+const server       = require('http').createServer(app);
+const cookieParser = require('cookie-parser');
+const MongoStore   = require('connect-mongo')(session);
+const URI          = process.env.MONGO_URI;
+const store        = new MongoStore({ url: URI });
+
+//const expect     = require('chai');
 
 // helmet and other custom headers
 app.use(helmet());
@@ -24,9 +34,10 @@ app.use(function (req, res, next){
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// public folder
+// public folders
 app.use('/scripts', express.static(process.cwd() + '/scripts'));
 app.use('/styles', express.static(process.cwd() + '/styles'));
+app.use('/img', express.static(process.cwd() + '/img'));
 
 // index page
 app.route('/')
@@ -41,7 +52,7 @@ app.use(function(req, res, next) {
 });
 
 // Set up server to listen on 443
-const portNum = 443;
+const portNum = process.env.PORT;
 server.listen(portNum, () => {
   console.log(`Listening on port ${portNum}`);
 });

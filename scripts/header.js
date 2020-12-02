@@ -10,12 +10,12 @@ class Header extends React.Component {
   userArea() {
     if (this.state.auth === true) {
       return /*#__PURE__*/React.createElement("a", {
-        href: "#",
+        href: "#auth",
         class: "nav-link mx-3",
         id: "auth-nav"
       }, " Hello, user!");
     } else return /*#__PURE__*/React.createElement("a", {
-      href: "#",
+      href: "#auth",
       class: "nav-link mx-3",
       id: "auth-nav"
     }, " Log-in or Register");
@@ -39,7 +39,7 @@ class Header extends React.Component {
       class: "navbar-toggler-icon"
     }, /*#__PURE__*/React.createElement("i", {
       class: "fab fa-elementor"
-    }))), /*#__PURE__*/React.createElement("a", {
+    }), "O")), /*#__PURE__*/React.createElement("a", {
       class: "navbar-brand",
       href: "#"
     }, /*#__PURE__*/React.createElement("img", {
@@ -51,21 +51,21 @@ class Header extends React.Component {
     }, /*#__PURE__*/React.createElement("div", {
       class: "navbar-nav col-lg"
     }, /*#__PURE__*/React.createElement("a", {
-      href: "#",
+      href: "#home",
       class: "nav-link mx-3",
       id: "home-nav"
     }, " Home"), /*#__PURE__*/React.createElement("a", {
-      href: "#",
+      href: "#products",
       class: "nav-link mx-3",
       id: "products-nav"
     }, " Products"), /*#__PURE__*/React.createElement("a", {
-      href: "#",
+      href: "#directory",
       class: "nav-link mx-3",
       id: "directory-nav"
     }, " Tributes A-Z")), /*#__PURE__*/React.createElement("div", {
       class: "navbar-nav",
       id: "nav-account-area col-lg"
-    }, this.userArea))));
+    }, this.userArea()))));
   }
 
 }

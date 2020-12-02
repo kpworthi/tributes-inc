@@ -59,8 +59,30 @@ body {
   font-size: 2.2rem;
   text-align: center;
 }
+.main-area .sub-divider {
+  border: 1px solid black;
+  width: 50%;
+  align-self: center;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+.main-area .vert-divider {
+  border: 1px solid black;
+  max-width: 2px;
+  height: 50vh;
+}
 .main-area .plainText {
   font-size: 1.3rem;
+}
+
+#home figure {
+  min-width: 250px;
+  min-height: 250px;
+  text-align: center;
+}
+#home figure img {
+  border: 1px solid black;
+  border-radius: 5px;
 }
 
 /*# sourceMappingURL=index.css.map */
