@@ -108,7 +108,7 @@ class Main extends React.Component {
     let View = this.pageView;
     return /*#__PURE__*/React.createElement("main", {
       id: "main",
-      class: "container-fluid"
+      class: "px-sm-4"
     }, /*#__PURE__*/React.createElement(Header, null), /*#__PURE__*/React.createElement(View, null), /*#__PURE__*/React.createElement("div", {
       id: "defaultLoad",
       class: "mx-3 mb-4 main-area"

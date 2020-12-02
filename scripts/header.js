@@ -37,9 +37,13 @@ class Header extends React.Component {
       "aria-label": "Toggle navigation"
     }, /*#__PURE__*/React.createElement("span", {
       class: "navbar-toggler-icon"
-    }, /*#__PURE__*/React.createElement("i", {
-      class: "fab fa-elementor"
-    }), "O")), /*#__PURE__*/React.createElement("a", {
+    }, /*#__PURE__*/React.createElement("img", {
+      src: "../img/list.svg",
+      alt: "",
+      width: "48",
+      height: "48",
+      title: "Menu"
+    }))), /*#__PURE__*/React.createElement("a", {
       class: "navbar-brand",
       href: "#"
     }, /*#__PURE__*/React.createElement("img", {
@@ -49,22 +53,22 @@ class Header extends React.Component {
       class: "collapse navbar-collapse",
       id: "navbar-links"
     }, /*#__PURE__*/React.createElement("div", {
-      class: "navbar-nav col-lg"
+      class: "navbar-nav col-lg text-center"
     }, /*#__PURE__*/React.createElement("a", {
-      href: "#home",
       class: "nav-link mx-3",
+      href: "#home",
       id: "home-nav"
     }, " Home"), /*#__PURE__*/React.createElement("a", {
-      href: "#products",
       class: "nav-link mx-3",
+      href: "#products",
       id: "products-nav"
     }, " Products"), /*#__PURE__*/React.createElement("a", {
-      href: "#directory",
       class: "nav-link mx-3",
+      href: "#directory",
       id: "directory-nav"
     }, " Tributes A-Z")), /*#__PURE__*/React.createElement("div", {
-      class: "navbar-nav",
-      id: "nav-account-area col-lg"
+      class: "navbar-nav col-lg text-center justify-content-end",
+      id: "nav-account-area"
     }, this.userArea()))));
   }
 
