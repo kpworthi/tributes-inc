@@ -1,6 +1,37 @@
 class Auth extends React.Component {
   constructor() {
     super();
+    this.handleButton = this.handleButton.bind(this);
+  }
+
+  handleButton(event) {
+    let clicked = event.target;
+
+    if (clicked.id === "submit-reg") {
+      event.preventDefault();
+      let username = $("#register-username")[0].value,
+          password = $("#register-password")[0].value,
+          passwordConfirm = $("#register-password-confirm")[0].value;
+
+      if (password !== passwordConfirm) {
+        $("#reg-status")[0].textContent = 'Passwords entered do not match!';
+        return null;
+      }
+
+      let submission = $.post('/register', {
+        username: username,
+        password: password
+      }).done(function (response) {
+        $("#reg-status")[0].textContent = response;
+      }).fail(function (err) {
+        console.log(' THERE WAS AN ERROR!!!!!!!!!!!!!!!!! ');
+        $("#reg-status")[0].textContent = err;
+      });
+    } else if (clicked.id === "submit-login") {
+      event.preventDefault();
+      $("#login-status")[0].textContent = "This doesn't work yet!";
+      console.log('Failed log-in.');
+    }
   }
 
   render() {
@@ -39,14 +70,18 @@ class Auth extends React.Component {
       id: "login-password"
     })), /*#__PURE__*/React.createElement("button", {
       type: "submit",
-      class: "btn btn-light"
-    }, " Submit ")), /*#__PURE__*/React.createElement("div", {
+      class: "btn btn-light",
+      id: "submit-login",
+      onClick: this.handleButton
+    }, " Submit "), /*#__PURE__*/React.createElement("p", {
+      id: "login-status"
+    })), /*#__PURE__*/React.createElement("div", {
       class: "vert-divider d-none d-sm-block"
     }), /*#__PURE__*/React.createElement("div", {
       class: "sub-divider d-block d-sm-none"
     }), /*#__PURE__*/React.createElement("form", {
       class: "col-sm-5 mx-3",
-      id: "login-form"
+      id: "register-form"
     }, /*#__PURE__*/React.createElement("h3", {
       class: "text-align"
     }, /*#__PURE__*/React.createElement("u", null, " Register New Account ")), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("div", {
@@ -74,9 +109,13 @@ class Auth extends React.Component {
       class: "form-control",
       id: "register-password-confirm"
     })), /*#__PURE__*/React.createElement("button", {
-      type: "submit",
-      class: "btn btn-light"
-    }, " Submit "))));
+      type: "button",
+      class: "btn btn-light",
+      id: "submit-reg",
+      onClick: this.handleButton
+    }, " Submit "), /*#__PURE__*/React.createElement("p", {
+      id: "reg-status"
+    }))));
   }
 
 }

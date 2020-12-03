@@ -2,7 +2,19 @@
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 
-function routes (app, myDataBase) {
+function routes (app, database) {
+
+  class User {
+    constructor ( username, password ) {
+      this.username= username;
+      this.password= password;
+      this.created_on= new Date(); //maybe define the local time, maybe EST time? double check this!!
+      this.last_login= new Date(); //same as above. also update this whenever the user logs in.
+      this.realname_first= 'Not specified';
+      this.realname_last= 'Not specified';
+      this.email= 'Not specified';
+    }
+  }
 
   //Ensure Authenticated middleware
   function ensureAuthenticated(req, res, next) {
@@ -15,16 +27,6 @@ function routes (app, myDataBase) {
     res.redirect('/');
   };
 
-  app.route("/")
-    .get((req, res) => {
-      res.render(process.cwd() + '/views/pug/index',  
-            {title: 'Connected to Database', 
-             message: 'Please login',
-             showLogin: true,
-             showRegistration: true,
-             showSocialAuth: true});
-    });
-
   app.route('/login') 
     .post((req, res, next) => {
       console.log("Log-in request."); 
@@ -36,22 +38,6 @@ function routes (app, myDataBase) {
         res.redirect('/profile');
       });
 
-  app.route('/auth/github')
-    .get(passport.authenticate('github'));
-
-  app.route('/auth/github/callback')
-    .get(passport.authenticate('github', { failureRedirect: '/abc' }),
-      function(req, res) {
-        req.session.user_id = req.user.id;
-        res.redirect('/chat');
-      });
-
-  app.route('/profile')
-    .get(ensureAuthenticated, function(req, res, next){
-      res.render(process.cwd() + '/views/pug/profile', 
-                {username: req.user.username || req.user.name});
-      });
-
   app.route('/logout')
     .get((req, res) => {
       req.logout();
@@ -61,37 +47,44 @@ function routes (app, myDataBase) {
   //User registration
   app.route('/register')
     .post((req, res, next) => {
+      console.log('register request received.')
+      console.log(`info was: ${req.body.username}:${req.body.password}`);
 
       const hash = bcrypt.hashSync(req.body.password, 12)
+      
+      database(async function (client) {
+        let findResults = await client.db('tributes-inc').collection('users').findOne({ username: req.body.username }) 
+        console.log(findResults);
+        
+        if ( findResults === null ) {
+          let insertResults = await client.db('tributes-inc').collection('users').insertOne( new User(req.body.username, hash));
 
-      myDataBase.findOne({ username: req.body.username }, function(err, user) {
-        if (err) {
-          next(err);
-        } else if (user) {
-          res.redirect('/');
+          if( insertResults.insertedCount === 0 ){
+            res.send('An error occurred while trying to create a user. Please try again.');
+            res.end();
+            next('db error');
+          }
+          else {
+                res.send('Account created successfully!');
+                res.end();
+                next(null, insertResults.ops[0]);
+          }
+
         } else {
-          myDataBase.insertOne({
-            username: req.body.username,
-            password: hash
-          },
-            (err, doc) => {
-              if (err) {
-                res.redirect('/');
-              } else {
-                // The inserted document is held within
-                // the ops property of the doc
-                next(null, doc.ops[0]);
-              }
-            }
-          )
+          res.send('Error, user already exists! Please pick a new name.')
+          res.end();
+          next('user already exists');
         }
-      })
+
+      });
+      /*
   },passport.authenticate('local', { failureRedirect: '/' }),
     (req, res, next) => {
-      res.redirect('/profile');
+      res.redirect('/profile');*/
     }
   );
 
+/*
   //Chat handler
   app.route('/chat')
     .get(ensureAuthenticated, 
@@ -106,6 +99,7 @@ function routes (app, myDataBase) {
     res.status(404)
       .render(process.cwd() + '/views/pug/fourohfour', {})
   });
+  */
 }
 
 module.exports = routes;

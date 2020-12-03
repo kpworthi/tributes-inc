@@ -34,4 +34,4 @@ function auth (app, myDataBase) {
 
 }
 
-module.exports = connection;
+module.exports = auth;

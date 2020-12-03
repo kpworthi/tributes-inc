@@ -12,6 +12,12 @@ Create a multi-page website incorporating multiple functionalaties learned over 
 1. MongoDB is utilized for account authentication and user-created content
 1. Server to be created using Node.js and Express.js
 
+### 0.3.0 changes (proposed)
+1. Added mongoDB collection for user registration
+1. Modified log-in area to submit actual requests
+1. Server authenticates info via Passport / mongoDB
+1. On successful registration or log-in, user is redirected to account landing page
+
 ### 0.2.0 changes
 1. Modified base html page for React.
 1. Added React main file (index) and subsequent components for header, footer, and the main pages (home, products, the directory and the log-in button).
