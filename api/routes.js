@@ -2,6 +2,8 @@
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 
+const currentTimeEST = () => Date().toLocaleString('en-US', { timeZone: 'EST'}) + ' EST';
+
 function routes (app, database) {
 
   class User {
@@ -54,26 +56,25 @@ function routes (app, database) {
       
       database(async function (client) {
         let findResults = await client.db('tributes-inc').collection('users').findOne({ username: req.body.username }) 
-        console.log(findResults);
         
         if ( findResults === null ) {
           let insertResults = await client.db('tributes-inc').collection('users').insertOne( new User(req.body.username, hash));
 
           if( insertResults.insertedCount === 0 ){
             res.send('An error occurred while trying to create a user. Please try again.');
-            res.end();
-            next('db error');
+            console.log("User wasn't found, but a new one wasn't added... There's probably a mongo error. " + currentTimeEST())
+            //next('db error');
           }
           else {
                 res.send('Account created successfully!');
-                res.end();
-                next(null, insertResults.ops[0]);
+                console.log("A new user '" + req.body.username + "' was created at " + currentTimeEST());
+                //next(null, insertResults.ops[0]);
           }
 
         } else {
           res.send('Error, user already exists! Please pick a new name.')
-          res.end();
-          next('user already exists');
+          console.log("User tried to register a name that already exists. " + currentTimeEST())
+          //next('user already exists');
         }
 
       });

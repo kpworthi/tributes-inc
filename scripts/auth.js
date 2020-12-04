@@ -2,36 +2,69 @@ class Auth extends React.Component {
   constructor() {
     super();
     this.handleButton = this.handleButton.bind(this);
+    this.submitLogin = this.submitLogin.bind(this);
+    this.submitRegister = this.submitRegister.bind(this);
   }
 
   handleButton(event) {
     let clicked = event.target;
 
     if (clicked.id === "submit-reg") {
-      event.preventDefault();
-      let username = $("#register-username")[0].value,
-          password = $("#register-password")[0].value,
-          passwordConfirm = $("#register-password-confirm")[0].value;
+      this.submitRegister(event);
+    } else if (clicked.id === "submit-login") {
+      this.submitLogin(event);
+    }
+  }
 
-      if (password !== passwordConfirm) {
-        $("#reg-status")[0].textContent = 'Passwords entered do not match!';
-        return null;
-      }
+  submitLogin(event) {
+    event.preventDefault();
+    $("#login-status")[0].textContent = "This doesn't work yet!";
+    console.log('Log-in HTTP request failed.');
+  }
 
+  submitRegister(event) {
+    event.preventDefault();
+    let username = $("#register-username")[0].value,
+        password = $("#register-password")[0].value,
+        passwordConfirm = $("#register-password-confirm")[0].value;
+
+    if (this.registerChecker(username, password, passwordConfirm)) {
+      $("#reg-status")[0].textContent = 'Request submitted, please wait.';
       let submission = $.post('/register', {
         username: username,
         password: password
       }).done(function (response) {
         $("#reg-status")[0].textContent = response;
       }).fail(function (err) {
-        console.log(' THERE WAS AN ERROR!!!!!!!!!!!!!!!!! ');
+        console.log(' Registration HTTP request failed. ');
         $("#reg-status")[0].textContent = err;
       });
-    } else if (clicked.id === "submit-login") {
-      event.preventDefault();
-      $("#login-status")[0].textContent = "This doesn't work yet!";
-      console.log('Failed log-in.');
     }
+  }
+
+  registerChecker(user, pass, passConfirm) {
+    if (pass !== passConfirm) {
+      $("#reg-status")[0].textContent = 'Passwords entered do not match.';
+      return false;
+    } else if (user === '') {
+      $("#reg-status")[0].textContent = 'You need to specify a username!';
+      return false;
+    } else if (pass === '' || passConfirm === '') {
+      $("#reg-status")[0].textContent = 'A password must be entered in both fields.';
+      return false;
+    } else if (pass.length < 10) {
+      $("#reg-status")[0].textContent = 'Password must be at least 10 characters.';
+      return false;
+    } else if (pass.match(/[0-9]/) === null) {
+      $("#reg-status")[0].textContent = 'Password must have at least one number.';
+      return false;
+    } else if (pass.match(/[a-z]/) === null || pass.match(/[A-Z]/) === null) {
+      $("#reg-status")[0].textContent = 'Password must have at least one lowercase and one uppercase letter.';
+      return false;
+    } else if (user.length < 6) {
+      $("#reg-status")[0].textContent = 'Username must be at least 6 characters.';
+      return false;
+    } else return true;
   }
 
   render() {
@@ -88,7 +121,7 @@ class Auth extends React.Component {
       class: "form-group"
     }, /*#__PURE__*/React.createElement("label", {
       for: "register-username"
-    }, " Username: "), /*#__PURE__*/React.createElement("input", {
+    }, " Username (six characters minimum): "), /*#__PURE__*/React.createElement("input", {
       type: "text",
       class: "form-control",
       id: "register-username"
@@ -96,7 +129,7 @@ class Auth extends React.Component {
       class: "form-group"
     }, /*#__PURE__*/React.createElement("label", {
       for: "register-password"
-    }, " Password "), /*#__PURE__*/React.createElement("input", {
+    }, " Password (ten characters minimum): "), /*#__PURE__*/React.createElement("input", {
       type: "password",
       class: "form-control",
       id: "register-password"
@@ -104,7 +137,7 @@ class Auth extends React.Component {
       class: "form-group"
     }, /*#__PURE__*/React.createElement("label", {
       for: "register-password-confirm"
-    }, " Confirm Password "), /*#__PURE__*/React.createElement("input", {
+    }, " Confirm Password: "), /*#__PURE__*/React.createElement("input", {
       type: "password",
       class: "form-control",
       id: "register-password-confirm"

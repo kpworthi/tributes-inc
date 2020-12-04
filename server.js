@@ -18,6 +18,7 @@ const routes       = require('./api/routes')
 const auth         = require('./api/auth');
 
 //const expect     = require('chai');
+const currentTimeEST = () => Date().toLocaleString('en-US', { timeZone: 'EST'}) + ' EST';
 
 // helmet and other custom headers
 app.use(helmet());
