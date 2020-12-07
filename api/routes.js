@@ -10,8 +10,8 @@ function routes (app, database) {
     constructor ( username, password ) {
       this.username= username;
       this.password= password;
-      this.created_on= new Date(); //maybe define the local time, maybe EST time? double check this!!
-      this.last_login= new Date(); //same as above. also update this whenever the user logs in.
+      this.created_on= currentTimeEST();
+      this.last_login= currentTimeEST();
       this.realname_first= 'Not specified';
       this.realname_last= 'Not specified';
       this.email= 'Not specified';
@@ -20,25 +20,28 @@ function routes (app, database) {
 
   //Ensure Authenticated middleware
   function ensureAuthenticated(req, res, next) {
-    console.log("Verifying authentication");
+    console.log(`Verifying authentication for user ${req.body.username}`);
     if (req.isAuthenticated()) {
-      console.log("Verification success.")
-      return next();
+      console.log("User is already logged in!.");
+      return res.send("You're already logged in!");
+      //return next();
     }
-    console.log("Verification failed.")
-    res.redirect('/');
+    console.log("User is not logged in.")
+    return next();
   };
-
+  
   app.route('/login') 
-    .post((req, res, next) => {
-      console.log("Log-in request."); 
-      next();
-      },
-      passport.authenticate('local', { failureRedirect: '/abc' }),
-      function(req, res) {
-        console.log("log-in successful, redirecting")
-        res.redirect('/profile');
-      });
+    .post( ensureAuthenticated,
+      function(req, res, next) {
+      passport.authenticate('local', function(err, user, info) {
+        if (err) { return next(err); }
+        if (!user) { return res.send('Incorrect username or password'); }
+        req.login(user, function(err) {
+          if (err) { return next(err); }
+          return res.send(`${req.user.username} has successfully signed in!`);
+        });
+      })(req, res, next);
+    });
 
   app.route('/logout')
     .get((req, res) => {

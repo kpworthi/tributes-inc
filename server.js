@@ -45,7 +45,10 @@ app.use(session({
   key: 'express.sid',
   store: store,
   saveUninitialized: true,
-  cookie: { secure: true }
+  cookie: { 
+    secure: false,
+    maxAge: 3600000
+  }
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

@@ -18,8 +18,23 @@ class Auth extends React.Component {
 
   submitLogin(event) {
     event.preventDefault();
-    $("#login-status")[0].textContent = "This doesn't work yet!";
-    console.log('Log-in HTTP request failed.');
+    let username = $("#login-username")[0].value,
+        password = $("#login-password")[0].value;
+
+    if (username === '' || password === '') {
+      $("#login-status")[0].textContent = 'Please complete both the username and the password fields.';
+    } else {
+      $("#login-status")[0].textContent = 'Request submitted, please wait.';
+      let submission = $.post('/login', {
+        username: username,
+        password: password
+      }).done(function (response) {
+        $("#login-status")[0].textContent = response;
+      }).fail(function (err) {
+        console.log(' Log-in HTTP request failed. ');
+        $("#reg-status")[0].textContent = err;
+      });
+    }
   }
 
   submitRegister(event) {

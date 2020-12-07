@@ -15,8 +15,11 @@ Create a multi-page website incorporating multiple functionalaties learned over 
 ### 0.3.0 changes (proposed)
 1. Added mongoDB collection for user registration
 1. Modified log-in area to submit actual requests
-1. Server authenticates info via Passport / mongoDB
-1. On successful registration or log-in, user is redirected to account landing page
+1. Log-in and registration buttons display feedback under them
+1. Server authenticates users via Passport / mongoDB
+1. Site retains session info via a mongo store
+1. On successful registration or log-in, user is redirected to an account landing page
+1. On subsequent log-ins, the user's last log-in date is updated
 
 ### 0.2.0 changes
 1. Modified base html page for React.
