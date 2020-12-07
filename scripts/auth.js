@@ -1,55 +1,55 @@
 class Auth extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.handleButton = this.handleButton.bind(this);
     this.submitLogin = this.submitLogin.bind(this);
     this.submitRegister = this.submitRegister.bind(this);
+    this.updateLoginState = this.props.updateLoginState;
   }
 
   handleButton(event) {
     let clicked = event.target;
 
     if (clicked.id === "submit-reg") {
-      this.submitRegister(event);
+      event.preventDefault();
+      this.submitRegister($("#register-username")[0].value, $("#register-password")[0].value, $("#register-password-confirm")[0].value);
     } else if (clicked.id === "submit-login") {
-      this.submitLogin(event);
+      event.preventDefault();
+      this.submitLogin($("#login-username")[0].value, $("#login-password")[0].value);
     }
   }
 
-  submitLogin(event) {
-    event.preventDefault();
-    let username = $("#login-username")[0].value,
-        password = $("#login-password")[0].value;
-
+  submitLogin(username, password) {
     if (username === '' || password === '') {
       $("#login-status")[0].textContent = 'Please complete both the username and the password fields.';
     } else {
       $("#login-status")[0].textContent = 'Request submitted, please wait.';
-      let submission = $.post('/login', {
+      let submission = $.post('/api/login', {
         username: username,
         password: password
-      }).done(function (response) {
-        $("#login-status")[0].textContent = response;
+      }).done(response => {
+        $("#login-status")[0].textContent = response.msg;
+        setTimeout(() => {
+          this.updateLoginState(response.auth, response.username);
+        }, 2000);
       }).fail(function (err) {
-        console.log(' Log-in HTTP request failed. ');
-        $("#reg-status")[0].textContent = err;
+        console.log(' Log-in HTTP request failed. ' + err);
+        $("#login-status")[0].textContent = err;
       });
     }
   }
 
-  submitRegister(event) {
-    event.preventDefault();
-    let username = $("#register-username")[0].value,
-        password = $("#register-password")[0].value,
-        passwordConfirm = $("#register-password-confirm")[0].value;
-
+  submitRegister(username, password, passwordConfirm) {
     if (this.registerChecker(username, password, passwordConfirm)) {
       $("#reg-status")[0].textContent = 'Request submitted, please wait.';
-      let submission = $.post('/register', {
+      let submission = $.post('/api/register', {
         username: username,
         password: password
-      }).done(function (response) {
-        $("#reg-status")[0].textContent = response;
+      }).done(response => {
+        $("#reg-status")[0].textContent = response.msg;
+        setTimeout(() => {
+          this.updateLoginState(response.auth, response.username);
+        }, 2000);
       }).fail(function (err) {
         console.log(' Registration HTTP request failed. ');
         $("#reg-status")[0].textContent = err;

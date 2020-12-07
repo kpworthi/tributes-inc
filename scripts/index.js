@@ -6,10 +6,12 @@ class Main extends React.Component {
     super();
     this.state = {
       viewing: 'default',
-      auth: false
+      auth: false,
+      username: ''
     };
     this.loadPage = this.loadPage.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.updateLoginState = this.updateLoginState.bind(this);
     this.pageView = class View extends React.Component {
       constructor() {
         super();
@@ -36,18 +38,16 @@ class Main extends React.Component {
 
   handleClick(event) {
     let clicked = event.target;
-    if (!clicked.href) return null;else if (clicked.getAttribute("class").includes("nav-link")) {
-      $(".nav-link").css('border-color', '#7e4a35');
-      $(".nav-link").css('color', 'white');
-      clicked.style.borderColor = "white";
-      clicked.style.color = "#ccc";
-
-      if (clicked.href.split('#')[1] !== this.state.viewing) {
-        this.loadPage(clicked.href.split('#')[1]);
-      }
+    if (!clicked.href) return null;else if (clicked.href.includes('#logout')) {
+      let submission = $.get('/api/logout').done(response => {
+        this.updateLoginState(false, '');
+      }).fail(function (err) {
+        console.log(' Log out HTTP request failed. ' + currentTimeEST());
+        this.updateLoginState(false, ''); //force user logout client-side, at least
+      });
     } else if (clicked.href.includes('#')) {
-      $(".nav-link").css('border-color', '#7e4a35');
-      $(".nav-link").css('color', 'white');
+      $(".link-navbar").css('border-color', '#7e4a35');
+      $(".link-navbar").css('color', 'white');
       let matchingNav = $(`${clicked.hash}-nav`)[0];
       matchingNav.style.borderColor = "white";
       matchingNav.style.color = "#ccc";
@@ -85,7 +85,7 @@ class Main extends React.Component {
         break;
 
       case 'account':
-        import('../scripts/account.js').then(module => {
+        if (this.state.auth) import('../scripts/account.js').then(module => {
           this.pageView = module.default;
           this.setState({
             viewing: 'account'
@@ -104,12 +104,42 @@ class Main extends React.Component {
     }
   }
 
+  updateLoginState(isAuth, username = '') {
+    this.setState({
+      auth: isAuth,
+      username: username
+    });
+
+    if (isAuth && this.state.viewing === 'auth') {
+      this.handleClick({
+        target: {
+          href: '#account',
+          hash: '#account'
+        }
+      });
+    } else if (!isAuth && this.state.viewing === 'account') {
+      this.handleClick({
+        target: {
+          href: '#auth',
+          hash: '#auth'
+        }
+      });
+    }
+  }
+
   render() {
     let View = this.pageView;
     return /*#__PURE__*/React.createElement("main", {
       id: "main",
       class: "px-sm-4"
-    }, /*#__PURE__*/React.createElement(Header, null), /*#__PURE__*/React.createElement(View, null), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement(Header, {
+      auth: this.state.auth,
+      username: this.state.username,
+      updateLoginState: this.updateLoginState
+    }), /*#__PURE__*/React.createElement(View, {
+      updateLoginState: this.updateLoginState,
+      usernmae: this.state.username
+    }), /*#__PURE__*/React.createElement("div", {
       id: "defaultLoad",
       class: "mx-3 mb-4 main-area"
     }, /*#__PURE__*/React.createElement("h1", {

@@ -40,7 +40,7 @@ body {
     height: 50px;
   }
 }
-.navbar .navbar-nav a {
+.navbar .navbar-nav .link-navbar {
   align-self: center;
   color: white;
   border: 1px solid #7e4a35;
@@ -48,7 +48,7 @@ body {
   text-align: center;
   min-width: 45px;
 }
-.navbar .navbar-nav a:hover {
+.navbar .navbar-nav .box-highlight:hover {
   animation-name: link-color;
   animation-duration: 500ms;
   animation-fill-mode: forwards;

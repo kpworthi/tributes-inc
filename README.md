@@ -21,6 +21,9 @@ Create a multi-page website incorporating multiple functionalaties learned over 
 1. On successful registration or log-in, user is redirected to an account landing page
 1. On subsequent log-ins, the user's last log-in date is updated
 
+- Changed arguments passed from auth.js click handler to submission functions
+- Initially, server replied with string for auth checks. Moved to json
+
 ### 0.2.0 changes
 1. Modified base html page for React.
 1. Added React main file (index) and subsequent components for header, footer, and the main pages (home, products, the directory and the log-in button).
