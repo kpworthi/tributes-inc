@@ -1,6 +1,7 @@
 class Account extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.username = props.username || 'user';
   }
 
   render() {
@@ -10,7 +11,7 @@ class Account extends React.Component {
     }, /*#__PURE__*/React.createElement("h1", {
       class: "",
       id: "title"
-    }, "Welcome, user!"), /*#__PURE__*/React.createElement("h2", {
+    }, "Welcome, ", this.username, "!"), /*#__PURE__*/React.createElement("h2", {
       class: "",
       id: "subTitle"
     }, "Please choose an option below"));

@@ -26,7 +26,7 @@ class Header extends React.Component {
 
   userArea() {
     if (this.auth === true) {
-      return /*#__PURE__*/React.createElement("div", {
+      return () => /*#__PURE__*/React.createElement("div", {
         class: "nav-link"
       }, /*#__PURE__*/React.createElement("a", {
         href: "#account",
@@ -37,16 +37,17 @@ class Header extends React.Component {
         class: "mx-3 p-1 link-navbar",
         id: "logout"
       }, " Sign out"));
-    } else return /*#__PURE__*/React.createElement("a", {
-      href: "#auth",
+    } else return () => /*#__PURE__*/React.createElement("a", {
+      href: "#login",
       class: "nav-link link-navbar box-highlight mx-3",
-      id: "auth-nav"
+      id: "login-nav"
     }, " Log-in or Register");
   }
 
   render() {
     this.auth = this.props.auth;
     this.username = this.props.username;
+    let UserArea = this.userArea();
     return /*#__PURE__*/React.createElement("header", {
       id: "header",
       class: ""
@@ -94,7 +95,7 @@ class Header extends React.Component {
     }, " Tributes A-Z")), /*#__PURE__*/React.createElement("div", {
       class: "navbar-nav col-lg text-center justify-content-end",
       id: "nav-account-area"
-    }, this.userArea()))));
+    }, /*#__PURE__*/React.createElement(UserArea, null)))));
   }
 
 }

@@ -22,7 +22,7 @@ class Main extends React.Component {
       }
 
     };
-    this.pages = ['home', 'products', 'directory', 'auth', 'account'];
+    this.pages = ['home', 'products', 'directory', 'login', 'account'];
   }
 
   componentDidMount() {
@@ -93,11 +93,11 @@ class Main extends React.Component {
         });
         break;
 
-      case 'auth':
-        import('../scripts/auth.js').then(module => {
+      case 'login':
+        import('../scripts/login.js').then(module => {
           this.pageView = module.default;
           this.setState({
-            viewing: 'auth'
+            viewing: 'login'
           });
         });
         break;
@@ -110,7 +110,7 @@ class Main extends React.Component {
       username: username
     });
 
-    if (isAuth && this.state.viewing === 'auth') {
+    if (isAuth && this.state.viewing === 'login') {
       this.handleClick({
         target: {
           href: '#account',
@@ -120,8 +120,8 @@ class Main extends React.Component {
     } else if (!isAuth && this.state.viewing === 'account') {
       this.handleClick({
         target: {
-          href: '#auth',
-          hash: '#auth'
+          href: '#login',
+          hash: '#login'
         }
       });
     }
@@ -148,7 +148,9 @@ class Main extends React.Component {
     }, "Welcome to Tributes Inc.!"), /*#__PURE__*/React.createElement("h2", {
       class: "",
       id: "subTitle"
-    }, "We're glad you're here")), /*#__PURE__*/React.createElement(Footer, null));
+    }, "We're glad you're here"), /*#__PURE__*/React.createElement("p", {
+      class: "text-center"
+    }, "Hang in there while we get some things together....")), /*#__PURE__*/React.createElement(Footer, null));
   }
 
 }

@@ -23,7 +23,7 @@ function routes (app, database) {
     console.log(`Verifying authentication for user ${req.body.username}`);
     if (req.isAuthenticated()) {
       console.log("User is already logged in!");
-      return res.json({auth: true, msg: "You're already logged in!", username: "something"});
+      return res.json({auth: true, msg: "You're already logged in!", username: req.user.username});
       //return next();
     }
     console.log("User is not logged in.")

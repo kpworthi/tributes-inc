@@ -1,4 +1,4 @@
-class Auth extends React.Component {
+class Login extends React.Component {
   constructor(props) {
     super(props);
     this.handleButton = this.handleButton.bind(this);
@@ -20,64 +20,92 @@ class Auth extends React.Component {
   }
 
   submitLogin(username, password) {
+    let status = $("#login-status")[0];
+    let clicked = $('#submit-login')[0];
+
     if (username === '' || password === '') {
-      $("#login-status")[0].textContent = 'Please complete both the username and the password fields.';
-    } else {
-      $("#login-status")[0].textContent = 'Request submitted, please wait.';
-      let submission = $.post('/api/login', {
-        username: username,
-        password: password
-      }).done(response => {
-        $("#login-status")[0].textContent = response.msg;
-        setTimeout(() => {
-          this.updateLoginState(response.auth, response.username);
-        }, 2000);
-      }).fail(function (err) {
-        console.log(' Log-in HTTP request failed. ' + err);
-        $("#login-status")[0].textContent = err;
-      });
+      return status.textContent = 'Please complete both the username and the password fields.';
     }
+
+    clicked.disabled = true;
+    let buttonTimeout = setTimeout(() => {
+      clicked.disabled = false;
+      return status.textContent = 'An error occurred during submission, please try again.';
+    }, 4000);
+    status.textContent = 'Request submitted, please wait.';
+    let submission = $.post('/api/login', {
+      username: username,
+      password: password
+    }).done(response => {
+      setTimeout(() => {
+        this.updateLoginState(response.auth, response.username);
+      }, 2000);
+      clearTimeout(buttonTimeout);
+      clicked.disabled = response.auth;
+      return status.textContent = response.msg;
+    }).fail(function (err) {
+      console.log(' Log-in HTTP request failed. ' + err);
+      clicked.disabled = false;
+      clearTimeout(buttonTimeout);
+      return status.textContent = 'An error occurred during submission, please try again.';
+    });
   }
 
   submitRegister(username, password, passwordConfirm) {
-    if (this.registerChecker(username, password, passwordConfirm)) {
-      $("#reg-status")[0].textContent = 'Request submitted, please wait.';
-      let submission = $.post('/api/register', {
-        username: username,
-        password: password
-      }).done(response => {
-        $("#reg-status")[0].textContent = response.msg;
-        setTimeout(() => {
-          this.updateLoginState(response.auth, response.username);
-        }, 2000);
-      }).fail(function (err) {
-        console.log(' Registration HTTP request failed. ');
-        $("#reg-status")[0].textContent = err;
-      });
+    let status = $("#reg-status")[0];
+    let clicked = $('#submit-reg')[0];
+
+    if (!this.registerChecker(username, password, passwordConfirm)) {
+      return 'Username or password did not meet criteria.';
     }
+
+    clicked.disabled = true;
+    let buttonTimeout = setTimeout(() => {
+      clicked.disabled = false;
+      return status.textContent = 'An error occurred during submission, please try again.';
+    }, 4000);
+    status.textContent = 'Request submitted, please wait.';
+    let submission = $.post('/api/register', {
+      username: username,
+      password: password
+    }).done(response => {
+      setTimeout(() => {
+        this.updateLoginState(response.auth, response.username);
+      }, 2000);
+      clearTimeout(buttonTimeout);
+      clicked.disabled = response.auth;
+      return status.textContent = response.msg;
+    }).fail(function (err) {
+      console.log(' Registration HTTP request failed. ');
+      clicked.disabled = false;
+      clearTimeout(buttonTimeout);
+      return status.textContent = 'An error occurred during submission, please try again.';
+    });
   }
 
   registerChecker(user, pass, passConfirm) {
+    let status = $("#reg-status")[0];
+
     if (pass !== passConfirm) {
-      $("#reg-status")[0].textContent = 'Passwords entered do not match.';
+      status.textContent = 'Passwords entered do not match.';
       return false;
     } else if (user === '') {
-      $("#reg-status")[0].textContent = 'You need to specify a username!';
+      status.textContent = 'You need to specify a username!';
       return false;
     } else if (pass === '' || passConfirm === '') {
-      $("#reg-status")[0].textContent = 'A password must be entered in both fields.';
+      status.textContent = 'A password must be entered in both fields.';
       return false;
     } else if (pass.length < 10) {
-      $("#reg-status")[0].textContent = 'Password must be at least 10 characters.';
+      status.textContent = 'Password must be at least 10 characters.';
       return false;
     } else if (pass.match(/[0-9]/) === null) {
-      $("#reg-status")[0].textContent = 'Password must have at least one number.';
+      status.textContent = 'Password must have at least one number.';
       return false;
     } else if (pass.match(/[a-z]/) === null || pass.match(/[A-Z]/) === null) {
-      $("#reg-status")[0].textContent = 'Password must have at least one lowercase and one uppercase letter.';
+      status.textContent = 'Password must have at least one lowercase and one uppercase letter.';
       return false;
     } else if (user.length < 6) {
-      $("#reg-status")[0].textContent = 'Username must be at least 6 characters.';
+      status.textContent = 'Username must be at least 6 characters.';
       return false;
     } else return true;
   }
@@ -168,4 +196,4 @@ class Auth extends React.Component {
 
 }
 
-export default Auth;
+export default Login;
