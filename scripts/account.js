@@ -6,7 +6,7 @@ class Account extends React.Component {
 
   render() {
     return /*#__PURE__*/React.createElement("div", {
-      id: "account",
+      id: "account-area",
       class: "mx-3 mb-4 main-area"
     }, /*#__PURE__*/React.createElement("h1", {
       class: "",

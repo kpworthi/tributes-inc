@@ -9,20 +9,9 @@ class Header extends React.Component {
     this.username = props.username;
     this.updateLoginState = this.props.updateLoginState;
     this.userArea = this.userArea.bind(this);
-    this.initialLoginCheck = this.initialLoginCheck.bind(this);
   }
 
-  componentDidMount() {
-    this.initialLoginCheck();
-  }
-
-  initialLoginCheck() {
-    let submission = $.get('/api/login').done(response => {
-      this.updateLoginState(response.auth, response.username ? response.username : '');
-    }).fail(function (err) {
-      console.log(' Auth-check HTTP request failed. ' + currentTimeEST());
-    });
-  }
+  componentDidMount() {}
 
   userArea() {
     if (this.auth === true) {

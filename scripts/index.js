@@ -12,6 +12,8 @@ class Main extends React.Component {
     this.loadPage = this.loadPage.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.updateLoginState = this.updateLoginState.bind(this);
+    this.pages = ['home', 'products', 'directory', 'login', 'logout', 'account'];
+    this.securePages = ['login', 'account'];
     this.pageView = class View extends React.Component {
       constructor() {
         super();
@@ -22,16 +24,43 @@ class Main extends React.Component {
       }
 
     };
-    this.pages = ['home', 'products', 'directory', 'login', 'account'];
   }
 
   componentDidMount() {
-    if (window.location.hash && this.pages.includes(window.location.hash.slice(1))) {
-      this.loadPage(window.location.hash.slice(1));
-    } else if (this.state.viewing === 'default') {
-      this.loadPage();
-    }
+    let linkHash = window.location.hash; // make sure there is or isn't an existing session synchronously
 
+    if (linkHash && this.securePages.includes(linkHash.slice(1))) {
+      console.log('secure page check');
+      let submission = $.get('/api/login').done(response => {
+        this.setState({
+          auth: response.auth,
+          username: response.username ? response.username : ''
+        }, () => {
+          // if there's already a session and user is on login, move them to account
+          if (this.state.auth && linkHash === '#login') linkHash = '#account';
+          this.loadPage(linkHash.slice(1));
+          $(window).click(this.handleClick);
+          $('#defaultLoad').css('display', 'none');
+        });
+      }).fail(function (err) {
+        console.log(' Auth-check HTTP request failed. ' + currentTimeEST());
+      });
+      return null;
+    } // otherwise make sure there is or isn't an existing session asynchronously
+    // after starting the page load
+    else if (linkHash && this.pages.includes(linkHash.slice(1))) {
+        console.log('insecure page check');
+        this.loadPage(linkHash.slice(1));
+      } else if (this.state.viewing === 'default') {
+        console.log('default page check');
+        this.loadPage();
+      }
+
+    let submission = $.get('/api/login').done(response => {
+      this.updateLoginState(response.auth, response.username ? response.username : '');
+    }).fail(function (err) {
+      console.log(' Auth-check HTTP request failed. ' + currentTimeEST());
+    });
     $(window).click(this.handleClick);
     $('#defaultLoad').css('display', 'none');
   }
@@ -85,14 +114,17 @@ class Main extends React.Component {
         break;
 
       case 'account':
-        if (this.state.auth) import('../scripts/account.js').then(module => {
-          this.pageView = module.default;
-          this.setState({
-            viewing: 'account'
+        if (this.state.auth) {
+          import('../scripts/account.js').then(module => {
+            this.pageView = module.default;
+            this.setState({
+              viewing: 'account'
+            });
           });
-        });
-        break;
+          break;
+        }
 
+      case 'logout':
       case 'login':
         import('../scripts/login.js').then(module => {
           this.pageView = module.default;
@@ -138,7 +170,7 @@ class Main extends React.Component {
       updateLoginState: this.updateLoginState
     }), /*#__PURE__*/React.createElement(View, {
       updateLoginState: this.updateLoginState,
-      usernmae: this.state.username
+      username: this.state.username
     }), /*#__PURE__*/React.createElement("div", {
       id: "defaultLoad",
       class: "mx-3 mb-4 main-area"
