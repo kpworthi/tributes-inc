@@ -24,6 +24,7 @@ Create a multi-page website incorporating multiple functionalaties learned over 
 - Changed arguments passed from auth.js click handler to submission functions
 - Initially, server replied with string for auth checks. Moved to json
 - Finally changed login page filename to 'login' instead of having two 'auth' files
+- Account landing page with basic tab functionality implemented as a placeholder.
 
 ### 0.2.0 changes
 1. Modified base html page for React.
