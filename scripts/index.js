@@ -75,12 +75,6 @@ class Main extends React.Component {
         this.updateLoginState(false, ''); //force user logout client-side, at least
       });
     } else if (clicked.href.includes('#')) {
-      /*
-      $( ".link-navbar" ).css('border-color', '#7e4a35');
-      $( ".link-navbar" ).css('color', 'white');
-      let matchingNav = $( `${clicked.hash}-nav` )[0];
-      matchingNav.style.borderColor="white";
-      matchingNav.style.color="#ccc"*/
       $(`#${this.state.viewing}-nav`).toggleClass('active');
       this.loadPage(clicked.href.split('#')[1]);
     } else return null;

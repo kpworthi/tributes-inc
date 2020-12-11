@@ -15,6 +15,10 @@ body {
   background-color: #dbceb0;
 }
 
+h1 {
+  font-family: "Fira Sans", sans-serif;
+}
+
 .active {
   border: 1px solid white !important;
   border-radius: 5px;
@@ -56,16 +60,21 @@ body {
     height: 50px;
   }
 }
-.navbar #logout-nav, .navbar #login-nav, .navbar #account-nav {
-  position: absolute;
-  right: 15px;
+@media (min-width: 991px) {
+  .navbar #logout-nav, .navbar #login-nav, .navbar #account-nav {
+    position: absolute;
+    right: 15px;
+  }
 }
 
 .main-area {
+  display: flex;
+  flex-direction: column;
   margin-top: 100px;
+  margin-bottom: 100px;
   padding-top: 10px;
   background-color: #cab577;
-  min-height: 80vh;
+  height: calc(100vh - 200px);
   max-height: calc(100vh - 200px);
   border-radius: 5px;
   overflow-y: auto;
@@ -91,6 +100,13 @@ body {
 .main-area #home figure img {
   border: 1px solid black;
   border-radius: 5px;
+}
+.main-area #option-content {
+  min-height: 300px;
+}
+
+#footer {
+  background-color: #dbceb0;
 }
 
 /*# sourceMappingURL=index.css.map */

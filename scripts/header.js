@@ -56,7 +56,7 @@ class Header extends React.Component {
       class: "navbar-brand",
       href: "#"
     }, /*#__PURE__*/React.createElement("img", {
-      src: "https://i.postimg.cc/4y2k0W3g/test-logo.png",
+      src: "./img/logo.png",
       class: ""
     })), /*#__PURE__*/React.createElement("div", {
       class: "collapse navbar-collapse",

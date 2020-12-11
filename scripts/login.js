@@ -113,7 +113,7 @@ class Login extends React.Component {
   render() {
     return /*#__PURE__*/React.createElement("div", {
       id: "auth-component",
-      class: "d-flex flex-column mx-3 mb-4 px-sm-4 main-area"
+      class: "mx-3 mb-4 px-sm-3 px-1 main-area"
     }, /*#__PURE__*/React.createElement("h1", {
       class: "text-center",
       id: "title"
