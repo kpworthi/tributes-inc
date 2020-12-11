@@ -15,12 +15,28 @@ body {
   background-color: #dbceb0;
 }
 
+.active {
+  border: 1px solid white !important;
+  border-radius: 5px;
+}
+
 .navbar {
   background-color: #7e4a35;
 }
 .navbar img {
   border: 3px solid black;
   border-radius: 8px;
+}
+.navbar #logout-nav {
+  border: none !important;
+}
+.navbar .nav-link {
+  border: 1px solid #7e4a35;
+  border-radius: 5px;
+}
+.navbar .nav-link:hover {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 5px;
 }
 .navbar #nav-divide {
   width: 1px;
@@ -40,24 +56,9 @@ body {
     height: 50px;
   }
 }
-.navbar .navbar-nav .link-navbar {
-  align-self: center;
-  color: white;
-  border: 1px solid #7e4a35;
-  border-radius: 5px;
-  text-align: center;
-  min-width: 45px;
-}
-.navbar .navbar-nav .box-highlight:hover {
-  animation-name: link-color;
-  animation-duration: 500ms;
-  animation-fill-mode: forwards;
-}
-@keyframes link-color {
-  100% {
-    color: #ccc;
-    border-color: white;
-  }
+.navbar #logout-nav, .navbar #login-nav, .navbar #account-nav {
+  position: absolute;
+  right: 15px;
 }
 
 .main-area {
@@ -65,16 +66,10 @@ body {
   padding-top: 10px;
   background-color: #cab577;
   min-height: 80vh;
+  max-height: calc(100vh - 200px);
   border-radius: 5px;
-}
-.main-area #title {
-  font-size: 3.7rem;
-  font-family: Times, serif;
-  text-align: center;
-}
-.main-area #subTitle {
-  font-size: 2.2rem;
-  text-align: center;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .main-area .sub-divider {
   border: 1px solid black;
@@ -87,9 +82,6 @@ body {
   border: 1px solid black;
   max-width: 2px;
   height: 50vh;
-}
-.main-area .plainText {
-  font-size: 1.3rem;
 }
 .main-area #home figure {
   min-width: 250px;

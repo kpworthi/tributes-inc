@@ -75,11 +75,13 @@ class Main extends React.Component {
         this.updateLoginState(false, ''); //force user logout client-side, at least
       });
     } else if (clicked.href.includes('#')) {
-      $(".link-navbar").css('border-color', '#7e4a35');
-      $(".link-navbar").css('color', 'white');
-      let matchingNav = $(`${clicked.hash}-nav`)[0];
-      matchingNav.style.borderColor = "white";
-      matchingNav.style.color = "#ccc";
+      /*
+      $( ".link-navbar" ).css('border-color', '#7e4a35');
+      $( ".link-navbar" ).css('color', 'white');
+      let matchingNav = $( `${clicked.hash}-nav` )[0];
+      matchingNav.style.borderColor="white";
+      matchingNav.style.color="#ccc"*/
+      $(`#${this.state.viewing}-nav`).toggleClass('active');
       this.loadPage(clicked.href.split('#')[1]);
     } else return null;
   }
@@ -91,7 +93,7 @@ class Main extends React.Component {
           this.pageView = module.default;
           this.setState({
             viewing: 'home'
-          });
+          }, () => $(`#${this.state.viewing}-nav`).toggleClass('active'));
         });
         break;
 
@@ -100,7 +102,7 @@ class Main extends React.Component {
           this.pageView = module.default;
           this.setState({
             viewing: 'products'
-          });
+          }, () => $(`#${this.state.viewing}-nav`).toggleClass('active'));
         });
         break;
 
@@ -109,7 +111,7 @@ class Main extends React.Component {
           this.pageView = module.default;
           this.setState({
             viewing: 'directory'
-          });
+          }, () => $(`#${this.state.viewing}-nav`).toggleClass('active'));
         });
         break;
 
@@ -119,7 +121,7 @@ class Main extends React.Component {
             this.pageView = module.default;
             this.setState({
               viewing: 'account'
-            });
+            }, () => $(`#${this.state.viewing}-nav`).toggleClass('active'));
           });
           break;
         }
@@ -130,7 +132,7 @@ class Main extends React.Component {
           this.pageView = module.default;
           this.setState({
             viewing: 'login'
-          });
+          }, () => $(`#${this.state.viewing}-nav`).toggleClass('active'));
         });
         break;
     }
@@ -163,7 +165,7 @@ class Main extends React.Component {
     let View = this.pageView;
     return /*#__PURE__*/React.createElement("main", {
       id: "main",
-      class: "px-sm-4"
+      class: ""
     }, /*#__PURE__*/React.createElement(Header, {
       auth: this.state.auth,
       username: this.state.username,
@@ -173,12 +175,12 @@ class Main extends React.Component {
       username: this.state.username
     }), /*#__PURE__*/React.createElement("div", {
       id: "defaultLoad",
-      class: "mx-3 mb-4 main-area"
+      class: "mx-3 mb-4 px-sm-4 main-area"
     }, /*#__PURE__*/React.createElement("h1", {
-      class: "",
+      class: "text-center",
       id: "title"
     }, "Welcome to Tributes Inc.!"), /*#__PURE__*/React.createElement("h2", {
-      class: "",
+      class: "text-center",
       id: "subTitle"
     }, "We're glad you're here"), /*#__PURE__*/React.createElement("p", {
       class: "text-center"

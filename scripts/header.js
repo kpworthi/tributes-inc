@@ -16,19 +16,19 @@ class Header extends React.Component {
   userArea() {
     if (this.auth === true) {
       return () => /*#__PURE__*/React.createElement("div", {
-        class: "nav-link"
+        class: ""
       }, /*#__PURE__*/React.createElement("a", {
         href: "#account",
-        class: "mx-3 p-1 link-navbar",
+        class: "nav-link mx-3 p-1",
         id: "account-nav"
       }, " ", this.username, "'s account"), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("a", {
         href: "#logout",
-        class: "mx-3 p-1 link-navbar",
-        id: "logout"
+        class: "nav-link mx-3 p-1",
+        id: "logout-nav"
       }, " Sign out"));
     } else return () => /*#__PURE__*/React.createElement("a", {
+      class: "nav-link mx-3",
       href: "#login",
-      class: "nav-link link-navbar box-highlight mx-3",
       id: "login-nav"
     }, " Log-in or Register");
   }
@@ -41,7 +41,7 @@ class Header extends React.Component {
       id: "header",
       class: ""
     }, /*#__PURE__*/React.createElement("nav", {
-      class: "navbar navbar-expand-lg fixed-top"
+      class: "navbar navbar-dark navbar-expand-lg fixed-top"
     }, /*#__PURE__*/React.createElement("button", {
       class: "navbar-toggler",
       type: "button",
@@ -52,13 +52,7 @@ class Header extends React.Component {
       "aria-label": "Toggle navigation"
     }, /*#__PURE__*/React.createElement("span", {
       class: "navbar-toggler-icon"
-    }, /*#__PURE__*/React.createElement("img", {
-      src: "../img/list.svg",
-      alt: "",
-      width: "48",
-      height: "48",
-      title: "Menu"
-    }))), /*#__PURE__*/React.createElement("a", {
+    })), /*#__PURE__*/React.createElement("a", {
       class: "navbar-brand",
       href: "#"
     }, /*#__PURE__*/React.createElement("img", {
@@ -68,23 +62,20 @@ class Header extends React.Component {
       class: "collapse navbar-collapse",
       id: "navbar-links"
     }, /*#__PURE__*/React.createElement("div", {
-      class: "navbar-nav col-lg text-center"
+      class: "navbar-nav text-center"
     }, /*#__PURE__*/React.createElement("a", {
-      class: "nav-link link-navbar box-highlight mx-3",
+      class: "nav-link align-self-center mx-3",
       href: "#home",
       id: "home-nav"
     }, " Home"), /*#__PURE__*/React.createElement("a", {
-      class: "nav-link link-navbar box-highlight mx-3",
+      class: "nav-link align-self-center mx-3",
       href: "#products",
       id: "products-nav"
     }, " Products"), /*#__PURE__*/React.createElement("a", {
-      class: "nav-link link-navbar box-highlight mx-3",
+      class: "nav-link align-self-center mx-3",
       href: "#directory",
       id: "directory-nav"
-    }, " Tributes A-Z")), /*#__PURE__*/React.createElement("div", {
-      class: "navbar-nav col-lg text-center justify-content-end",
-      id: "nav-account-area"
-    }, /*#__PURE__*/React.createElement(UserArea, null)))));
+    }, " Tributes A-Z"), /*#__PURE__*/React.createElement(UserArea, null)))));
   }
 
 }
