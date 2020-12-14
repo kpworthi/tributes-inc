@@ -1,5 +1,8 @@
 node_modules
 src
 scss
+testing
 img/about.jpg
 img/history.jpg
+/priv-policy.txt
+.env

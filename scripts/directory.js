@@ -6,12 +6,12 @@ class Directory extends React.Component {
   render() {
     return /*#__PURE__*/React.createElement("div", {
       id: "directory-component",
-      class: "d-flex flex-column mx-3 mb-4 main-area"
+      class: "mx-3 mb-4 px-sm-3 px-1 main-area"
     }, /*#__PURE__*/React.createElement("h1", {
-      class: "",
+      class: "text-center",
       id: "title"
     }, "Tributes Inc. Directory"), /*#__PURE__*/React.createElement("h2", {
-      class: "",
+      class: "text-center",
       id: "subTitle"
     }, "All the wonderful people we know about"), /*#__PURE__*/React.createElement("div", {
       class: "sub-divider"

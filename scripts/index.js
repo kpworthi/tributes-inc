@@ -6,10 +6,14 @@ class Main extends React.Component {
     super();
     this.state = {
       viewing: 'default',
-      auth: false
+      auth: false,
+      username: ''
     };
     this.loadPage = this.loadPage.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.updateLoginState = this.updateLoginState.bind(this);
+    this.pages = ['home', 'products', 'directory', 'login', 'logout', 'account'];
+    this.securePages = ['login', 'account'];
     this.pageView = class View extends React.Component {
       constructor() {
         super();
@@ -20,37 +24,58 @@ class Main extends React.Component {
       }
 
     };
-    this.pages = ['home', 'products', 'directory', 'auth', 'account'];
   }
 
   componentDidMount() {
-    if (window.location.hash && this.pages.includes(window.location.hash.slice(1))) {
-      this.loadPage(window.location.hash.slice(1));
-    } else if (this.state.viewing === 'default') {
-      this.loadPage();
-    }
+    let linkHash = window.location.hash; // make sure there is or isn't an existing session synchronously
 
+    if (linkHash && this.securePages.includes(linkHash.slice(1))) {
+      console.log('secure page check');
+      let submission = $.get('/api/login').done(response => {
+        this.setState({
+          auth: response.auth,
+          username: response.username ? response.username : ''
+        }, () => {
+          // if there's already a session and user is on login, move them to account
+          if (this.state.auth && linkHash === '#login') linkHash = '#account';
+          this.loadPage(linkHash.slice(1));
+          $(window).click(this.handleClick);
+          $('#defaultLoad').css('display', 'none');
+        });
+      }).fail(function (err) {
+        console.log(' Auth-check HTTP request failed. ' + currentTimeEST());
+      });
+      return null;
+    } // otherwise make sure there is or isn't an existing session asynchronously
+    // after starting the page load
+    else if (linkHash && this.pages.includes(linkHash.slice(1))) {
+        console.log('insecure page check');
+        this.loadPage(linkHash.slice(1));
+      } else if (this.state.viewing === 'default') {
+        console.log('default page check');
+        this.loadPage();
+      }
+
+    let submission = $.get('/api/login').done(response => {
+      this.updateLoginState(response.auth, response.username ? response.username : '');
+    }).fail(function (err) {
+      console.log(' Auth-check HTTP request failed. ' + currentTimeEST());
+    });
     $(window).click(this.handleClick);
     $('#defaultLoad').css('display', 'none');
   }
 
   handleClick(event) {
     let clicked = event.target;
-    if (!clicked.href) return null;else if (clicked.getAttribute("class").includes("nav-link")) {
-      $(".nav-link").css('border-color', '#7e4a35');
-      $(".nav-link").css('color', 'white');
-      clicked.style.borderColor = "white";
-      clicked.style.color = "#ccc";
-
-      if (clicked.href.split('#')[1] !== this.state.viewing) {
-        this.loadPage(clicked.href.split('#')[1]);
-      }
+    if (!clicked.href) return null;else if (clicked.href.includes('#logout')) {
+      let submission = $.get('/api/logout').done(response => {
+        this.updateLoginState(false, '');
+      }).fail(function (err) {
+        console.log(' Log out HTTP request failed. ' + currentTimeEST());
+        this.updateLoginState(false, ''); //force user logout client-side, at least
+      });
     } else if (clicked.href.includes('#')) {
-      $(".nav-link").css('border-color', '#7e4a35');
-      $(".nav-link").css('color', 'white');
-      let matchingNav = $(`${clicked.hash}-nav`)[0];
-      matchingNav.style.borderColor = "white";
-      matchingNav.style.color = "#ccc";
+      $(`#${this.state.viewing}-nav`).toggleClass('active');
       this.loadPage(clicked.href.split('#')[1]);
     } else return null;
   }
@@ -62,7 +87,7 @@ class Main extends React.Component {
           this.pageView = module.default;
           this.setState({
             viewing: 'home'
-          });
+          }, () => $(`#${this.state.viewing}-nav`).toggleClass('active'));
         });
         break;
 
@@ -71,7 +96,7 @@ class Main extends React.Component {
           this.pageView = module.default;
           this.setState({
             viewing: 'products'
-          });
+          }, () => $(`#${this.state.viewing}-nav`).toggleClass('active'));
         });
         break;
 
@@ -80,27 +105,53 @@ class Main extends React.Component {
           this.pageView = module.default;
           this.setState({
             viewing: 'directory'
-          });
+          }, () => $(`#${this.state.viewing}-nav`).toggleClass('active'));
         });
         break;
 
       case 'account':
-        import('../scripts/account.js').then(module => {
-          this.pageView = module.default;
-          this.setState({
-            viewing: 'account'
+        if (this.state.auth) {
+          import('../scripts/account.js').then(module => {
+            this.pageView = module.default;
+            this.setState({
+              viewing: 'account'
+            }, () => $(`#${this.state.viewing}-nav`).toggleClass('active'));
           });
-        });
-        break;
+          break;
+        }
 
-      case 'auth':
-        import('../scripts/auth.js').then(module => {
+      case 'logout':
+      case 'login':
+        import('../scripts/login.js').then(module => {
           this.pageView = module.default;
           this.setState({
-            viewing: 'auth'
-          });
+            viewing: 'login'
+          }, () => $(`#${this.state.viewing}-nav`).toggleClass('active'));
         });
         break;
+    }
+  }
+
+  updateLoginState(isAuth, username = '') {
+    this.setState({
+      auth: isAuth,
+      username: username
+    });
+
+    if (isAuth && this.state.viewing === 'login') {
+      this.handleClick({
+        target: {
+          href: '#account',
+          hash: '#account'
+        }
+      });
+    } else if (!isAuth && this.state.viewing === 'account') {
+      this.handleClick({
+        target: {
+          href: '#login',
+          hash: '#login'
+        }
+      });
     }
   }
 
@@ -108,17 +159,26 @@ class Main extends React.Component {
     let View = this.pageView;
     return /*#__PURE__*/React.createElement("main", {
       id: "main",
-      class: "px-sm-4"
-    }, /*#__PURE__*/React.createElement(Header, null), /*#__PURE__*/React.createElement(View, null), /*#__PURE__*/React.createElement("div", {
+      class: ""
+    }, /*#__PURE__*/React.createElement(Header, {
+      auth: this.state.auth,
+      username: this.state.username,
+      updateLoginState: this.updateLoginState
+    }), /*#__PURE__*/React.createElement(View, {
+      updateLoginState: this.updateLoginState,
+      username: this.state.username
+    }), /*#__PURE__*/React.createElement("div", {
       id: "defaultLoad",
-      class: "mx-3 mb-4 main-area"
+      class: "mx-3 mb-4 px-sm-4 main-area"
     }, /*#__PURE__*/React.createElement("h1", {
-      class: "",
+      class: "text-center",
       id: "title"
     }, "Welcome to Tributes Inc.!"), /*#__PURE__*/React.createElement("h2", {
-      class: "",
+      class: "text-center",
       id: "subTitle"
-    }, "We're glad you're here")), /*#__PURE__*/React.createElement(Footer, null));
+    }, "We're glad you're here"), /*#__PURE__*/React.createElement("p", {
+      class: "text-center"
+    }, "Hang in there while we get some things together....")), /*#__PURE__*/React.createElement(Footer, null));
   }
 
 }

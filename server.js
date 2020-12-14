@@ -12,10 +12,13 @@ const app          = express();
 const server       = require('http').createServer(app);
 const cookieParser = require('cookie-parser');
 const MongoStore   = require('connect-mongo')(session);
-const URI          = process.env.MONGO_URI;
+const URI          = process.env.CONNECTION_STRING;
 const store        = new MongoStore({ url: URI });
+const routes       = require('./api/routes')
+const auth         = require('./api/auth');
 
 //const expect     = require('chai');
+const currentTimeEST = () => Date().toLocaleString('en-US', { timeZone: 'EST'}) + ' EST';
 
 // helmet and other custom headers
 app.use(helmet());
@@ -30,14 +33,31 @@ app.use(function (req, res, next){
   next();
 });
 
-// parsers
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
 // public folders
 app.use('/scripts', express.static(process.cwd() + '/scripts'));
 app.use('/styles', express.static(process.cwd() + '/styles'));
 app.use('/img', express.static(process.cwd() + '/img'));
+
+// passport and associated config
+app.use(session({ 
+  secret: "don johnson",
+  resave: true,
+  key: 'express.sid',
+  store: store,
+  saveUninitialized: true,
+  cookie: { 
+    secure: true,
+    maxAge: 1800000
+  }
+}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+routes(app, myDB);
+auth(app, myDB);
+
 
 // index page
 app.route('/')
