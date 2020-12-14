@@ -40,11 +40,12 @@ app.use('/img', express.static(process.cwd() + '/img'));
 
 // passport and associated config
 app.use(session({ 
-  secret: "don johnson",
+  secret: process.env.COOKIE_SECRET,
   resave: true,
   key: 'express.sid',
   store: store,
   saveUninitialized: true,
+  proxy: true,
   cookie: { 
     secure: true,
     maxAge: 1800000
