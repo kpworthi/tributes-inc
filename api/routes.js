@@ -3,7 +3,7 @@ const passport = require("passport");
 const bcrypt = require("bcrypt");
 
 const currentTimeEST = () =>
-  Date().toLocaleString("en-US", { timeZone: "EST" }) + " EST";
+  new Date().toLocaleString("en-US", { timeZone: "EST" }) + " EST";
 
 function routes(app, database) {
   class User {
@@ -19,8 +19,8 @@ function routes(app, database) {
     }
   }
 
-  //Ensure Authenticated middleware
-  function ensureAuthenticated(req, res, next) {
+  //Ensure Authenticated/Not Authenticated middleware
+  function ensureNotAuthenticated(req, res, next) {
     console.log(`Verifying authentication for user ${req.body.username}`);
     if (req.isAuthenticated()) {
       console.log("User is already logged in!");
@@ -29,18 +29,28 @@ function routes(app, database) {
         msg: "You're already logged in!",
         username: req.user.username,
       });
-      //return next();
     }
     console.log("User is not logged in.");
     return next();
   }
+  function ensureAuthenticated(req, res, next) {
+    console.log(`Verifying authentication for user ${req.body.username}`);
+    if (req.isAuthenticated()) {
+      console.log("User is logged in.");
+      return next();
+    }
+    console.log("User is not logged in!");
+    return res.json({
+      auth: false,
+      msg: "User is not logged in!"
+    });
+  }
 
-  app
-    .route("/api/login")
-    .get(ensureAuthenticated, function (req, res, next) {
+  app.route("/api/login")
+    .get(ensureNotAuthenticated, function (req, res, next) {
       res.json({ auth: false, msg: "User is not currently logged in." });
     })
-    .post(ensureAuthenticated, function (req, res, next) {
+    .post(ensureNotAuthenticated, function (req, res, next) {
       passport.authenticate("local", function (err, user, info) {
         if (err) {
           return next(err);
@@ -64,16 +74,17 @@ function routes(app, database) {
       })(req, res, next);
     });
 
-  app.route("/api/logout").get((req, res) => {
-    req.logout();
-    res.redirect("/");
-  });
+  app.route("/api/logout")
+    .get((req, res) => {
+      req.logout();
+      res.redirect("/#home");
+    });
 
   //User registration
   app.route("/api/register").post(
     (req, res, next) => {
       console.log("register request received.");
-      console.log(`info was: ${req.body.username}:${req.body.password}`);
+      console.log(`info was: ${req.body.username}`);
 
       const hash = bcrypt.hashSync(req.body.password, 12);
 
@@ -130,13 +141,6 @@ function routes(app, database) {
     }
   );
 
-  /*
-  //404 handler
-  app.use((req, res, next) => {
-    res.status(404)
-      .render(process.cwd() + '/views/pug/fourohfour', {})
-  });
-*/
 }
 
 module.exports = routes;

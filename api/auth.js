@@ -5,7 +5,7 @@ const LocalStrategy  = require("passport-local");
 const bcrypt         = require("bcrypt");
 const ObjectID       = require("mongodb").ObjectID;
 const currentTimeEST = () =>
-  Date().toLocaleString("en-US", { timeZone: "EST" }) + " EST";
+  new Date().toLocaleString("en-US", { timeZone: "EST" }) + " EST";
 
 function auth(app, database) {
   //Passport user init
