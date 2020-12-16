@@ -77,3 +77,5 @@ const portNum = process.env.PORT;
 server.listen(portNum, () => {
   console.log(`Listening on port ${portNum}`);
 });
+
+module.exports = server;
