@@ -31,7 +31,6 @@ function auth(app, database) {
   //Passport strategy setup
   passport.use(
     new LocalStrategy(function (username, password, done) {
-      console.log("checking username and password");
       database(async function (client) {
         let result = await client
           .db("tributes-inc")

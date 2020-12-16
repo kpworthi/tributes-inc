@@ -16,9 +16,8 @@ Create a multi-page website incorporating multiple functionalaties learned over 
 1. Implemented server route testing
 1. Implemented log-in / registration testing
 
-- Log-out API call now checks to see if user is even logged in first, just in case.
 - ensureAuthenticated was properly renamed to ensureNotAuthenticated
-- Routes now use both ensureAuthenticated and ensureNotAuthenticated
+- a new ensureAuthenticated was added
 
 ### 0.3.1 changes
 1. Fixed an issue with cookies not being delivered properly

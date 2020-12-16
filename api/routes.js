@@ -21,25 +21,21 @@ function routes(app, database) {
 
   //Ensure Authenticated/Not Authenticated middleware
   function ensureNotAuthenticated(req, res, next) {
-    console.log(`Verifying authentication for user ${req.body.username}`);
+    console.log(`User: ${req.body.username}, auth check. ${currentTimeEST()}`);
     if (req.isAuthenticated()) {
-      console.log("User is already logged in!");
       return res.json({
         auth: true,
         msg: "You're already logged in!",
         username: req.user.username,
       });
     }
-    console.log("User is not logged in.");
     return next();
   }
   function ensureAuthenticated(req, res, next) {
-    console.log(`Verifying authentication for user ${req.body.username}`);
+    console.log(`User: ${req.body.username}, auth check. ${currentTimeEST()}`);
     if (req.isAuthenticated()) {
-      console.log("User is logged in.");
       return next();
     }
-    console.log("User is not logged in!");
     return res.json({
       auth: false,
       msg: "User is not logged in!"
@@ -83,8 +79,7 @@ function routes(app, database) {
   //User registration
   app.route("/api/register").post(
     (req, res, next) => {
-      console.log("register request received.");
-      console.log(`info was: ${req.body.username}`);
+      console.log(`register request: ${req.body.username}. ${currentTimeEST()}`);
 
       const hash = bcrypt.hashSync(req.body.password, 12);
 
