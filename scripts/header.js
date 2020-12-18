@@ -8,10 +8,42 @@ class Header extends React.Component {
     this.auth = props.auth;
     this.username = props.username;
     this.updateLoginState = this.props.updateLoginState;
+    this.palette = {
+      one: {
+        nav: '#7E4A35',
+        page: '#dbceb0',
+        container: '#cab577',
+        content: '#D4C391'
+      },
+      two: {
+        nav: '#667292',
+        page: '#F1E3DD',
+        container: '#8D9DB6',
+        content: '#BCCAD6'
+      },
+      three: {
+        nav: '#B04517',
+        page: '#F2E394',
+        container: '#F2AE72',
+        content: '#F4E1D2'
+      }
+    };
     this.userArea = this.userArea.bind(this);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    //testing only
+    $('#color-select').on("change", event => {
+      this.loadPalette(this.palette[$('#color-select option:selected')[0].value]);
+    });
+  }
+
+  loadPalette(palette) {
+    $('.navbar').css('background-color', palette.nav);
+    $('body').css('background-color', palette.page);
+    $('.main-area').css('background-color', palette.container);
+    $('.inset').css('background-color', palette.content);
+  }
 
   userArea() {
     if (this.auth === true) {
@@ -75,7 +107,23 @@ class Header extends React.Component {
       class: "nav-link align-self-center mx-3",
       href: "#directory",
       id: "directory-nav"
-    }, " Tributes A-Z"), /*#__PURE__*/React.createElement(UserArea, null)))));
+    }, " Tributes A-Z"), /*#__PURE__*/React.createElement("a", {
+      class: "nav-link align-self-center mx-3",
+      href: "#template-a",
+      id: "template-a-nav"
+    }, " Temp A"), /*#__PURE__*/React.createElement("a", {
+      class: "nav-link align-self-center mx-3",
+      href: "#template-b",
+      id: "template-b-nav"
+    }, " Temp B"), /*#__PURE__*/React.createElement("select", {
+      id: "color-select"
+    }, /*#__PURE__*/React.createElement("option", {
+      value: "one"
+    }, "Tributes Classic"), /*#__PURE__*/React.createElement("option", {
+      value: "two"
+    }, "Tributes Cool   "), /*#__PURE__*/React.createElement("option", {
+      value: "three"
+    }, "Tributes Warm ")), /*#__PURE__*/React.createElement(UserArea, null)))));
   }
 
 }

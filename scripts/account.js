@@ -19,10 +19,7 @@ class Account extends React.Component {
   }
 
   handleClick(event) {
-    console.log(event.target);
-
     if (event.target.type === 'button') {
-      console.log(event.target.id);
       $(`#${this.state.currentButton}`).toggleClass('active');
       this.setState({
         currentButton: event.target.id

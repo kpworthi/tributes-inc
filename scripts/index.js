@@ -12,7 +12,9 @@ class Main extends React.Component {
     this.loadPage = this.loadPage.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.updateLoginState = this.updateLoginState.bind(this);
-    this.pages = ['home', 'products', 'directory', 'login', 'logout', 'account'];
+    this.pages = ['home', 'products', 'directory', 'login', 'logout', 'account']; //temp template testing addition
+
+    this.pages.concat(...['template-a', 'template-b']);
     this.securePages = ['login', 'account'];
     this.pageView = class View extends React.Component {
       constructor() {
@@ -82,6 +84,26 @@ class Main extends React.Component {
 
   loadPage(page = 'home') {
     switch (page) {
+      //template test buttons
+      case 'template-a':
+        import('../scripts/template-a.js').then(module => {
+          this.pageView = module.default;
+          this.setState({
+            viewing: 'template-a'
+          }, () => $(`#${this.state.viewing}-nav`).toggleClass('active'));
+        });
+        break;
+
+      case 'template-b':
+        import('../scripts/template-b.js').then(module => {
+          this.pageView = module.default;
+          this.setState({
+            viewing: 'template-b'
+          }, () => $(`#${this.state.viewing}-nav`).toggleClass('active'));
+        });
+        break;
+      //normal buttons
+
       case 'home':
         import('../scripts/home.js').then(module => {
           this.pageView = module.default;
