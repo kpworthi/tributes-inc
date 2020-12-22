@@ -17,7 +17,13 @@ class Products extends React.Component {
       class: "sub-divider"
     }), /*#__PURE__*/React.createElement("ul", {
       class: "mx-3"
-    }, /*#__PURE__*/React.createElement("h3", null, "Digital Products"), /*#__PURE__*/React.createElement("li", null, "Templated pages"), /*#__PURE__*/React.createElement("li", null, "Custom pages"), /*#__PURE__*/React.createElement("li", null, "Professionally designed pages")), /*#__PURE__*/React.createElement("ul", {
+    }, /*#__PURE__*/React.createElement("h3", null, "Digital Products"), /*#__PURE__*/React.createElement("li", null, "Templated pages: ", /*#__PURE__*/React.createElement("a", {
+      href: "#template-a",
+      class: "template-link"
+    }, "Template A Preview"), " - ", /*#__PURE__*/React.createElement("a", {
+      href: "#template-b",
+      class: "template-link"
+    }, "Template B Preview")), /*#__PURE__*/React.createElement("li", null, "Custom pages"), /*#__PURE__*/React.createElement("li", null, "Professionally designed pages")), /*#__PURE__*/React.createElement("ul", {
       class: "mx-3"
     }, /*#__PURE__*/React.createElement("h3", null, "Physical Products"), /*#__PURE__*/React.createElement("li", null, "Framed tribute collage"), /*#__PURE__*/React.createElement("li", null, "Professionally printed and optionally framed photos"), /*#__PURE__*/React.createElement("li", null, "Engraved plaques")), /*#__PURE__*/React.createElement("ul", {
       class: "mx-3"

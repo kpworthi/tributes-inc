@@ -1,22 +1,70 @@
 class TemplateA extends React.Component {
-  constructor() {
-    super();
-    this.content = {
-      name: "Your Tribute's Name",
-      tagline: "A fitting sub-heading for your tribute (optional)",
-      img: "../img/test-house.jpg",
-      caption: "Your tribute's humble beginnings",
-      quote: "Here is a quote about this person and something that made them wonderful (optional)",
-      author: "Someone that knew them (also optional)",
-      bio: ["  Use this area to talk about the person you are dedicating this tribute to. You can type as much content as you might want so that you can fill out the page entirely. If you type enough text, a scroll bar will appear to make sure there is a way to view everything that you've entered. Don't worry about typign too much, this is your space to do with as you please! We've entered some additional filler text below to show how the space fills out.", "  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolo  re magna aliqua. Cursus turpis massa tincidunt dui ut ornare lectus sit amet. Tristique nulla aliquet enim tortor at auctor urna nunc id. Leo in vitae turpis massa sed. Purus sit amet volutpat consequat mauris nunc congue nisi vitae. Et odio pellentesque diam volutpat commodo sed. Lectus sit amet est placerat in egestas erat imperdiet. Elementum sagittis vitae et leo duis ut. Sed risus ultricies tristique nulla aliquet enim. Arcu cursus vitae congue mauris rhoncus. Egestas sed tempus urna et pharetra pharetra. Nibh mauris cursus mattis molestie a. Consectetur purus ut faucibus pulvinar elementum. Interdum consectetur libero id faucibus nisl. Ultricies tristique nulla aliquet enim. Magna eget est lorem ipsum dolor sit amet consectetur adipiscing. Nullam non nisi est sit amet facilisis magna etiam. Et ligula ullamcorper malesuada proin libero. Arcu dictum varius duis at. In ornare quam viverra orci sagittis.", "  Blandit massa enim nec dui nunc mattis. Egestas quis ipsum suspendisse ultrices gravida dictum fusce ut. Laoreet suspendisse interdum consectetur libero id faucibus. Placerat duis ultricies lacus sed turpis tincidunt id aliquet. Iaculis at erat pellentesque adipiscing commodo elit at. Enim sed faucibus turpis in. Egestas fringilla phasellus faucibus scelerisque. Velit aliquet sagittis id consectetur. Gravida dictum fusce ut placerat orci nulla pellentesque dignissim enim. Sed odio morbi quis commodo. Dapibus ultrices in iaculis nunc sed augue lacus. Elementum tempus egestas sed sed risus pretium quam vulputate dignissim. Placerat orci nulla pellentesque dignissim enim sit amet. Ultrices in iaculis nunc sed augue lacus viverra. Duis at consectetur lorem donec. Odio tempor orci dapibus ultrices in iaculis nunc sed augue.", "  At the bottom, we can even include a link to additional information, if you'd like. It would look like this:"],
-      link: '#'
+  constructor(props) {
+    super(props);
+    this.content = props.dbEntry;
+    this.preview = true;
+    this.palette = {
+      "classic": {
+        nav: '#7E4A35',
+        page: '#dbceb0',
+        container: '#cab577',
+        content: '#D4C391'
+      },
+      "cool": {
+        nav: '#667292',
+        page: '#F1E3DD',
+        container: '#8D9DB6',
+        content: '#BCCAD6'
+      },
+      "warm": {
+        nav: '#B04517',
+        page: '#F2E394',
+        container: '#F2AE72',
+        content: '#F4E1D2'
+      }
     };
+    this.colorPreviewer = this.colorPreviewer.bind(this);
+    this.loadPalette = this.loadPalette.bind(this);
     this.renderBio = this.renderBio.bind(this);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.loadPalette(this.content.palette);
+    if (this.preview) $('#color-select').on("change", () => {
+      this.loadPalette($('#color-select option:selected')[0].value);
+    });
+  }
+
+  componentWillUnmount() {
+    this.loadPalette('classic');
+  }
+
+  loadPalette(palette) {
+    $('.navbar').css('background-color', this.palette[palette].nav);
+    $('.nav-link').css('border', `1px solid ${this.palette[palette].nav}`);
+    $('body').css('background-color', this.palette[palette].page);
+    $('.main-area').css('background-color', this.palette[palette].container);
+    $('.inset').css('background-color', this.palette[palette].content);
+  }
+
+  colorPreviewer() {
+    return /*#__PURE__*/React.createElement("select", {
+      id: "color-select"
+    }, /*#__PURE__*/React.createElement("option", {
+      value: "default",
+      disabled: "true",
+      selected: "true"
+    }, "Preview a color scheme"), /*#__PURE__*/React.createElement("option", {
+      value: "classic"
+    }, "Tributes Classic"), /*#__PURE__*/React.createElement("option", {
+      value: "cool"
+    }, "Tributes Cool   "), /*#__PURE__*/React.createElement("option", {
+      value: "warm"
+    }, "Tributes Warm "));
+  }
 
   renderBio() {
+    console.log(this.content);
     let bioText = this.content.bio;
     return /*#__PURE__*/React.createElement("div", {
       id: "bio-text"
@@ -58,7 +106,7 @@ class TemplateA extends React.Component {
       class: "mb-0"
     }, this.content.quote), /*#__PURE__*/React.createElement("footer", {
       class: "blockquote-footer"
-    }, this.content.author)) : null, /*#__PURE__*/React.createElement(Bio, null), /*#__PURE__*/React.createElement("a", {
+    }, this.content.author), this.preview ? this.colorPreviewer() : null) : null, /*#__PURE__*/React.createElement(Bio, null), /*#__PURE__*/React.createElement("a", {
       href: this.content.link
     }, "  Click here to learn more about [Your Tribute's Name] (Optional)"))), /*#__PURE__*/React.createElement("div", {
       id: "lower-buffer",

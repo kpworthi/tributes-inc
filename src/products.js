@@ -12,7 +12,7 @@ class Products extends React.Component {
         <div class="sub-divider"></div>
 
         <ul class="mx-3"><h3>Digital Products</h3>
-          <li>Templated pages</li>
+          <li>Templated pages: <a href="#template-a" class="template-link">Template A Preview</a> - <a href="#template-b" class="template-link">Template B Preview</a></li>
           <li>Custom pages</li>
           <li>Professionally designed pages</li>
         </ul>
