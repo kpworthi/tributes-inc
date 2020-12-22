@@ -12,6 +12,13 @@ Create a multi-page website incorporating multiple functionalaties learned over 
 1. MongoDB is utilized for account authentication and user-created content
 1. Server to be created using Node.js and Express.js
 
+### 0.3.3 changes
+1. finished coding templates
+1. hooked templates into products page
+1. templates pull data from database
+
+-cleaned up switch in index.js
+
 ### 0.3.2 changes
 1. Implemented server route testing
 1. Implemented log-in / registration testing

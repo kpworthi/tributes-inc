@@ -39,6 +39,8 @@ app.use('/styles', express.static(process.cwd() + '/styles'));
 app.use('/img', express.static(process.cwd() + '/img'));
 
 // passport and associated config
+let minutes = 30;
+
 app.use(session({ 
   secret: process.env.COOKIE_SECRET,
   resave: true,
@@ -47,8 +49,8 @@ app.use(session({
   saveUninitialized: true,
   proxy: true,
   cookie: { 
-    secure: true,
-    maxAge: 1800000
+    secure: false,
+    maxAge: minutes*1000*60 
   }
 }));
 app.use(bodyParser.json());

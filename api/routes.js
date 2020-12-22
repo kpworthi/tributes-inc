@@ -1,6 +1,7 @@
 
 const passport = require("passport");
 const bcrypt = require("bcrypt");
+const { ObjectId } = require("mongodb");
 
 const currentTimeEST = () =>
   new Date().toLocaleString("en-US", { timeZone: "EST" }) + " EST";
@@ -16,6 +17,20 @@ function routes(app, database) {
       this.realname_first = "Not specified";
       this.realname_last  = "Not specified";
       this.email          = "Not specified";
+    }
+  }
+
+  class Template {
+    construcor( formData ){
+      this.name     = formData.name;
+      this.tagline  = formData.tagline || '';
+      this.img      = formData.img;
+      this.caption  = formData.caption;
+      this.quote    = formData.quote || '';
+      this.author   = formData.author || '';
+      this.bio      = formData.bio || '';
+      this.timeline = formData.timeline || '';
+      this.link     = formData.link || '';
     }
   }
 
@@ -41,6 +56,29 @@ function routes(app, database) {
       msg: "User is not logged in!"
     });
   }
+
+  app.route("/api/tribute")
+    .post(function (req, res){
+      let searchTerm = {};
+      //if it's a template request, it'll have an id
+      if ( req.body.id )
+        searchTerm = { _id: new ObjectId(req.body.id) };
+      //otherwise search by name
+      else searchTerm = { name: req.body.name };
+
+      database(async function (client) {
+        let result = await client.db('tributes-inc').collection('pages').findOne(searchTerm);
+
+        if (result === null){
+          console.log("Couldn't find the requested tribute! " + req.body);
+          return null;
+        }
+        else {
+          console.log(`sending ${result}`);
+          return res.json(result);
+        }
+      });
+    });
 
   app.route("/api/login")
     .get(ensureNotAuthenticated, function (req, res, next) {

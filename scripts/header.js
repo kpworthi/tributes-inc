@@ -11,8 +11,6 @@ class Header extends React.Component {
     this.userArea = this.userArea.bind(this);
   }
 
-  componentDidMount() {}
-
   userArea() {
     if (this.auth === true) {
       return () => /*#__PURE__*/React.createElement("div", {
