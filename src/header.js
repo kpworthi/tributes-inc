@@ -39,7 +39,7 @@ class Header extends React.Component {
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-links" aria-controls="navbar-links" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon" />
           </button>
-          <a class="navbar-brand" href="#"><img src="./img/logo.png" class="" /></a>
+          <a class="navbar-brand" href="#home"><img src="./img/logo.png" href="#home" /></a>
 
           <div class="collapse navbar-collapse" id="navbar-links">
             <div class="navbar-nav text-center">

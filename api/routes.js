@@ -17,6 +17,8 @@ function routes(app, database) {
       this.realname_first = "Not specified";
       this.realname_last  = "Not specified";
       this.email          = "Not specified";
+      this.shipping       = [];
+      this.billing        = [];
     }
   }
 

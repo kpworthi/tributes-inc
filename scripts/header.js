@@ -52,10 +52,10 @@ class Header extends React.Component {
       class: "navbar-toggler-icon"
     })), /*#__PURE__*/React.createElement("a", {
       class: "navbar-brand",
-      href: "#"
+      href: "#home"
     }, /*#__PURE__*/React.createElement("img", {
       src: "./img/logo.png",
-      class: ""
+      href: "#home"
     })), /*#__PURE__*/React.createElement("div", {
       class: "collapse navbar-collapse",
       id: "navbar-links"

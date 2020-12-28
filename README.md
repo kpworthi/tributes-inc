@@ -12,6 +12,17 @@ Create a multi-page website incorporating multiple functionalaties learned over 
 1. MongoDB is utilized for account authentication and user-created content
 1. Server to be created using Node.js and Express.js
 
+### 0.4.0 changes
+1. Users can now create a templated tribute page through their account page
+
+- Basic design in place for account:profile area
+
+### 0.3.4 changes
+1. Logo now points to the home page
+1. Fixed centering on account page sub-heading placeholders
+
+- portfolio assets and routing were added to the server. added gitignore as they do not pertain to tributes-inc
+
 ### 0.3.3 changes
 1. finished coding templates
 1. hooked templates into products page

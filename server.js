@@ -68,6 +68,12 @@ app.route('/')
     res.sendFile(process.cwd() + '/views/index.html');
   });
 
+// portofolio handler
+app.route('/portfolio/:file')
+  .get(function (req, res) {
+    res.sendFile(process.cwd() + '/portfolio/' + req.params.file);
+  }); 
+
 app.use(function(req, res, next) {
   res.status(404)
     .type('text')
