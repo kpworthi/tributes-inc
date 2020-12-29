@@ -3,9 +3,10 @@ class Account extends React.Component {
     super(props);
     this.username = props.username || 'user';
     this.state = {
-      currentButton: 'profile-btn',
-      subOption: 'none'
+      currentTab: 'profile-tab',
+      subOption: 'default'
     };
+    this.loadPage = props.loadPage;
     this.handleClick = this.handleClick.bind(this);
     this.profileOption = this.profileOption.bind(this);
     this.createOption = this.createOption.bind(this);
@@ -17,27 +18,50 @@ class Account extends React.Component {
       'content': this.contentOption,
       'create': this.createOption
     };
-    this.productOptions = ['default', 'design', 'templates'];
+    this.subOptions = {
+      'default': [['Design: Our Custom Products', 'design', 'Here you’ll find our variety of à la carte products. From our professional tributes to our framed collages, start here to get designing.'], ['Customize: Tiered Packages', 'default', "Thinking about multiple items and want to design and ship everything conveniently? We have three different tier levels to get you what you want."], ['Order: Generic Items', 'default', 'Any items that are offered as an option, as well as any items you might need to refresh or maintain a previous purchase can be found here.']],
+      'design': [['Templated Tribute', 'templates', 'Choose from two different styles of tributes. Layouts are pre-made, and all that is needed is to fill in what you want them to say!'], ['Custom Designed Tribute', 'design', 'Feel comfortable with getting into the nitty gritty? Get started with a custom designed tribute to have greater control over content presentation.'], ['T. I. Designed Tribute', 'design', 'Interested in a custom look, but want to leave it to someone else? Select a Tributes Inc. designed tribute and we’ll work with you to get you a feel that’s just right.']],
+      'templates': [['Templated Biography Tribute', 'product-design-a', 'A pre-designed tribute template that is used for large amounts of text in a biography style. Note: Users are able to create up to two templated tributes for free'], ['Templated Timeline Tribute', 'product-design-b', 'A pre-designed tribute template that is used for smaller amounts of text in a timeline style. Note: Users are able to create up to two templated tributes for free']]
+    };
     this.stateList = [["AL", "Alabama"], ["AK", "Alaska"], ["AZ", "Arizona"], ["AR", "Arkansas"], ["CA", "California"], ["CO", "Colorado"], ["CT", "Connecticut"], ["DE", "Delaware"], ["FL", "Florida"], ["GA", "Georgia"], ["HI", "Hawaii"], ["ID", "Idaho"], ["IL", "Illinois"], ["IN", "Indiana"], ["IA", "Iowa"], ["KS", "Kansas"], ["KY", "Kentucky"], ["LA", "Louisiana"], ["ME", "Maine"], ["MD", "Maryland"], ["MA", "Massachusetts"], ["MI", "Michigan"], ["MN", "Minnesota"], ["MS", "Mississippi"], ["MO", "Missouri"], ["MT", "Montana"], ["NE", "Nebraska"], ["NV", "Nevada"], ["NH", "New Hampshire"], ["NJ", "New Jersey"], ["NM", "New Mexico"], ["NY", "New York"], ["NC", "North Carolina"], ["ND", "North Dakota"], ["OH", "Ohio"], ["OK", "Oklahoma"], ["OR", "Oregon"], ["PA", "Pennsylvania"], ["RI", "Rhode Island"], ["SC", "South Carolina"], ["SD", "South Dakota"], ["TN", "Tennessee"], ["TX", "Texas"], ["UT", "Utah"], ["VT", "Vermont"], ["VA", "Virginia"], ["WA", "Washington"], ["WV", "West Virginia"], ["WI", "Wisconsin"], ["WY", "Wyoming"]];
   }
 
   componentDidMount() {
-    $('#account-area').click(this.handleClick);
+    $('button').click(this.handleClick);
+    console.log('mount');
   }
 
   handleClick(event) {
-    if (event.target.type === 'button') {
-      $(`#${this.state.currentButton}`).toggleClass('active');
+    let clickedButton = event.currentTarget;
+    console.log(clickedButton.id.split('product-')[1]);
+    event.stopPropagation(); // if clicking on a main tab
+
+    if (clickedButton.id.includes('tab')) {
+      // unset the current button as active, change state to re-render
+      // activate current button
+      $(`#${this.state.currentTab}`).toggleClass('active');
       this.setState({
-        currentButton: event.target.id
-      }, () => $(`#${this.state.currentButton}`).toggleClass('active'));
-    }
+        currentTab: event.target.id,
+        subOption: 'default'
+      }, () => $(`#${this.state.currentTab}`).toggleClass('active'));
+    } // if clicking on a card
+    else if (clickedButton.classList.contains('card')) {
+        // if it's a product card, take to the product page
+        if (clickedButton.id.includes('product')) {
+          this.loadPage(clickedButton.id);
+        } // otherwise set state to re-render and load new cards
+        else {
+            this.setState({
+              subOption: clickedButton.id
+            });
+          }
+      }
   }
 
   profileOption() {
     return /*#__PURE__*/React.createElement("div", {
       id: "profile-display",
-      class: "border p-2"
+      class: "border p-2 h-100"
     }, /*#__PURE__*/React.createElement("h3", {
       class: "text-center"
     }, "Here's your profile information"), /*#__PURE__*/React.createElement("div", {
@@ -176,7 +200,7 @@ class Account extends React.Component {
   paymentOption() {
     return /*#__PURE__*/React.createElement("div", {
       id: "payment-display",
-      class: "border p-2"
+      class: "border p-2 h-100"
     }, /*#__PURE__*/React.createElement("h3", {
       class: "text-center"
     }, "Here's the payment options you've saved"), /*#__PURE__*/React.createElement("div", {
@@ -189,7 +213,7 @@ class Account extends React.Component {
   historyOption() {
     return /*#__PURE__*/React.createElement("div", {
       id: "history-display",
-      class: "border p-2"
+      class: "border p-2 h-100"
     }, /*#__PURE__*/React.createElement("h3", {
       class: "text-center"
     }, "Here's the list of your most recent orders"), /*#__PURE__*/React.createElement("div", {
@@ -202,7 +226,7 @@ class Account extends React.Component {
   contentOption() {
     return /*#__PURE__*/React.createElement("div", {
       id: "content-display",
-      class: "border p-2"
+      class: "border p-2 h-100"
     }, /*#__PURE__*/React.createElement("h3", {
       class: "text-center"
     }, "Here's the content you've created"), /*#__PURE__*/React.createElement("div", {
@@ -212,21 +236,16 @@ class Account extends React.Component {
     }));
   }
 
-  createOption(view = 'default') {
-    let subOptions = {
-      'default': [['Design: Our Custom Products', 'design', 'Here you’ll find our variety of à la carte products. From our professional tributes to our framed collages, start here to get designing.'], ['Customize: Tiered Packages', 'default', "Thinking about multiple items and want to design and ship everything conveniently? We have three different tier levels to get you what you want."], ['Order: Generic Items', 'default', 'Any items that are offered as an option, as well as any items you might need to refresh or maintain a previous purchase can be found here.']],
-      'design': [['Templated Tribute', 'Choose from two different styles of tributes. Layouts are pre-made, and all that is needed is to fill in what you want them to say!'], ['Custom Designed Tribute', 'Feel comfortable with getting into the nitty gritty? Get started with a custom designed tribute to have greater control over content presentation.'], ['T. I. Designed Tribute', 'Interested in a custom look, but want to leave it to someone else? Select a Tributes Inc. designed tribute and we’ll work with you to get you a feel that’s just right.']],
-      'templates': [['Templated Biography Tribute', 'A pre-designed tribute template that is used for large amounts of text in a biography style. Note: Users are able to create up to two templated tributes for free'], ['Templated Timeline Tribute', 'A pre-designed tribute template that is used for smaller amounts of text in a timeline style. Note: Users are able to create up to two templated tributes for free']]
-    };
+  createOption() {
     let productDisplay = [];
 
-    for (let each of subOptions['default']) {
+    for (let each of this.subOptions[this.state.subOption]) {
       productDisplay.push(this.returnCard(...each));
     }
 
     return /*#__PURE__*/React.createElement("div", {
       id: "create-display",
-      class: "border p-2"
+      class: "border p-2 h-100"
     }, /*#__PURE__*/React.createElement("h3", {
       class: "text-center"
     }, "Create or Buy"), /*#__PURE__*/React.createElement("div", {
@@ -244,7 +263,8 @@ class Account extends React.Component {
       class: "card mx-3 my-2",
       style: {
         "width": "18rem"
-      }
+      },
+      onClick: this.handleClick
     }, /*#__PURE__*/React.createElement("h5", {
       class: "card-title text-center"
     }, title), /*#__PURE__*/React.createElement("svg", {
@@ -273,10 +293,7 @@ class Account extends React.Component {
   }
 
   render() {
-    let Option = this.options[this.state.currentButton.split('-')[0]];
-    if (this.state.currentButton !== 'create-btn' && this.state.subOption !== 'none') this.setState({
-      subOption: 'none'
-    });
+    let Option = this.options[this.state.currentTab.split('-')[0]];
     return /*#__PURE__*/React.createElement("div", {
       id: "account-area",
       class: "mx-3 mb-4 px-sm-3 px-1 main-area"
@@ -292,25 +309,25 @@ class Account extends React.Component {
     }, /*#__PURE__*/React.createElement("button", {
       type: "button",
       class: "btn btn-light mx-3 my-1 my-sm-0 col-sm active",
-      id: "profile-btn"
+      id: "profile-tab"
     }, "Profile"), /*#__PURE__*/React.createElement("button", {
       type: "button",
       class: "btn btn-light mx-3 my-1 my-sm-0 col-sm",
-      id: "payment-btn"
+      id: "payment-tab"
     }, "Payment Information"), /*#__PURE__*/React.createElement("button", {
       type: "button",
       class: "btn btn-light mx-3 my-1 my-sm-0 col-sm",
-      id: "history-btn"
+      id: "history-tab"
     }, "Payment History"), /*#__PURE__*/React.createElement("button", {
       type: "button",
       class: "btn btn-light mx-3 my-1 my-sm-0 col-sm",
-      id: "content-btn"
+      id: "content-tab"
     }, "Your Content"), /*#__PURE__*/React.createElement("button", {
       type: "button",
       class: "btn btn-light mx-3 my-1 my-sm-0 col-sm",
-      id: "create-btn"
+      id: "create-tab"
     }, "Create or Buy")), /*#__PURE__*/React.createElement("div", {
-      class: "mx-2 mt-2",
+      class: "mx-2 mt-2 h-100",
       id: "option-content"
     }, /*#__PURE__*/React.createElement(Option, null)));
   }

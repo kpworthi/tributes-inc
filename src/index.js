@@ -27,7 +27,6 @@ class Main extends React.Component {
         <h2 class="text-center" id="subTitle">We're glad you're here</h2>
         <p class="text-center">Hang in there while we get some things together....</p>
       </div>);
-;
 
   }
 
@@ -71,6 +70,8 @@ class Main extends React.Component {
 
   handleClick ( event ) {
     let clicked = event.target;
+    console.log('index handleclick');
+    console.log(clicked);
 
     //not a link, do nothing
     if ( !clicked.href ) {
@@ -117,8 +118,8 @@ class Main extends React.Component {
         this.updateLoginState( false, '' );//force user logout client-side, at least
       });this.collapseNavbar();
     }
-    //navbar path
-    else if( clicked.href.includes('#') ) {
+    //navbar path or clicking a product card in the account page
+    else if( clicked.href.includes('#')) {
       $( `#${this.state.viewing}-nav`).removeClass('active');
       this.collapseNavbar();
       this.loadPage( clicked.href.split('#')[1] );
@@ -135,8 +136,11 @@ class Main extends React.Component {
   }
 
   loadPage ( page = 'home' ) {
+    // if attempting to access account page but not logged in
     if( page === 'account' && this.state.auth === false ) page = 'login';
+    // if logging out, redirect to home
     else if (page === 'logout' || page === null ) page = 'home';
+    // if accessing a template or tribute outside of normal navigation (no db info)
     else if ((page.includes('template') || page.includes('tribute')) && this.dbEntry.name == undefined) page = 'home';
 
     $( '#view-wrapper' ).fadeOut(()=>{
@@ -171,7 +175,11 @@ class Main extends React.Component {
         <Header auth={this.state.auth} username={this.state.username} updateLoginState={this.updateLoginState} />
 
         <div id="view-wrapper" class="h-100 w-100">
-          <View updateLoginState={this.updateLoginState} username={this.state.username} dbEntry={this.dbEntry?this.dbEntry:null}/>
+          <View updateLoginState={this.updateLoginState} 
+                username={this.state.username} 
+                dbEntry={this.dbEntry?this.dbEntry:null}
+                loadPage={this.loadPage}
+                />
         </div>
 
         <Footer />

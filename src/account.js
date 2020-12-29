@@ -4,9 +4,11 @@ class Account extends React.Component {
 
     this.username = props.username || 'user';
     this.state = {
-      currentButton: 'profile-btn',
-      subOption: 'none'
+      currentTab: 'profile-tab',
+      subOption: 'default'
     }
+
+    this.loadPage = props.loadPage;
 
     this.handleClick = this.handleClick.bind(this);
     this.profileOption = this.profileOption.bind(this);
@@ -20,9 +22,32 @@ class Account extends React.Component {
       'create' : this.createOption
     }
 
-    this.productOptions = ['default', 'design', 'templates']
-
-
+    this.subOptions = {
+      'default':    [['Design: Our Custom Products', 
+                      'design',
+                      'Here you’ll find our variety of à la carte products. From our professional tributes to our framed collages, start here to get designing.'],
+                     ['Customize: Tiered Packages',
+                      'default',
+                      "Thinking about multiple items and want to design and ship everything conveniently? We have three different tier levels to get you what you want."],
+                     ['Order: Generic Items',
+                      'default',
+                      'Any items that are offered as an option, as well as any items you might need to refresh or maintain a previous purchase can be found here.']],
+      'design':     [['Templated Tribute',
+                      'templates',
+                      'Choose from two different styles of tributes. Layouts are pre-made, and all that is needed is to fill in what you want them to say!'],
+                     ['Custom Designed Tribute',
+                      'design',
+                      'Feel comfortable with getting into the nitty gritty? Get started with a custom designed tribute to have greater control over content presentation.'],
+                     ['T. I. Designed Tribute',
+                      'design',
+                      'Interested in a custom look, but want to leave it to someone else? Select a Tributes Inc. designed tribute and we’ll work with you to get you a feel that’s just right.']],
+      'templates':  [['Templated Biography Tribute',
+                      'product-design-a',
+                      'A pre-designed tribute template that is used for large amounts of text in a biography style. Note: Users are able to create up to two templated tributes for free'],
+                     ['Templated Timeline Tribute',
+                      'product-design-b',
+                      'A pre-designed tribute template that is used for smaller amounts of text in a timeline style. Note: Users are able to create up to two templated tributes for free']]
+    }
 
     this.stateList = [
       ["AL", "Alabama"],
@@ -80,20 +105,41 @@ class Account extends React.Component {
   }
 
   componentDidMount () {
-    $( '#account-area' ).click(this.handleClick);
+    $( 'button' ).click(this.handleClick);
+    console.log('mount');
   }
 
   handleClick (event) {
-    if ( event.target.type === 'button' ){
-      $(`#${this.state.currentButton}`).toggleClass('active');
-      this.setState({currentButton: event.target.id}, () => 
-        $(`#${this.state.currentButton}`).toggleClass('active'));
+    let clickedButton = event.currentTarget;
+    console.log(clickedButton.id.split('product-')[1]);
+    event.stopPropagation();
+
+    // if clicking on a main tab
+    if ( clickedButton.id.includes('tab') ){
+      // unset the current button as active, change state to re-render
+      // activate current button
+      $(`#${this.state.currentTab}`).toggleClass('active');
+      this.setState( { 
+        currentTab: event.target.id,
+        subOption: 'default' }, () => 
+          $(`#${this.state.currentTab}`).toggleClass('active'));
+    }
+    // if clicking on a card
+    else if ( clickedButton.classList.contains('card')){
+      // if it's a product card, take to the product page
+      if ( clickedButton.id.includes('product') ){
+        this.loadPage( clickedButton.id );
+      }
+      // otherwise set state to re-render and load new cards
+      else {
+        this.setState( { subOption: clickedButton.id } )
+      }
     }
   }
 
   profileOption () {
     return (
-      <div id="profile-display" class="border p-2">
+      <div id="profile-display" class="border p-2 h-100">
         <h3 class="text-center">Here's your profile information</h3>
         <div class="divider"></div>
         <div id="sub-container">
@@ -175,7 +221,7 @@ class Account extends React.Component {
 
   paymentOption () {
     return (
-      <div id="payment-display" class="border p-2">
+      <div id="payment-display" class="border p-2 h-100">
         <h3 class="text-center">Here's the payment options you've saved</h3>
         <div class="divider"></div>
         <div id="sub-container"></div>
@@ -185,7 +231,7 @@ class Account extends React.Component {
 
   historyOption () {
     return (
-      <div id="history-display" class="border p-2">
+      <div id="history-display" class="border p-2 h-100">
         <h3 class="text-center">Here's the list of your most recent orders</h3>
         <div class="divider"></div>
         <div id="sub-container"></div>
@@ -195,7 +241,7 @@ class Account extends React.Component {
 
   contentOption () {
     return (
-      <div id="content-display" class="border p-2">
+      <div id="content-display" class="border p-2 h-100">
         <h3 class="text-center">Here's the content you've created</h3>
         <div class="divider"></div>
         <div id="sub-container"></div>
@@ -203,36 +249,14 @@ class Account extends React.Component {
     )
   }
 
-  createOption ( view = 'default' ) {
-    let subOptions = {
-      'default':    [['Design: Our Custom Products', 
-                      'design',
-                      'Here you’ll find our variety of à la carte products. From our professional tributes to our framed collages, start here to get designing.'],
-                     ['Customize: Tiered Packages',
-                      'default',
-                      "Thinking about multiple items and want to design and ship everything conveniently? We have three different tier levels to get you what you want."],
-                     ['Order: Generic Items',
-                      'default',
-                      'Any items that are offered as an option, as well as any items you might need to refresh or maintain a previous purchase can be found here.']],
-      'design':     [['Templated Tribute',
-                      
-                      'Choose from two different styles of tributes. Layouts are pre-made, and all that is needed is to fill in what you want them to say!'],
-                     ['Custom Designed Tribute', 
-                      'Feel comfortable with getting into the nitty gritty? Get started with a custom designed tribute to have greater control over content presentation.'],
-                     ['T. I. Designed Tribute', 
-                      'Interested in a custom look, but want to leave it to someone else? Select a Tributes Inc. designed tribute and we’ll work with you to get you a feel that’s just right.']],
-      'templates':  [['Templated Biography Tribute', 
-                      'A pre-designed tribute template that is used for large amounts of text in a biography style. Note: Users are able to create up to two templated tributes for free'],
-                     ['Templated Timeline Tribute', 
-                      'A pre-designed tribute template that is used for smaller amounts of text in a timeline style. Note: Users are able to create up to two templated tributes for free']]
-    }
+  createOption () {
     let productDisplay = [];
-    for (let each of subOptions['default']){
+    for (let each of this.subOptions[this.state.subOption]){
       productDisplay.push(this.returnCard(...each));
     }
     
     return (
-      <div id="create-display" class="border p-2">
+      <div id="create-display" class="border p-2 h-100">
         <h3 class="text-center">Create or Buy</h3>
         <div class="divider"></div>
         <div id="sub-container" class="d-flex flex-wrap justify-content-center">
@@ -244,7 +268,7 @@ class Account extends React.Component {
 
   returnCard( title, linkId, text ) {
     return (
-      <button type="button" id={linkId} class="card mx-3 my-2" style={{"width": "18rem"}}>
+      <button type="button" id={linkId} class="card mx-3 my-2" style={{"width": "18rem"}} onClick={this.handleClick}>
         <h5 class="card-title text-center">{title}</h5>
         <svg class="bd-placeholder-img card-img-top" 
             width="100%" 
@@ -264,8 +288,7 @@ class Account extends React.Component {
   }
 
   render(){
-    let Option = this.options[this.state.currentButton.split('-')[0]];
-    if (this.state.currentButton !== 'create-btn' && this.state.subOption !== 'none') this.setState({subOption: 'none'})
+    let Option = this.options[this.state.currentTab.split('-')[0]];
 
     return(
       <div id="account-area" class="mx-3 mb-4 px-sm-3 px-1 main-area">
@@ -273,14 +296,14 @@ class Account extends React.Component {
         <h2 class="text-center" id="subTitle">Please choose an option below</h2>
 
         <div class="row justify-content-center mt-5" id="option-tabs" >
-          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm active" id='profile-btn'>Profile</button>
-          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm" id='payment-btn'>Payment Information</button>
-          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm" id='history-btn'>Payment History</button>
-          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm" id='content-btn'>Your Content</button>
-          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm" id='create-btn'>Create or Buy</button>
+          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm active" id='profile-tab'>Profile</button>
+          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm" id='payment-tab'>Payment Information</button>
+          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm" id='history-tab'>Payment History</button>
+          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm" id='content-tab'>Your Content</button>
+          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm" id='create-tab'>Create or Buy</button>
         </div>
 
-        <div class="mx-2 mt-2" id="option-content" >
+        <div class="mx-2 mt-2 h-100" id="option-content" >
           <Option />
         </div>
 
