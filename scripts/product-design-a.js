@@ -84,7 +84,6 @@ class DesignBio extends React.Component {
         clearTimeout(buttonTimeout);
         return submitStatus.textContent = 'An error occurred during submission, please try again.';
       });
-      ;
     } else {
       $('#submit-status').text('Please fill out all required fields!');
     }
@@ -94,7 +93,9 @@ class DesignBio extends React.Component {
     return /*#__PURE__*/React.createElement("form", {
       id: "design-a-component",
       class: "mx-3 px-sm-3 px-1 main-area"
-    }, /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("h1", {
+      class: "text-center"
+    }, "Build a Biography Tribute"), /*#__PURE__*/React.createElement("div", {
       id: "top-block",
       class: "row mx-0 my-2 px-sm-5 py-1 justify-content-center rounded inset"
     }, /*#__PURE__*/React.createElement("div", {
@@ -213,6 +214,11 @@ class DesignBio extends React.Component {
       id: "username",
       name: "username",
       value: this.username
+    }), /*#__PURE__*/React.createElement("input", {
+      type: "hidden",
+      id: "type",
+      name: "type",
+      value: "TemplateA"
     }), /*#__PURE__*/React.createElement("button", {
       type: "submit",
       id: "save-btn",

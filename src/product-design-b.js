@@ -60,6 +60,15 @@ class DesignTimeline extends React.Component {
 
   submitHandler ( event ) {
     event.preventDefault();
+    let submit = $('#save-btn')[0];
+    let submitStatus = $('#submit-status')[0];
+
+    submit.disabled = true;
+    let buttonTimeout = setTimeout(() => {
+      submit.disabled = false;
+      return submitStatus.textContent = 'An error occurred during submission, please try again.';
+    }, 4000);
+
     let validSubmission = true;
 
     $( ':required' ).each( (ind,el) => {
@@ -79,8 +88,29 @@ class DesignTimeline extends React.Component {
     });
 
     if (validSubmission) {
-      $.post( "/api/design", $( "#design-b-component" ).serialize() );
       $( '#submit-status' ).text('Saving...');
+      $.post( "/api/design", $( "#design-b-component" ).serialize() )
+        .done( ( response ) => {
+          if ( response === 'Success! Tribute saved.' ) {
+            setTimeout(() => {
+              $( '#account-nav' ).click();
+            }, 2000);
+            clearTimeout(buttonTimeout);
+            submit.disabled = true;
+            return submitStatus.textContent = response;
+          }
+          else {
+            clearTimeout(buttonTimeout);
+            submit.disabled = false;
+            return submitStatus.textContent = response;
+          }
+        })
+        .fail( function ( err ) {
+          console.log(' Tribute save HTTP request failed. ');
+          submit.disabled = false;
+          clearTimeout(buttonTimeout);
+          return submitStatus.textContent = 'An error occurred during submission, please try again.';
+        });
     }
     else {
       $( '#submit-status' ).text('Please make sure all fields are filled out correctly. For timeline events, see the example.')
@@ -93,6 +123,7 @@ class DesignTimeline extends React.Component {
       <form id="design-b-component" class="mx-3 px-sm-3 px-1 main-area row flex-row justify-content-around">
         
         <div id="left-block" class="d-flex flex-column col-lg-6 justify-content-center rounded inset text-center">
+          <h1 class="text-center">Build a Timeline Tribute</h1>
           <div id="title-area">
             <div class="form-group">
               <label for="name">Tributee's Name</label>
@@ -137,6 +168,7 @@ class DesignTimeline extends React.Component {
           </div>
 
           <input type="hidden" id="username" name="username" value={this.username} />
+          <input type="hidden" id="type" name="type" value='TemplateB' />
 
           <button type="submit" id="save-btn" class="btn btn-success">Save Tribute</button>
           <p id="submit-status" class="" />

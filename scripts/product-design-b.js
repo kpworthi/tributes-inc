@@ -73,6 +73,13 @@ class DesignTimeline extends React.Component {
 
   submitHandler(event) {
     event.preventDefault();
+    let submit = $('#save-btn')[0];
+    let submitStatus = $('#submit-status')[0];
+    submit.disabled = true;
+    let buttonTimeout = setTimeout(() => {
+      submit.disabled = false;
+      return submitStatus.textContent = 'An error occurred during submission, please try again.';
+    }, 4000);
     let validSubmission = true;
     $(':required').each((ind, el) => {
       if (el.value === '') {
@@ -88,8 +95,26 @@ class DesignTimeline extends React.Component {
     });
 
     if (validSubmission) {
-      $.post("/api/design", $("#design-b-component").serialize());
       $('#submit-status').text('Saving...');
+      $.post("/api/design", $("#design-b-component").serialize()).done(response => {
+        if (response === 'Success! Tribute saved.') {
+          setTimeout(() => {
+            $('#account-nav').click();
+          }, 2000);
+          clearTimeout(buttonTimeout);
+          submit.disabled = true;
+          return submitStatus.textContent = response;
+        } else {
+          clearTimeout(buttonTimeout);
+          submit.disabled = false;
+          return submitStatus.textContent = response;
+        }
+      }).fail(function (err) {
+        console.log(' Tribute save HTTP request failed. ');
+        submit.disabled = false;
+        clearTimeout(buttonTimeout);
+        return submitStatus.textContent = 'An error occurred during submission, please try again.';
+      });
     } else {
       $('#submit-status').text('Please make sure all fields are filled out correctly. For timeline events, see the example.');
     }
@@ -102,7 +127,9 @@ class DesignTimeline extends React.Component {
     }, /*#__PURE__*/React.createElement("div", {
       id: "left-block",
       class: "d-flex flex-column col-lg-6 justify-content-center rounded inset text-center"
-    }, /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("h1", {
+      class: "text-center"
+    }, "Build a Timeline Tribute"), /*#__PURE__*/React.createElement("div", {
       id: "title-area"
     }, /*#__PURE__*/React.createElement("div", {
       class: "form-group"
@@ -202,6 +229,11 @@ class DesignTimeline extends React.Component {
       id: "username",
       name: "username",
       value: this.username
+    }), /*#__PURE__*/React.createElement("input", {
+      type: "hidden",
+      id: "type",
+      name: "type",
+      value: "TemplateB"
     }), /*#__PURE__*/React.createElement("button", {
       type: "submit",
       id: "save-btn",

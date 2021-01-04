@@ -36,7 +36,9 @@ function routes(app, database) {
       this.timeline   = formData.timeline || '';
       this.visible    = formData.visible || true;
       this.link       = formData.link || '';
+      this.type       = formData.type;
       this.approved   = false;
+      this.flagged    = false;
       this.username   = formData.username;
     }
   }
@@ -71,10 +73,10 @@ function routes(app, database) {
       if ( req.body.id )
         searchTerm = { _id: new ObjectId(req.body.id) };
       //otherwise search by name
-      else searchTerm = { name: req.body.name };
+      else searchTerm = { "name": req.body.name };
 
       database(async function (client) {
-        let result = await client.db('tributes-inc').collection('pages').findOne(searchTerm);
+        let result = await client.db('tributes-inc').collection(req.body.id?'pages':'tributes').findOne(searchTerm);
 
         if (result === null){
           console.log("Couldn't find the requested tribute! " + req.body);
@@ -181,6 +183,7 @@ function routes(app, database) {
     }
   );
 
+  //Template Build Request
   app.route("/api/design")
     .post((req, res) => {
       console.log(req.body)
@@ -235,11 +238,35 @@ function routes(app, database) {
           }
         }
         else {
-          res.send('A tribute for this person already exists...')
+          res.send(findResults?'A tribute for this person already exists...':"You already have two free tribute pages.")
         }
       });
     });
 
+  //Tribute List Request
+  app.route("/api/list")
+    .post((req, res) => {
+      let reqType = req.body.type;
+      let query = {};
+      let options = {};
+
+      switch(reqType){
+        case 'directory':
+          options.projection = {"name": 1, "approved": 1}
+          break;
+        case 'user':
+          query.username = req.body.username;
+          options.projection = {"name": 1, "approved": 1, "type": 1};
+          break;
+      }
+
+      database(async function (client) {
+        let resultsArray = await client.db('tributes-inc').collection('tributes').find(query, options).toArray();
+
+        console.log(resultsArray);
+        res.send(resultsArray);
+      })
+    });
 }
 
 module.exports = routes;

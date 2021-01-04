@@ -2,7 +2,7 @@ class TemplateA extends React.Component {
   constructor(props) {
     super(props);
     this.content = props.dbEntry;
-    this.preview = true;
+    this.preview = this.content.name === "Your Tribute's Name" ? true : false;
     this.palette = {
       "classic": {
         nav: '#7E4A35',
@@ -74,7 +74,6 @@ class TemplateA extends React.Component {
   }
 
   render() {
-    let Bio = this.renderBio;
     return /*#__PURE__*/React.createElement("div", {
       id: "template-a-component",
       class: "mx-3 px-sm-3 px-1 main-area"
@@ -106,9 +105,11 @@ class TemplateA extends React.Component {
       class: "mb-0"
     }, this.content.quote), /*#__PURE__*/React.createElement("footer", {
       class: "blockquote-footer"
-    }, this.content.author), this.preview ? this.colorPreviewer() : null) : null, /*#__PURE__*/React.createElement(Bio, null), /*#__PURE__*/React.createElement("a", {
+    }, this.content.author), this.preview ? this.colorPreviewer() : null) : null, /*#__PURE__*/React.createElement("div", {
+      id: "bio-text"
+    }, /*#__PURE__*/React.createElement("p", null, this.content.bio)), this.content.link ? /*#__PURE__*/React.createElement("a", {
       href: this.content.link
-    }, "  Click here to learn more about [Your Tribute's Name] (Optional)"))), /*#__PURE__*/React.createElement("div", {
+    }, `Click here to learn more about ${this.preview ? "[Your Tribute's Name] (Optional)" : this.content.name}`) : null)), /*#__PURE__*/React.createElement("div", {
       id: "lower-buffer",
       style: {
         "height": "100px"

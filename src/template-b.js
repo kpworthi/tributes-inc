@@ -85,7 +85,9 @@ class TemplateB extends React.Component {
               {this.preview?this.colorPreviewer():null}
           </blockquote>):null}
           <Timeline/>
-          <a href={this.content.link} class="text-center">  Click here to learn more about [Your Tribute's Name] (Optional)</a>
+                      
+          {this.content.link?
+          <a href={this.content.link}>{`Click here to learn more about ${this.preview?"[Your Tribute's Name] (Optional)":this.content.name}`}</a>:null}
         </div>
 
       </div>

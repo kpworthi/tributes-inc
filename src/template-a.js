@@ -3,7 +3,7 @@ class TemplateA extends React.Component {
     super(props);
 
     this.content = props.dbEntry;
-    this.preview = true;
+    this.preview = this.content.name==="Your Tribute's Name"?true:  false;
 
     this.palette = { 
       "classic": {nav: '#7E4A35', page: '#dbceb0', container: '#cab577', content: '#D4C391'},
@@ -61,7 +61,6 @@ class TemplateA extends React.Component {
   }
 
   render(){
-    let Bio = this.renderBio;
 
     return(
       <div id="template-a-component" class="mx-3 px-sm-3 px-1 main-area">
@@ -88,9 +87,12 @@ class TemplateA extends React.Component {
               {this.preview?this.colorPreviewer():null}
             </blockquote>):null}
 
-            <Bio/>
+            <div id="bio-text">
+              <p>{this.content.bio}</p>
+            </div>
             
-            <a href={this.content.link}>  Click here to learn more about [Your Tribute's Name] (Optional)</a>
+            {this.content.link?
+            <a href={this.content.link}>{`Click here to learn more about ${this.preview?"[Your Tribute's Name] (Optional)":this.content.name}`}</a>:null}
           </div>
         </div>
 

@@ -101,10 +101,9 @@ class TemplateB extends React.Component {
       class: "mb-0"
     }, this.content.quote), /*#__PURE__*/React.createElement("footer", {
       class: "blockquote-footer"
-    }, this.content.author), this.preview ? this.colorPreviewer() : null) : null, /*#__PURE__*/React.createElement(Timeline, null), /*#__PURE__*/React.createElement("a", {
-      href: this.content.link,
-      class: "text-center"
-    }, "  Click here to learn more about [Your Tribute's Name] (Optional)")));
+    }, this.content.author), this.preview ? this.colorPreviewer() : null) : null, /*#__PURE__*/React.createElement(Timeline, null), this.content.link ? /*#__PURE__*/React.createElement("a", {
+      href: this.content.link
+    }, `Click here to learn more about ${this.preview ? "[Your Tribute's Name] (Optional)" : this.content.name}`) : null));
   }
 
 }

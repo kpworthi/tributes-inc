@@ -4,16 +4,21 @@ class Account extends React.Component {
 
     this.username = props.username || 'user';
     this.state = {
+      contentList: [{"name": 'Hang in there while we get some things together....'}],
       currentTab: 'profile-tab',
       subOption: 'default'
     }
 
     this.loadPage = props.loadPage;
 
-    this.handleClick = this.handleClick.bind(this);
-    this.profileOption = this.profileOption.bind(this);
-    this.createOption = this.createOption.bind(this);
-    this.stateDropdown = this.stateDropdown.bind(this);
+    this.handleClick       = this.handleClick.bind(this);
+    this.profileOption     = this.profileOption.bind(this);
+    this.contentOption     = this.contentOption.bind(this);
+    this.createOption      = this.createOption.bind(this);
+    this.stateDropdown     = this.stateDropdown.bind(this);
+    this.getContentList    = this.getContentList.bind(this);
+    this.renderContentList = this.renderContentList.bind(this);
+
     this.options = { 
       'profile': this.profileOption, 
       'payment': this.paymentOption, 
@@ -105,10 +110,12 @@ class Account extends React.Component {
   }
 
   componentDidMount () {
-    $( 'button' ).click(this.handleClick);
+    this.getContentList();
+
+    $( '.option' ).click(this.handleClick);
     console.log('mount');
   }
-
+  
   handleClick (event) {
     let clickedButton = event.currentTarget;
     console.log(clickedButton.id.split('product-')[1]);
@@ -244,9 +251,30 @@ class Account extends React.Component {
       <div id="content-display" class="border p-2 h-100">
         <h3 class="text-center">Here's the content you've created</h3>
         <div class="divider"></div>
-        <div id="sub-container"></div>
+        {this.renderContentList()}
       </div>
     )
+  }
+
+  getContentList () {
+    $.post( "/api/list", {"type": "user", "username": this.username} )
+      .done( ( response ) => {
+        this.setState({contentList: response});
+      })
+      .fail( function ( err ) {
+        console.log(' Directory HTTP request failed. ');
+        return 'An error occurred during the request, please try again.';
+      });
+      
+  }
+
+  renderContentList () {
+    let contentList = this.state.contentList;
+    return (
+      <div id="content-list" class="text-center">
+        {contentList[0].name.startsWith('Hang')?<p>{contentList[0].name}</p>:
+        contentList.map((value) => <a key={value.name} class="tribute-link" href={`#${value.name.toLowerCase().split(' ').join('-')}`}>{value.name}</a>)}
+      </div>)
   }
 
   createOption () {
@@ -296,11 +324,11 @@ class Account extends React.Component {
         <h2 class="text-center" id="subTitle">Please choose an option below</h2>
 
         <div class="row justify-content-center mt-5" id="option-tabs" >
-          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm active" id='profile-tab'>Profile</button>
-          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm" id='payment-tab'>Payment Information</button>
-          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm" id='history-tab'>Payment History</button>
-          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm" id='content-tab'>Your Content</button>
-          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm" id='create-tab'>Create or Buy</button>
+          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm option active" id='profile-tab'>Profile</button>
+          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm option" id='payment-tab'>Payment Information</button>
+          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm option" id='history-tab'>Payment History</button>
+          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm option" id='content-tab'>Your Content</button>
+          <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm option" id='create-tab'>Create or Buy</button>
         </div>
 
         <div class="mx-2 mt-2 h-100" id="option-content" >

@@ -3,14 +3,20 @@ class Account extends React.Component {
     super(props);
     this.username = props.username || 'user';
     this.state = {
+      contentList: [{
+        "name": 'Hang in there while we get some things together....'
+      }],
       currentTab: 'profile-tab',
       subOption: 'default'
     };
     this.loadPage = props.loadPage;
     this.handleClick = this.handleClick.bind(this);
     this.profileOption = this.profileOption.bind(this);
+    this.contentOption = this.contentOption.bind(this);
     this.createOption = this.createOption.bind(this);
     this.stateDropdown = this.stateDropdown.bind(this);
+    this.getContentList = this.getContentList.bind(this);
+    this.renderContentList = this.renderContentList.bind(this);
     this.options = {
       'profile': this.profileOption,
       'payment': this.paymentOption,
@@ -27,7 +33,8 @@ class Account extends React.Component {
   }
 
   componentDidMount() {
-    $('button').click(this.handleClick);
+    this.getContentList();
+    $('.option').click(this.handleClick);
     console.log('mount');
   }
 
@@ -231,9 +238,33 @@ class Account extends React.Component {
       class: "text-center"
     }, "Here's the content you've created"), /*#__PURE__*/React.createElement("div", {
       class: "divider"
-    }), /*#__PURE__*/React.createElement("div", {
-      id: "sub-container"
-    }));
+    }), this.renderContentList());
+  }
+
+  getContentList() {
+    $.post("/api/list", {
+      "type": "user",
+      "username": this.username
+    }).done(response => {
+      this.setState({
+        contentList: response
+      });
+    }).fail(function (err) {
+      console.log(' Directory HTTP request failed. ');
+      return 'An error occurred during the request, please try again.';
+    });
+  }
+
+  renderContentList() {
+    let contentList = this.state.contentList;
+    return /*#__PURE__*/React.createElement("div", {
+      id: "content-list",
+      class: "text-center"
+    }, contentList[0].name.startsWith('Hang') ? /*#__PURE__*/React.createElement("p", null, contentList[0].name) : contentList.map(value => /*#__PURE__*/React.createElement("a", {
+      key: value.name,
+      class: "tribute-link",
+      href: `#${value.name.toLowerCase().split(' ').join('-')}`
+    }, value.name)));
   }
 
   createOption() {
@@ -308,23 +339,23 @@ class Account extends React.Component {
       id: "option-tabs"
     }, /*#__PURE__*/React.createElement("button", {
       type: "button",
-      class: "btn btn-light mx-3 my-1 my-sm-0 col-sm active",
+      class: "btn btn-light mx-3 my-1 my-sm-0 col-sm option active",
       id: "profile-tab"
     }, "Profile"), /*#__PURE__*/React.createElement("button", {
       type: "button",
-      class: "btn btn-light mx-3 my-1 my-sm-0 col-sm",
+      class: "btn btn-light mx-3 my-1 my-sm-0 col-sm option",
       id: "payment-tab"
     }, "Payment Information"), /*#__PURE__*/React.createElement("button", {
       type: "button",
-      class: "btn btn-light mx-3 my-1 my-sm-0 col-sm",
+      class: "btn btn-light mx-3 my-1 my-sm-0 col-sm option",
       id: "history-tab"
     }, "Payment History"), /*#__PURE__*/React.createElement("button", {
       type: "button",
-      class: "btn btn-light mx-3 my-1 my-sm-0 col-sm",
+      class: "btn btn-light mx-3 my-1 my-sm-0 col-sm option",
       id: "content-tab"
     }, "Your Content"), /*#__PURE__*/React.createElement("button", {
       type: "button",
-      class: "btn btn-light mx-3 my-1 my-sm-0 col-sm",
+      class: "btn btn-light mx-3 my-1 my-sm-0 col-sm option",
       id: "create-tab"
     }, "Create or Buy")), /*#__PURE__*/React.createElement("div", {
       class: "mx-2 mt-2 h-100",

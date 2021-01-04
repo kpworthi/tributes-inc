@@ -77,15 +77,16 @@ class Main extends React.Component {
       return null;
     }
     //handle going to a template or a tribute
-    else if ((clicked.className === 'template-link' || clicked.className === 'tribute-link') && this.fetching === false) {
+    else if ((clicked.className === 'template-link' || clicked.className === 'tribute-link' ) && this.fetching === false) {
       let searchObj = {};
       this.fetching = true;
 
       $( `#${this.state.viewing}-nav`).removeClass('active');
 
-      if (clicked.className === 'template-link')
+      if (clicked.classList.contains('template-link'))
         searchObj = { name: '', id: (clicked.href.includes('template-a')?"5fe10116f521bd2c36488286":"5fe101d6f521bd2c36488288") };
       else searchObj = { name: clicked.textContent };
+      console.log(searchObj);
 
       let submission = $.post( '/api/tribute', searchObj )
         .done( ( response ) => {
@@ -93,8 +94,11 @@ class Main extends React.Component {
 
           if (searchObj.id) {
             this.loadPage(response.bio?'template-a':'template-b');
-          } else this.loadPage('tribute');
-
+          } else if (response.type === 'TemplateA') {
+            this.loadPage('template-a');
+          } else if (response.type === 'TemplateB') {
+            this.loadPage('template-b');
+          }
           return this.fetching = false;
         })
         .fail( function ( err ) {
