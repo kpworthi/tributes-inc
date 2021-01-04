@@ -14,6 +14,8 @@ Create a multi-page website incorporating multiple functionalaties learned over 
 
 ### 0.4.0 changes
 1. Users can now create a templated tribute page through their account page
+1. Two tribute templates are available, a biography style, and a timeline style
+1. Template previews are available from the products page
 
 - Basic design in place for account:profile area
 

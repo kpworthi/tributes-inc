@@ -17,10 +17,8 @@ class Main extends React.Component {
 
     this.fetching    = false;
     this.dbEntry     = {};
-    this.pages       = ['home', 'products', 'directory', 'login', 'logout', 'account'];
-    //temp template testing addition
-    this.pages.concat(...['template-a', 'template-b']);
-    this.securePages = ['login', 'account'];
+    this.pages       = ['home', 'products', 'directory', 'login', 'logout', 'account', 'template-a', 'template-b'];
+    this.securePages = ['login', 'account', 'product-design-a', 'product-design-b'];
     this.pageView    = () => (
       <div id="defaultLoad" class="mx-3 mb-4 px-sm-4 main-area" style={{"opacity": 1}}>
         <h1 class="text-center" id="title">Welcome to Tributes Inc.!</h1>
@@ -136,8 +134,8 @@ class Main extends React.Component {
   }
 
   loadPage ( page = 'home' ) {
-    // if attempting to access account page but not logged in
-    if( page === 'account' && this.state.auth === false ) page = 'login';
+    // if attempting to access 'secure' pages but not logged in
+    if ( this.securePages.includes(page) && this.state.auth === false ) page = 'login';
     // if logging out, redirect to home
     else if (page === 'logout' || page === null ) page = 'home';
     // if accessing a template or tribute outside of normal navigation (no db info)

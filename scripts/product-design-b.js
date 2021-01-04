@@ -1,4 +1,4 @@
-class DesignBio extends React.Component {
+class DesignTimeline extends React.Component {
   constructor(props) {
     super(props);
     this.username = props.username;
@@ -31,6 +31,9 @@ class DesignBio extends React.Component {
     $('#palette').on("change", () => {
       this.loadPalette($('#palette option:selected')[0].value);
     });
+    $('#timeline1').attr('required', true);
+    $('#timeline2').attr('required', true);
+    $('#timeline3').attr('required', true);
     $('#save-btn').click(this.submitHandler);
   }
 
@@ -46,15 +49,30 @@ class DesignBio extends React.Component {
     $('.inset').css('background-color', this.palette[palette].content);
   }
 
+  loadTimelineFields() {
+    let fieldList = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+    return fieldList.map((field, index) => {
+      let labelText = `Timeline Date ${index + 1}`;
+      let elementId = `timeline${index + 1}`;
+      let placeholder = `Enter an event ${index > 2 ? '(Optional)' : '(Required)'}`;
+      let required = index > 2 ? 'required' : '';
+      if (index === 0) labelText = `${labelText} (Format example: 1999 - Event text)`;
+      return /*#__PURE__*/React.createElement("div", {
+        class: "form-group"
+      }, /*#__PURE__*/React.createElement("label", {
+        for: elementId
+      }, labelText), /*#__PURE__*/React.createElement("input", {
+        type: "text",
+        id: elementId,
+        name: elementId,
+        class: "form-control timeline",
+        placeholder: placeholder
+      }));
+    });
+  }
+
   submitHandler(event) {
     event.preventDefault();
-    let submit = $('#save-btn')[0];
-    let submitStatus = $('#submit-status')[0];
-    submit.disabled = true;
-    let buttonTimeout = setTimeout(() => {
-      submit.disabled = false;
-      return submitStatus.textContent = 'An error occurred during submission, please try again.';
-    }, 4000);
     let validSubmission = true;
     $(':required').each((ind, el) => {
       if (el.value === '') {
@@ -62,44 +80,30 @@ class DesignBio extends React.Component {
         validSubmission = false;
       } else el.style.border = 'none';
     });
+    $('.timeline').each((ind, el) => {
+      if (el.value !== '' && el.value.match(/\d{1,4} - .+/) === null) {
+        el.style.border = '2px solid red';
+        validSubmission = false;
+      } else el.style.border = 'none';
+    });
 
     if (validSubmission) {
+      $.post("/api/design", $("#design-b-component").serialize());
       $('#submit-status').text('Saving...');
-      $.post("/api/design", $("#design-a-component").serialize()).done(response => {
-        if (response === 'Success! Tribute saved.') {
-          setTimeout(() => {
-            $('#account-nav').click();
-          }, 2000);
-          clearTimeout(buttonTimeout);
-          submit.disabled = true;
-          return submitStatus.textContent = response;
-        } else {
-          clearTimeout(buttonTimeout);
-          submit.disabled = false;
-          return submitStatus.textContent = response;
-        }
-      }).fail(function (err) {
-        console.log(' Tribute save HTTP request failed. ');
-        submit.disabled = false;
-        clearTimeout(buttonTimeout);
-        return submitStatus.textContent = 'An error occurred during submission, please try again.';
-      });
-      ;
     } else {
-      $('#submit-status').text('Please fill out all required fields!');
+      $('#submit-status').text('Please make sure all fields are filled out correctly. For timeline events, see the example.');
     }
   }
 
   render() {
     return /*#__PURE__*/React.createElement("form", {
-      id: "design-a-component",
-      class: "mx-3 px-sm-3 px-1 main-area"
+      id: "design-b-component",
+      class: "mx-3 px-sm-3 px-1 main-area row flex-row justify-content-around"
     }, /*#__PURE__*/React.createElement("div", {
-      id: "top-block",
-      class: "row mx-0 my-2 px-sm-5 py-1 justify-content-center rounded inset"
+      id: "left-block",
+      class: "d-flex flex-column col-lg-6 justify-content-center rounded inset text-center"
     }, /*#__PURE__*/React.createElement("div", {
-      id: "title-area",
-      class: "d-flex flex-column justify-content-center col-lg-5"
+      id: "title-area"
     }, /*#__PURE__*/React.createElement("div", {
       class: "form-group"
     }, /*#__PURE__*/React.createElement("label", {
@@ -122,8 +126,8 @@ class DesignBio extends React.Component {
       class: "form-control",
       placeholder: "Sub-title (Optional)"
     }))), /*#__PURE__*/React.createElement("div", {
-      id: "picture-area",
-      class: "d-flex flex-column justify-content-center col-lg-5"
+      id: "img-area",
+      class: "text-center"
     }, /*#__PURE__*/React.createElement("div", {
       class: "form-group"
     }, /*#__PURE__*/React.createElement("label", {
@@ -147,13 +151,8 @@ class DesignBio extends React.Component {
       placeholder: "Caption (Required)",
       required: true
     })))), /*#__PURE__*/React.createElement("div", {
-      id: "bottom-block",
-      class: "row mx-0 mt-3 justify-content-center rounded inset"
-    }, /*#__PURE__*/React.createElement("div", {
-      id: "text-wrapper",
-      class: "col-12 col-lg-10 text-justify"
-    }, /*#__PURE__*/React.createElement("div", {
-      class: "d-flex flex-column align-items-center text-center"
+      id: "right-block",
+      class: "d-flex flex-column col-lg-6 rounded inset"
     }, /*#__PURE__*/React.createElement("div", {
       class: "form-group w-75"
     }, /*#__PURE__*/React.createElement("label", {
@@ -174,7 +173,7 @@ class DesignBio extends React.Component {
       type: "text",
       class: "form-control",
       placeholder: "Author (Optional)"
-    }))), /*#__PURE__*/React.createElement("div", {
+    })), /*#__PURE__*/React.createElement("div", {
       class: "form-group text-center"
     }, /*#__PURE__*/React.createElement("label", {
       for: "palette"
@@ -188,17 +187,7 @@ class DesignBio extends React.Component {
       value: "cool"
     }, "Tributes Cool "), /*#__PURE__*/React.createElement("option", {
       value: "warm"
-    }, "Tributes Warm "))), /*#__PURE__*/React.createElement("div", {
-      class: "form-group"
-    }, /*#__PURE__*/React.createElement("label", {
-      for: "bio"
-    }, "Biography Text"), /*#__PURE__*/React.createElement("textarea", {
-      id: "bio",
-      name: "bio",
-      class: "form-control",
-      placeholder: "Enter the main text of your tribute here (Required)",
-      required: true
-    })), /*#__PURE__*/React.createElement("div", {
+    }, "Tributes Warm "))), this.loadTimelineFields(), /*#__PURE__*/React.createElement("div", {
       class: "form-group"
     }, /*#__PURE__*/React.createElement("label", {
       for: "link"
@@ -220,7 +209,7 @@ class DesignBio extends React.Component {
     }, "Save Tribute"), /*#__PURE__*/React.createElement("p", {
       id: "submit-status",
       class: ""
-    }))), /*#__PURE__*/React.createElement("div", {
+    })), /*#__PURE__*/React.createElement("div", {
       id: "lower-buffer",
       style: {
         "height": "200px"
@@ -230,4 +219,4 @@ class DesignBio extends React.Component {
 
 }
 
-export default DesignBio;
+export default DesignTimeline;

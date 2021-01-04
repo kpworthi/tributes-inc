@@ -23,16 +23,21 @@ function routes(app, database) {
   }
 
   class Template {
-    construcor( formData ){
-      this.name     = formData.name;
-      this.tagline  = formData.tagline || '';
-      this.img      = formData.img;
-      this.caption  = formData.caption;
-      this.quote    = formData.quote || '';
-      this.author   = formData.author || '';
-      this.bio      = formData.bio || '';
-      this.timeline = formData.timeline || '';
-      this.link     = formData.link || '';
+    constructor( formData ){
+      this.name       = formData.name;
+      this.name_lower = formData.name.toLowerCase();
+      this.tagline    = formData.tagline || '';
+      this.img        = formData.img;
+      this.caption    = formData.caption;
+      this.quote      = formData.quote || '';
+      this.author     = formData.author || '';
+      this.palette    = formData.palette || 'classic';
+      this.bio        = formData.bio || '';
+      this.timeline   = formData.timeline || '';
+      this.visible    = formData.visible || true;
+      this.link       = formData.link || '';
+      this.approved   = false;
+      this.username   = formData.username;
     }
   }
 
@@ -175,6 +180,65 @@ function routes(app, database) {
       );
     }
   );
+
+  app.route("/api/design")
+    .post((req, res) => {
+      console.log(req.body)
+      if ( req.body["timeline1"] ){
+        req.body.timeline = [];
+        Object.keys(req.body).forEach(key=>{
+          if( key.startsWith('timeline') && key !== 'timeline' && req.body[key] ){
+            req.body.timeline.push(req.body[key]);
+          }
+        });
+      }
+      
+      console.log(req.body.username + ' submitted a tribute ' + currentTimeEST());
+
+      database(async function (client) {
+
+        let validSubmission = true
+
+        // check for this tribute's name already in the DB
+        let findResults = await client
+          .db("tributes-inc")
+          .collection("tributes")
+          .findOne({ name_lower: req.body.name.toLowerCase() });
+
+        if (findResults !== null) validSubmission = false;
+
+        // check for more than two tributes under this user
+        let findArray = await client
+          .db("tributes-inc")
+          .collection("tributes")
+          .find({ username: req.body.username })
+            .toArray();
+
+        if (findArray.length>1) validSubmission = false;
+        // else list the number of tributes they have
+        else console.log(req.body.username + ' current total submissions ' + findArray.length);
+
+        // if it's still a valid submission, post it
+        if (validSubmission) {
+          let insertResults = await client
+            .db("tributes-inc")
+            .collection("tributes")
+            .insertOne(new Template(req.body));
+
+          if ( insertResults.insertedCount === 1 ) {
+            console.log('The submission was successful. ' + currentTimeEST())
+            res.send('Success! Tribute saved.');
+          }
+          else {
+            console.log('The submission was unsuccessful. ' + currentTimeEST())
+            res.send('Something went wrong during the save process, please try again or contact us!');
+          }
+        }
+        else {
+          res.send('A tribute for this person already exists...')
+        }
+      });
+    });
 
 }
 

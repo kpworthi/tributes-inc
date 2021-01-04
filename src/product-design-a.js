@@ -2,8 +2,7 @@ class DesignBio extends React.Component {
   constructor(props){
     super(props);
 
-    this.content = props.dbEntry;
-    this.preview = true;
+    this.username = props.username;
 
     this.palette = { 
       "classic": {nav: '#7E4A35', page: '#dbceb0', container: '#cab577', content: '#D4C391'},
@@ -12,15 +11,17 @@ class DesignBio extends React.Component {
     }
 
     this.loadPalette    = this.loadPalette.bind(this);
-    this.renderBio      = this.renderBio.bind(this);
+    this.submitHandler  = this.submitHandler.bind(this);
   }
 
   componentDidMount () {
     this.loadPalette( 'classic' );
-    if (this.preview)
-      $('#color-select').on("change", ()=>{
-        this.loadPalette( $('#color-select option:selected')[0].value);
-      });
+
+    $('#palette').on("change", ()=>{
+      this.loadPalette( $('#palette option:selected')[0].value);
+    });
+
+    $( '#save-btn' ).click(this.submitHandler);
   }
 
   componentWillUnmount () {
@@ -35,16 +36,53 @@ class DesignBio extends React.Component {
     $('.inset').css('background-color', this.palette[palette].content);
   }
 
-  renderBio(){
-    console.log(this.content);
-    let bioText = this.content.bio;
-    return (
-      <div id="bio-text">
-        {bioText.map((para, index) => (
-            <p key={`para${index+1}`}>{para}</p>
-        ))}
-      </div>
-    )
+  submitHandler ( event ) {
+    event.preventDefault();
+    let submit = $('#save-btn')[0];
+    let submitStatus = $('#submit-status')[0];
+
+    submit.disabled = true;
+    let buttonTimeout = setTimeout(() => {
+      submit.disabled = false;
+      return submitStatus.textContent = 'An error occurred during submission, please try again.';
+    }, 4000);
+
+    let validSubmission = true;
+    $( ':required' ).each( (ind,el) => {
+      if(el.value === '') {
+        el.style.border = '2px solid red';
+        validSubmission = false;
+      }
+      else el.style.border = 'none'
+    });
+    if(validSubmission){
+      $( '#submit-status' ).text('Saving...');
+      $.post( "/api/design", $( "#design-a-component" ).serialize() )
+        .done( ( response ) => {
+          if ( response === 'Success! Tribute saved.' ) {
+            setTimeout(() => {
+              $( '#account-nav' ).click();
+            }, 2000);
+            clearTimeout(buttonTimeout);
+            submit.disabled = true;
+            return submitStatus.textContent = response;
+          }
+          else {
+            clearTimeout(buttonTimeout);
+            submit.disabled = false;
+            return submitStatus.textContent = response;
+          }
+        })
+        .fail( function ( err ) {
+          console.log(' Tribute save HTTP request failed. ');
+          submit.disabled = false;
+          clearTimeout(buttonTimeout);
+          return submitStatus.textContent = 'An error occurred during submission, please try again.';
+        });;
+    }
+    else {
+      $( '#submit-status' ).text('Please fill out all required fields!');
+    }
   }
 
   render(){
@@ -56,19 +94,19 @@ class DesignBio extends React.Component {
           <div id="title-area" class="d-flex flex-column justify-content-center col-lg-5">
             <div class="form-group">
               <label for="name">Tributee's Name</label>
-              <input id="name" type="text" class="form-control" placeholder="Name (Required)" required />
+              <input id="name" name="name" type="text" class="form-control" placeholder="Name (Required)" required />
             </div><div class="form-group">
-              <label for="sub-title">Sub-title</label>
-              <input id="sub-title" type="text" class="form-control" placeholder="Sub-title (Optional)" />
+              <label for="tagline">Sub-title</label>
+              <input id="tagline" name="tagline" type="text" class="form-control" placeholder="Sub-title (Optional)" />
             </div>
           </div>
           <div id="picture-area" class="d-flex flex-column justify-content-center col-lg-5">
             <div class="form-group">
               <label for="img">Image link</label>
-              <input id="img" type="text" class="form-control" placeholder="https://example.com/img.jpg (Required)" required />
+              <input id="img" name="img" type="text" class="form-control" placeholder="https://example.com/img.jpg (Required)" required />
             </div><div class="form-group">
               <label for="caption">Caption</label>
-              <input id="caption" type="text" class="form-control" placeholder="Caption (Required)" required />
+              <input id="caption" name="caption" type="text" class="form-control" placeholder="Caption (Required)" required />
             </div>
           </div>
 
@@ -80,16 +118,16 @@ class DesignBio extends React.Component {
             <div class="d-flex flex-column align-items-center text-center">
               <div class="form-group w-75">
                 <label for="quote">Quote about or from your tributee</label>
-                <input id="quote" type="text" class="form-control" placeholder="Quote (Optional)" />
+                <input id="quote" name="quote" type="text" class="form-control" placeholder="Quote (Optional)" />
               </div><div class="form-group w-50">
                 <label for="author">Author of the quote</label>
-                <input id="author" type="text" class="form-control" placeholder="Author (Optional)" />
+                <input id="author" name="author" type="text" class="form-control" placeholder="Author (Optional)" />
               </div>
             </div>
 
             <div class="form-group text-center">
-              <label for="color-select">Choose a color scheme: </label>
-              <select id="color-select">
+              <label for="palette">Choose a color scheme: </label>
+              <select id="palette" name="palette">
                 <option value="classic" selected="true">Tributes Classic</option>
                 <option value="cool">Tributes Cool </option>
                 <option value="warm">Tributes Warm </option>
@@ -98,17 +136,24 @@ class DesignBio extends React.Component {
 
             <div class="form-group">
               <label for="bio">Biography Text</label>
-              <textarea id="bio" class="form-control" placeholder="Enter the main text of your tribute here (Required)"/>
+              <textarea id="bio" name="bio" class="form-control" placeholder="Enter the main text of your tribute here (Required)" required />
             </div>
 
             <div class="form-group">
               <label for="link">External Link</label>
-              <input id="link" type="text" class="form-control" placeholder="Enter a link for more information (Optional)"/>
+              <input id="link" name="link" type="text" class="form-control" placeholder="Enter a link for more information (Optional)" />
             </div>
+
+            <input type="hidden" id="username" name="username" value={this.username} />
+
+            <button type="submit" id="save-btn" class="btn btn-success">Save Tribute</button>
+            <p id="submit-status" class="" />
+
           </div>
         </div>
 
-        <div id="lower-buffer" style={{"height": "100px"}}/>
+
+        <div id="lower-buffer" style={{"height": "200px"}}/>
 
       </form>
     )

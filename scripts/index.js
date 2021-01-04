@@ -14,10 +14,8 @@ class Main extends React.Component {
     this.updateLoginState = this.updateLoginState.bind(this);
     this.fetching = false;
     this.dbEntry = {};
-    this.pages = ['home', 'products', 'directory', 'login', 'logout', 'account']; //temp template testing addition
-
-    this.pages.concat(...['template-a', 'template-b']);
-    this.securePages = ['login', 'account'];
+    this.pages = ['home', 'products', 'directory', 'login', 'logout', 'account', 'template-a', 'template-b'];
+    this.securePages = ['login', 'account', 'product-design-a', 'product-design-b'];
 
     this.pageView = () => /*#__PURE__*/React.createElement("div", {
       id: "defaultLoad",
@@ -128,8 +126,8 @@ class Main extends React.Component {
   }
 
   loadPage(page = 'home') {
-    // if attempting to access account page but not logged in
-    if (page === 'account' && this.state.auth === false) page = 'login'; // if logging out, redirect to home
+    // if attempting to access 'secure' pages but not logged in
+    if (this.securePages.includes(page) && this.state.auth === false) page = 'login'; // if logging out, redirect to home
     else if (page === 'logout' || page === null) page = 'home'; // if accessing a template or tribute outside of normal navigation (no db info)
       else if ((page.includes('template') || page.includes('tribute')) && this.dbEntry.name == undefined) page = 'home';
     $('#view-wrapper').fadeOut(() => {
