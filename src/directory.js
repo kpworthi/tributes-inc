@@ -30,7 +30,7 @@ class Directory extends React.Component {
     let tributeList = this.state.tributeList;
 
     return (
-      <div id="list-area" class="text-center">
+      <div id="list-area" class="d-flex flex-column align-items-center text-center">
         {tributeList[0].name.startsWith('Hang')?<p>{tributeList[0].name}</p>:
         tributeList.map((value) => <a key={value.name} class="tribute-link" href={`#${value.name.toLowerCase().split(' ').join('-')}`}>{value.name}</a>)}
       </div>)

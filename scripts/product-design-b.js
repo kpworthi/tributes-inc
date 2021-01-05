@@ -88,27 +88,30 @@ class DesignTimeline extends React.Component {
       submit.disabled = false;
       return submitStatus.textContent = 'An error occurred during submission, please try again.';
     }, 4000);
-    let validSubmission = true; // make sure year and event fields are filled out as pairs
+    let validSubmission = true;
 
     for (let i = 1; i < 16; i++) {
       let yearObj = $(`#year${i}`),
           eventObj = $(`#event${i}`),
           yearValue = $(`#year${i}`).val(),
-          eventValue = $(`#event${i}`).val();
+          eventValue = $(`#event${i}`).val(); // make sure year and event fields are filled out as pairs
 
       if ((!yearValue || !eventValue) && yearValue !== eventValue) {
         if (!yearValue) yearObj.css('border', '2px solid red');else eventObj.css('border', '2px solid red');
         validSubmission = false;
-      } else {
-        yearObj.css('border', 'none');
-        eventObj.css('border', 'none');
-      }
+      } // also check that years are numbers only
+      else if (!yearValue.match(/^\d+$/)) {
+          yearObj.css('border', '2px solid red');
+          validSubmission = false;
+        } // clear any field highlighting otherwise
+        else {
+            yearObj.css('border', 'none');
+            eventObj.css('border', 'none');
+          }
     } // make sure all require fields are filled
 
 
     $(':required').each(function () {
-      console.log(this);
-
       if ($(this).val() === '') {
         $(this).css('border', '2px solid red');
         validSubmission = false;
@@ -137,7 +140,7 @@ class DesignTimeline extends React.Component {
         return submitStatus.textContent = 'An error occurred during submission, please try again.';
       });
     } else {
-      $('#submit-status').text('Please be sure to fill out all required fields!');
+      $('#submit-status').text('Please be sure to fill out all required fields properly!');
       submit.disabled = false;
       clearTimeout(buttonTimeout);
     }

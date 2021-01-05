@@ -27,6 +27,13 @@ class Account extends React.Component {
       'create' : this.createOption
     }
 
+    this.contentTypes = {
+      'TemplateA': 'Digital Tribute: Template A (Biography)',
+      'TemplateB': 'Digital Tribute: Template B (Timeline)',
+      'Customized': 'Digital Tribute: Custom-made by You',
+      'Professional': 'Digital Tribute: Designed by Tributes Inc'
+    }
+
     this.subOptions = {
       'default':    [['Design: Our Custom Products', 
                       'design',
@@ -239,7 +246,7 @@ class Account extends React.Component {
   historyOption () {
     return (
       <div id="history-display" class="border p-2 h-100">
-        <h3 class="text-center">Here's the list of your most recent orders</h3>
+        <h3 class="text-center">Here's a list of your most recent orders</h3>
         <div class="divider"></div>
         <div id="sub-container"></div>
       </div>
@@ -271,9 +278,26 @@ class Account extends React.Component {
   renderContentList () {
     let contentList = this.state.contentList;
     return (
-      <div id="content-list" class="text-center">
+      <div id="content-list" class="d-flex flex-column align-items-center text-center">
+        <div class="row w-100">
+          <b class="my-3 col-3">Name</b>
+          <b class="my-3 col-3">Type</b>
+          <b class="my-3 col-3">Created On</b>
+          <b class="my-3 col-1"></b>
+          <b class="my-3 col-1"></b>
+          <b class="my-3 col-1"></b>
+        </div>
         {contentList[0].name.startsWith('Hang')?<p>{contentList[0].name}</p>:
-        contentList.map((value) => <a key={value.name} class="tribute-link" href={`#${value.name.toLowerCase().split(' ').join('-')}`}>{value.name}</a>)}
+        contentList.map((value) => 
+          <div class="row justify-content-center w-100">
+            <a key={value.name} class="tribute-link my-1 col-3" href={`#${value.name.toLowerCase().split(' ').join('-')}`}>{value.name}</a>
+            <p class="my-1 col-3">{this.contentTypes[value.type]}</p>
+            <p class="my-1 col-3">{value.created_on}</p>
+            <button type="button" class="btn btn-primary my-1 col-1">Edit</button>
+            <button type="button" class="btn btn-dark my-1 col-1">Hide</button>
+            <button type="button" class="btn btn-danger my-1 col-1">Delete</button>
+          </div>
+        )}
       </div>)
   }
 

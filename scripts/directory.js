@@ -31,7 +31,7 @@ class Directory extends React.Component {
     let tributeList = this.state.tributeList;
     return /*#__PURE__*/React.createElement("div", {
       id: "list-area",
-      class: "text-center"
+      class: "d-flex flex-column align-items-center text-center"
     }, tributeList[0].name.startsWith('Hang') ? /*#__PURE__*/React.createElement("p", null, tributeList[0].name) : tributeList.map(value => /*#__PURE__*/React.createElement("a", {
       key: value.name,
       class: "tribute-link",

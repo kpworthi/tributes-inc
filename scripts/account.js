@@ -24,6 +24,12 @@ class Account extends React.Component {
       'content': this.contentOption,
       'create': this.createOption
     };
+    this.contentTypes = {
+      'TemplateA': 'Digital Tribute: Template A (Biography)',
+      'TemplateB': 'Digital Tribute: Template B (Timeline)',
+      'Customized': 'Digital Tribute: Custom-made by You',
+      'Professional': 'Digital Tribute: Designed by Tributes Inc'
+    };
     this.subOptions = {
       'default': [['Design: Our Custom Products', 'design', 'Here you’ll find our variety of à la carte products. From our professional tributes to our framed collages, start here to get designing.'], ['Customize: Tiered Packages', 'default', "Thinking about multiple items and want to design and ship everything conveniently? We have three different tier levels to get you what you want."], ['Order: Generic Items', 'default', 'Any items that are offered as an option, as well as any items you might need to refresh or maintain a previous purchase can be found here.']],
       'design': [['Templated Tribute', 'templates', 'Choose from two different styles of tributes. Layouts are pre-made, and all that is needed is to fill in what you want them to say!'], ['Custom Designed Tribute', 'design', 'Feel comfortable with getting into the nitty gritty? Get started with a custom designed tribute to have greater control over content presentation.'], ['T. I. Designed Tribute', 'design', 'Interested in a custom look, but want to leave it to someone else? Select a Tributes Inc. designed tribute and we’ll work with you to get you a feel that’s just right.']],
@@ -223,7 +229,7 @@ class Account extends React.Component {
       class: "border p-2 h-100"
     }, /*#__PURE__*/React.createElement("h3", {
       class: "text-center"
-    }, "Here's the list of your most recent orders"), /*#__PURE__*/React.createElement("div", {
+    }, "Here's a list of your most recent orders"), /*#__PURE__*/React.createElement("div", {
       class: "divider"
     }), /*#__PURE__*/React.createElement("div", {
       id: "sub-container"
@@ -259,12 +265,41 @@ class Account extends React.Component {
     let contentList = this.state.contentList;
     return /*#__PURE__*/React.createElement("div", {
       id: "content-list",
-      class: "text-center"
-    }, contentList[0].name.startsWith('Hang') ? /*#__PURE__*/React.createElement("p", null, contentList[0].name) : contentList.map(value => /*#__PURE__*/React.createElement("a", {
+      class: "d-flex flex-column align-items-center text-center"
+    }, /*#__PURE__*/React.createElement("div", {
+      class: "row w-100"
+    }, /*#__PURE__*/React.createElement("b", {
+      class: "my-3 col-3"
+    }, "Name"), /*#__PURE__*/React.createElement("b", {
+      class: "my-3 col-3"
+    }, "Type"), /*#__PURE__*/React.createElement("b", {
+      class: "my-3 col-3"
+    }, "Created On"), /*#__PURE__*/React.createElement("b", {
+      class: "my-3 col-1"
+    }), /*#__PURE__*/React.createElement("b", {
+      class: "my-3 col-1"
+    }), /*#__PURE__*/React.createElement("b", {
+      class: "my-3 col-1"
+    })), contentList[0].name.startsWith('Hang') ? /*#__PURE__*/React.createElement("p", null, contentList[0].name) : contentList.map(value => /*#__PURE__*/React.createElement("div", {
+      class: "row justify-content-center w-100"
+    }, /*#__PURE__*/React.createElement("a", {
       key: value.name,
-      class: "tribute-link",
+      class: "tribute-link my-1 col-3",
       href: `#${value.name.toLowerCase().split(' ').join('-')}`
-    }, value.name)));
+    }, value.name), /*#__PURE__*/React.createElement("p", {
+      class: "my-1 col-3"
+    }, this.contentTypes[value.type]), /*#__PURE__*/React.createElement("p", {
+      class: "my-1 col-3"
+    }, value.created_on), /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      class: "btn btn-primary my-1 col-1"
+    }, "Edit"), /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      class: "btn btn-dark my-1 col-1"
+    }, "Hide"), /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      class: "btn btn-danger my-1 col-1"
+    }, "Delete"))));
   }
 
   createOption() {

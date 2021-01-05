@@ -68,8 +68,6 @@ class Main extends React.Component {
 
   handleClick ( event ) {
     let clicked = event.target;
-    console.log('index handleclick');
-    console.log(clicked);
 
     //not a link, do nothing
     if ( !clicked.href ) {
@@ -77,7 +75,9 @@ class Main extends React.Component {
       return null;
     }
     //handle going to a template or a tribute
-    else if ((clicked.className === 'template-link' || clicked.className === 'tribute-link' ) && this.fetching === false) {
+    else if ( clicked.className && 
+             (clicked.className.includes('template-link') || clicked.className.includes('tribute-link') ) && 
+              this.fetching === false) {
       let searchObj = {};
       this.fetching = true;
 

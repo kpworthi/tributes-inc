@@ -257,7 +257,7 @@ function routes(app, database) {
     .post((req, res) => {
       let reqType = req.body.type;
       let query = {};
-      let options = {};
+      let options = {sort: {'name': 1}};
 
       switch(reqType){
         case 'directory':
@@ -265,7 +265,7 @@ function routes(app, database) {
           break;
         case 'user':
           query.username = req.body.username;
-          options.projection = {"name": 1, "approved": 1, "type": 1};
+          options.projection = {"name": 1, "approved": 1, "type": 1, "created_on": 1};
           break;
       }
 

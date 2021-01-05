@@ -55,12 +55,13 @@ class DesignBio extends React.Component {
       submit.disabled = false;
       return submitStatus.textContent = 'An error occurred during submission, please try again.';
     }, 4000);
-    let validSubmission = true;
-    $(':required').each((ind, el) => {
-      if (el.value === '') {
-        el.style.border = '2px solid red';
+    let validSubmission = true; //make sure all required fields are filled
+
+    $(':required').each(function () {
+      if ($(this).val() === '') {
+        $(this).css('border', '2px solid red');
         validSubmission = false;
-      } else el.style.border = 'none';
+      } else $(this).css('border', 'none');
     });
 
     if (validSubmission) {

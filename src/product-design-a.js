@@ -48,13 +48,16 @@ class DesignBio extends React.Component {
     }, 4000);
 
     let validSubmission = true;
-    $( ':required' ).each( (ind,el) => {
-      if(el.value === '') {
-        el.style.border = '2px solid red';
+
+    //make sure all required fields are filled
+    $( ':required' ).each( function () {
+      if( $( this ).val() === '' ) {
+        $( this ).css('border','2px solid red');
         validSubmission = false;
       }
-      else el.style.border = 'none'
+      else $( this ).css('border', 'none');
     });
+
     if(validSubmission){
       $( '#submit-status' ).text('Saving...');
       $.post( "/api/design", $( "#design-a-component" ).serialize() )
