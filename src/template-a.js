@@ -49,7 +49,6 @@ class TemplateA extends React.Component {
   }
 
   renderBio(){
-    console.log(this.content);
     let bioText = this.content.bio;
     return (
       <div id="bio-text">
@@ -61,6 +60,7 @@ class TemplateA extends React.Component {
   }
 
   render(){
+    let Bio = this.renderBio;
 
     return(
       <div id="template-a-component" class="mx-3 px-sm-3 px-1 main-area">
@@ -87,9 +87,7 @@ class TemplateA extends React.Component {
               {this.preview?this.colorPreviewer():null}
             </blockquote>):null}
 
-            <div id="bio-text">
-              <p>{this.content.bio}</p>
-            </div>
+            <Bio />
             
             {this.content.link?
             <a href={this.content.link}>{`Click here to learn more about ${this.preview?"[Your Tribute's Name] (Optional)":this.content.name}`}</a>:null}

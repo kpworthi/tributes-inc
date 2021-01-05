@@ -188,6 +188,8 @@ function routes(app, database) {
   app.route("/api/design")
     .post((req, res) => {
       console.log(req.body)
+
+      // format the timeline for db upload
       if ( req.body["year1"] ){
         req.body.timeline = [];
         Object.keys(req.body).forEach(key=>{
@@ -198,7 +200,11 @@ function routes(app, database) {
           }
         });
       }
-      
+      //format the biography for db upload
+      else {
+        req.body.bio = req.body.bio.replace(/\r\n/g, '\n').split('\n').filter((value)=> value)
+      }
+
       console.log(req.body.username + ' submitted a tribute ' + currentTimeEST());
 
       database(async function (client) {
