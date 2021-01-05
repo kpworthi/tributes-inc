@@ -81,7 +81,9 @@ class DesignBio extends React.Component {
         });
     }
     else {
-      $( '#submit-status' ).text('Please fill out all required fields!');
+      $( '#submit-status' ).text('Please be sure to fill out all required fields!');
+      submit.disabled = false;
+      clearTimeout(buttonTimeout);
     }
   }
 

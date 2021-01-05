@@ -39,6 +39,7 @@ function routes(app, database) {
       this.type       = formData.type;
       this.approved   = false;
       this.flagged    = false;
+      this.created_on = currentTimeEST();
       this.username   = formData.username;
     }
   }
@@ -187,11 +188,13 @@ function routes(app, database) {
   app.route("/api/design")
     .post((req, res) => {
       console.log(req.body)
-      if ( req.body["timeline1"] ){
+      if ( req.body["year1"] ){
         req.body.timeline = [];
         Object.keys(req.body).forEach(key=>{
-          if( key.startsWith('timeline') && key !== 'timeline' && req.body[key] ){
-            req.body.timeline.push(req.body[key]);
+          // if it's a year and the year isn't empty
+          if( key.startsWith('year') && req.body[key] ){
+            // push the [year and event] into the timeline. event grabs the current number from the year 'index'
+            req.body.timeline.push([req.body[key],req.body[`event${key.split('r')[1]}`]]);
           }
         });
       }

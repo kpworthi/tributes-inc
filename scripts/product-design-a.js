@@ -85,7 +85,9 @@ class DesignBio extends React.Component {
         return submitStatus.textContent = 'An error occurred during submission, please try again.';
       });
     } else {
-      $('#submit-status').text('Please fill out all required fields!');
+      $('#submit-status').text('Please be sure to fill out all required fields!');
+      submit.disabled = false;
+      clearTimeout(buttonTimeout);
     }
   }
 

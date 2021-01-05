@@ -3,7 +3,7 @@ class TemplateB extends React.Component {
     super(props);
 
     this.content = props.dbEntry;
-    this.preview = true;
+    this.preview = this.content.name==="Your Tribute's Name"?true:false;
 
     this.palette = { 
       "classic": {nav: '#7E4A35', page: '#dbceb0', container: '#cab577', content: '#D4C391'},
@@ -77,9 +77,9 @@ class TemplateB extends React.Component {
           <figcaption>{this.content.caption}</figcaption>
         </div>
 
-        <div id="right-block" class="d-flex flex-column col-lg-6 rounded inset">
+        <div id="right-block" class="d-flex flex-column justify-content-between col-lg-6 rounded inset">
           {this.content.quote&&this.content.author?(
-          <blockquote class="blockquote text-center">
+          <blockquote class="blockquote mt-3 text-center">
             <p class="mb-0">{this.content.quote}</p>
             <footer class="blockquote-footer">{this.content.author}</footer>
               {this.preview?this.colorPreviewer():null}

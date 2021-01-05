@@ -2,7 +2,7 @@ class TemplateB extends React.Component {
   constructor(props) {
     super(props);
     this.content = props.dbEntry;
-    this.preview = true;
+    this.preview = this.content.name === "Your Tribute's Name" ? true : false;
     this.palette = {
       "classic": {
         nav: '#7E4A35',
@@ -94,9 +94,9 @@ class TemplateB extends React.Component {
       class: "rounded border template-a-img"
     })), /*#__PURE__*/React.createElement("figcaption", null, this.content.caption)), /*#__PURE__*/React.createElement("div", {
       id: "right-block",
-      class: "d-flex flex-column col-lg-6 rounded inset"
+      class: "d-flex flex-column justify-content-between col-lg-6 rounded inset"
     }, this.content.quote && this.content.author ? /*#__PURE__*/React.createElement("blockquote", {
-      class: "blockquote text-center"
+      class: "blockquote mt-3 text-center"
     }, /*#__PURE__*/React.createElement("p", {
       class: "mb-0"
     }, this.content.quote), /*#__PURE__*/React.createElement("footer", {

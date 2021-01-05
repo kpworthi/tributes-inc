@@ -3,7 +3,7 @@ class TemplateA extends React.Component {
     super(props);
 
     this.content = props.dbEntry;
-    this.preview = this.content.name==="Your Tribute's Name"?true:  false;
+    this.preview = this.content.name==="Your Tribute's Name"?true:false;
 
     this.palette = { 
       "classic": {nav: '#7E4A35', page: '#dbceb0', container: '#cab577', content: '#D4C391'},

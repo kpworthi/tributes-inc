@@ -31,9 +31,7 @@ class DesignTimeline extends React.Component {
     $('#palette').on("change", () => {
       this.loadPalette($('#palette option:selected')[0].value);
     });
-    $('#timeline1').attr('required', true);
-    $('#timeline2').attr('required', true);
-    $('#timeline3').attr('required', true);
+    $('.required').attr('required', true);
     $('#save-btn').click(this.submitHandler);
   }
 
@@ -52,22 +50,32 @@ class DesignTimeline extends React.Component {
   loadTimelineFields() {
     let fieldList = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
     return fieldList.map((field, index) => {
-      let labelText = `Timeline Date ${index + 1}`;
-      let elementId = `timeline${index + 1}`;
+      let elementId = `${index + 1}`;
       let placeholder = `Enter an event ${index > 2 ? '(Optional)' : '(Required)'}`;
-      let required = index > 2 ? 'required' : '';
-      if (index === 0) labelText = `${labelText} (Format example: 1999 - Event text)`;
+      let required = index < 3 ? 'required' : '';
       return /*#__PURE__*/React.createElement("div", {
-        class: "form-group"
+        class: "form-row"
+      }, /*#__PURE__*/React.createElement("div", {
+        class: "form-group col-2"
       }, /*#__PURE__*/React.createElement("label", {
-        for: elementId
-      }, labelText), /*#__PURE__*/React.createElement("input", {
+        for: `year${elementId}`
+      }, "Year ", elementId), /*#__PURE__*/React.createElement("input", {
         type: "text",
-        id: elementId,
-        name: elementId,
-        class: "form-control timeline",
+        id: `year${elementId}`,
+        name: `year${elementId}`,
+        class: `form-control timeline ${required}`,
+        placeholder: "Year"
+      })), /*#__PURE__*/React.createElement("div", {
+        class: "form-group col-9"
+      }, /*#__PURE__*/React.createElement("label", {
+        for: `event${elementId}`
+      }, "Event ", elementId), /*#__PURE__*/React.createElement("input", {
+        type: "text",
+        id: `event${elementId}`,
+        name: `event${elementId}`,
+        class: `form-control timeline ${required}`,
         placeholder: placeholder
-      }));
+      })));
     });
   }
 
@@ -80,18 +88,31 @@ class DesignTimeline extends React.Component {
       submit.disabled = false;
       return submitStatus.textContent = 'An error occurred during submission, please try again.';
     }, 4000);
-    let validSubmission = true;
-    $(':required').each((ind, el) => {
-      if (el.value === '') {
-        el.style.border = '2px solid red';
+    let validSubmission = true; // make sure year and event fields are filled out as pairs
+
+    for (let i = 1; i < 16; i++) {
+      let yearObj = $(`#year${i}`),
+          eventObj = $(`#event${i}`),
+          yearValue = $(`#year${i}`).val(),
+          eventValue = $(`#event${i}`).val();
+
+      if ((!yearValue || !eventValue) && yearValue !== eventValue) {
+        if (!yearValue) yearObj.css('border', '2px solid red');else eventObj.css('border', '2px solid red');
         validSubmission = false;
-      } else el.style.border = 'none';
-    });
-    $('.timeline').each((ind, el) => {
-      if (el.value !== '' && el.value.match(/\d{1,4} - .+/) === null) {
-        el.style.border = '2px solid red';
+      } else {
+        yearObj.css('border', 'none');
+        eventObj.css('border', 'none');
+      }
+    } // make sure all require fields are filled
+
+
+    $(':required').each(function () {
+      console.log(this);
+
+      if ($(this).val() === '') {
+        $(this).css('border', '2px solid red');
         validSubmission = false;
-      } else el.style.border = 'none';
+      } else $(this).css('border', 'none');
     });
 
     if (validSubmission) {
@@ -116,7 +137,9 @@ class DesignTimeline extends React.Component {
         return submitStatus.textContent = 'An error occurred during submission, please try again.';
       });
     } else {
-      $('#submit-status').text('Please make sure all fields are filled out correctly. For timeline events, see the example.');
+      $('#submit-status').text('Please be sure to fill out all required fields!');
+      submit.disabled = false;
+      clearTimeout(buttonTimeout);
     }
   }
 
