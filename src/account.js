@@ -37,27 +37,39 @@ class Account extends React.Component {
     this.subOptions = {
       'default':    [['Design: Our Custom Products', 
                       'design',
+                      "./img/design-prev.png",
                       'Here you’ll find our variety of à la carte products. From our professional tributes to our framed collages, start here to get designing.'],
                      ['Customize: Tiered Packages',
                       'default',
+                      "",
                       "Thinking about multiple items and want to design and ship everything conveniently? We have three different tier levels to get you what you want."],
                      ['Order: Generic Items',
                       'default',
+                      "",
                       'Any items that are offered as an option, as well as any items you might need to refresh or maintain a previous purchase can be found here.']],
       'design':     [['Templated Tribute',
                       'templates',
+                      "./img/templates-prev.png",
                       'Choose from two different styles of tributes. Layouts are pre-made, and all that is needed is to fill in what you want them to say!'],
                      ['Custom Designed Tribute',
                       'design',
+                      "",
                       'Feel comfortable with getting into the nitty gritty? Get started with a custom designed tribute to have greater control over content presentation.'],
                      ['T. I. Designed Tribute',
                       'design',
-                      'Interested in a custom look, but want to leave it to someone else? Select a Tributes Inc. designed tribute and we’ll work with you to get you a feel that’s just right.']],
+                      "",
+                      'Interested in a custom look, but want to leave it to someone else? Select a Tributes Inc. designed tribute and we’ll work with you to get you a feel that’s just right.'],
+                     ['Physical Designs',
+                      'design',
+                      "",
+                      "Here you'll find our physical offerings, for when you want something to have in your home or another place of prominence"],],
       'templates':  [['Templated Biography Tribute',
                       'product-design-a',
+                      "./img/temp-a-prev.png",
                       'A pre-designed tribute template that is used for large amounts of text in a biography style. Note: Users are able to create up to two templated tributes for free'],
                      ['Templated Timeline Tribute',
                       'product-design-b',
+                      "./img/temp-b-prev.png",
                       'A pre-designed tribute template that is used for smaller amounts of text in a timeline style. Note: Users are able to create up to two templated tributes for free']]
     }
 
@@ -153,7 +165,7 @@ class Account extends React.Component {
 
   profileOption () {
     return (
-      <div id="profile-display" class="border p-2 h-100">
+      <div id="profile-display" class="border p-2 acct-cont">
         <h3 class="text-center">Here's your profile information</h3>
         <div class="divider"></div>
         <div id="sub-container">
@@ -215,6 +227,8 @@ class Account extends React.Component {
                 </div>
               </div>
             </div>
+            <button type="button" class="btn btn-success" disabled>Save Info</button>
+            <small id="emailHelp" class="form-text text-muted">Saving personal information is currently disabled.</small>
           </form>
 
         </div>
@@ -235,7 +249,7 @@ class Account extends React.Component {
 
   paymentOption () {
     return (
-      <div id="payment-display" class="border p-2 h-100">
+      <div id="payment-display" class="border p-2 acct-cont">
         <h3 class="text-center">Here's the payment options you've saved</h3>
         <div class="divider"></div>
         <div id="sub-container"></div>
@@ -245,7 +259,7 @@ class Account extends React.Component {
 
   historyOption () {
     return (
-      <div id="history-display" class="border p-2 h-100">
+      <div id="history-display" class="border p-2 acct-cont">
         <h3 class="text-center">Here's a list of your most recent orders</h3>
         <div class="divider"></div>
         <div id="sub-container"></div>
@@ -255,7 +269,7 @@ class Account extends React.Component {
 
   contentOption () {
     return (
-      <div id="content-display" class="border p-2 h-100">
+      <div id="content-display" class="border p-2 acct-cont">
         <h3 class="text-center">Here's the content you've created</h3>
         <div class="divider"></div>
         {this.renderContentList()}
@@ -279,23 +293,26 @@ class Account extends React.Component {
     let contentList = this.state.contentList;
     return (
       <div id="content-list" class="d-flex flex-column align-items-center text-center">
-        <div class="row w-100">
-          <b class="my-3 col-3">Name</b>
+        <div class="row justify-content-center w-100">
+          <b class="my-3 col-2">Name</b>
           <b class="my-3 col-3">Type</b>
-          <b class="my-3 col-3">Created On</b>
+          <b class="my-3 col-2">Created On</b>
+          <b class="my-3 col-1">Approved?</b>
           <b class="my-3 col-1"></b>
           <b class="my-3 col-1"></b>
           <b class="my-3 col-1"></b>
         </div>
-        {contentList[0].name.startsWith('Hang')?<p>{contentList[0].name}</p>:
+        {contentList.length===0?<p>Nothing to display, yet!</p>:
+        contentList[0].name.startsWith('Hang')?<p>{contentList[0].name}</p>:
         contentList.map((value) => 
-          <div class="row justify-content-center w-100">
-            <a key={value.name} class="tribute-link my-1 col-3" href={`#${value.name.toLowerCase().split(' ').join('-')}`}>{value.name}</a>
+          <div class="row mb-1 align-items-center justify-content-center rounded border border-dark w-100">
+            <a key={value.name} class="tribute-link my-1 col-2" href={`#${value.name.toLowerCase().split(' ').join('-')}`}>{value.name}</a>
             <p class="my-1 col-3">{this.contentTypes[value.type]}</p>
-            <p class="my-1 col-3">{value.created_on}</p>
-            <button type="button" class="btn btn-primary my-1 col-1">Edit</button>
-            <button type="button" class="btn btn-dark my-1 col-1">Hide</button>
-            <button type="button" class="btn btn-danger my-1 col-1">Delete</button>
+            <p class="my-1 col-2">{new Date(value.created_on).toDateString()}</p>  
+            <p class="my-1 col-1">{value.approved?"Yes":"No"}</p>
+            <button type="button" class="btn btn-primary my-1 col-1" disabled>Edit</button>
+            <button type="button" class="btn btn-dark my-1 col-1" disabled>Hide</button>
+            <button type="button" class="btn btn-danger my-1 col-1" disabled>Delete</button>
           </div>
         )}
       </div>)
@@ -308,7 +325,7 @@ class Account extends React.Component {
     }
     
     return (
-      <div id="create-display" class="border p-2 h-100">
+      <div id="create-display" class="border p-2 acct-cont">
         <h3 class="text-center">Create or Buy</h3>
         <div class="divider"></div>
         <div id="sub-container" class="d-flex flex-wrap justify-content-center">
@@ -318,10 +335,14 @@ class Account extends React.Component {
     )
   }
 
-  returnCard( title, linkId, text ) {
+  returnCard( title, linkId, img, text ) {
     return (
-      <button type="button" id={linkId} class="card mx-3 my-2" style={{"width": "18rem"}} onClick={this.handleClick}>
+      <button type="button" id={linkId} class="card mx-3 my-2" 
+              style={{"width": "18rem", "opacity": img?"100%":"70%"}} 
+              onClick={this.handleClick} disabled={img?null:"disabled"} >
         <h5 class="card-title text-center">{title}</h5>
+
+        {img?<img src={img} class="card-img border border-dark" />:
         <svg class="bd-placeholder-img card-img-top" 
             width="100%" 
             height="180" 
@@ -331,11 +352,12 @@ class Account extends React.Component {
               <title>Placeholder</title>
               <rect width="100%" height="100%" fill="#868e96"/>
               <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Coming soon</text>
-        </svg>
+        </svg>}
+
         <div class="card-body">
           <p class="card-text">{text}</p>
         </div>
-    </button>
+      </button>
     )
   }
 
@@ -355,7 +377,7 @@ class Account extends React.Component {
           <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm option" id='create-tab'>Create or Buy</button>
         </div>
 
-        <div class="mx-2 mt-2 h-100" id="option-content" >
+        <div class="mx-2 mt-2 acct-cont" id="option-content" >
           <Option />
         </div>
 

@@ -91,6 +91,7 @@ function routes(app, database) {
     });
 
   app.route("/api/login")
+    // get used to determine if a user is still logged in on inital site loading
     .get(ensureNotAuthenticated, function (req, res, next) {
       res.json({ auth: false, msg: "User is not currently logged in." });
     })
@@ -184,10 +185,9 @@ function routes(app, database) {
     }
   );
 
-  //Template Build Request
+  //Template Build/Edit/Delete Request
   app.route("/api/design")
     .post((req, res) => {
-      console.log(req.body)
 
       // format the timeline for db upload
       if ( req.body["year1"] ){
@@ -250,7 +250,9 @@ function routes(app, database) {
           res.send(findResults?'A tribute for this person already exists...':"You already have two free tribute pages.")
         }
       });
-    });
+    })
+    .put((req, res) => {})
+    .delete((req, res) => {});
 
   //Tribute List Request
   app.route("/api/list")

@@ -15,6 +15,7 @@ class Main extends React.Component {
     this.handleClick       = this.handleClick.bind(this);
     this.updateLoginState  = this.updateLoginState.bind(this);
 
+    // fetching is used for preventing multiple db/server queries when one might already be active
     this.fetching    = false;
     this.dbEntry     = {};
     this.pages       = ['home', 'products', 'directory', 'login', 'logout', 'account', 'template-a', 'template-b'];
@@ -34,7 +35,6 @@ class Main extends React.Component {
     // make sure there is or isn't an existing session synchronously
     // when loading a secure page
     if ( linkHash && this.securePages.includes(linkHash.slice(1))) {
-      //console.log('secure page check');
       let submission = $.get( '/api/login' )
         .done( ( response ) => {
           this.setState( {auth: response.auth, username: response.username?response.username:'' }, () => {
@@ -51,7 +51,6 @@ class Main extends React.Component {
     // otherwise make sure there is or isn't an existing session asynchronously
     // after starting the page load
     else {
-      //console.log('insecure page check');
       this.loadPage( linkHash.slice(1) || null )
 
       let submission = $.get( '/api/login' )
@@ -69,7 +68,7 @@ class Main extends React.Component {
   handleClick ( event ) {
     let clicked = event.target;
 
-    //not a link, do nothing
+    //not a link, do nothing but collapse the navbar
     if ( !clicked.href ) {
       this.collapseNavbar();
       return null;
@@ -83,10 +82,11 @@ class Main extends React.Component {
 
       $( `#${this.state.viewing}-nav`).removeClass('active');
 
+      // prep the http request by assigning what to grab from the db
+      // based on if it's a template (mongo _id) or a tribute (tribute's name)
       if (clicked.classList.contains('template-link'))
         searchObj = { name: '', id: (clicked.href.includes('template-a')?"5fe10116f521bd2c36488286":"5fe101d6f521bd2c36488288") };
       else searchObj = { name: clicked.textContent };
-      console.log(searchObj);
 
       let submission = $.post( '/api/tribute', searchObj )
         .done( ( response ) => {
@@ -126,6 +126,7 @@ class Main extends React.Component {
       this.collapseNavbar();
       this.loadPage( clicked.href.split('#')[1] );
     }
+    //make sure to collapse the navbar otherwise
     else {
         this.collapseNavbar();
       return null;
@@ -145,6 +146,7 @@ class Main extends React.Component {
     // if accessing a template or tribute outside of normal navigation (no db info)
     else if ((page.includes('template') || page.includes('tribute')) && this.dbEntry.name == undefined) page = 'home';
 
+    // load the module if needed, update state, change browser location to reflect new area
     $( '#view-wrapper' ).fadeOut(()=>{
       import(`../scripts/${page}.js`)
         .then(module => {
@@ -158,6 +160,7 @@ class Main extends React.Component {
     });
   }
 
+  // passed to components to update login section of index state
   updateLoginState ( isAuth, username = '' ) {
     this.setState( { auth: isAuth, username: username } );
     if ( isAuth && this.state.viewing === 'login' ) {

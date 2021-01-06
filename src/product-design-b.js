@@ -21,8 +21,6 @@ class DesignTimeline extends React.Component {
       this.loadPalette( $('#palette option:selected')[0].value);
     });
 
-    $('.required').attr('required', true);
-
     $( '#save-btn' ).click(this.submitHandler);
   }
 
@@ -43,17 +41,16 @@ class DesignTimeline extends React.Component {
     return fieldList.map((field, index) => {
       let elementId = `${index+1}`;
       let placeholder = `Enter an event ${index>2?'(Optional)':'(Required)'}`;
-      let required = index<3?'required':'';
 
       return(
         <div class="form-row">
           <div class="form-group col-2">
             <label for={`year${elementId}`}>Year {elementId}</label>
-            <input type="text" id={`year${elementId}`} name={`year${elementId}`} class={`form-control timeline ${required}`} placeholder="Year" />
+            <input type="text" id={`year${elementId}`} name={`year${elementId}`} class="form-control timeline" required={index<3?true:null} placeholder="Year" />
           </div>
           <div class="form-group col-9">
             <label for={`event${elementId}`}>Event {elementId}</label>
-            <input type="text" id={`event${elementId}`} name={`event${elementId}`} class={`form-control timeline ${required}`} placeholder={placeholder} />
+            <input type="text" id={`event${elementId}`} name={`event${elementId}`} class="form-control timeline" required={index<3?true:null} placeholder={placeholder} />
           </div>
         </div>
       )

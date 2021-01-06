@@ -31,9 +31,9 @@ class Account extends React.Component {
       'Professional': 'Digital Tribute: Designed by Tributes Inc'
     };
     this.subOptions = {
-      'default': [['Design: Our Custom Products', 'design', 'Here you’ll find our variety of à la carte products. From our professional tributes to our framed collages, start here to get designing.'], ['Customize: Tiered Packages', 'default', "Thinking about multiple items and want to design and ship everything conveniently? We have three different tier levels to get you what you want."], ['Order: Generic Items', 'default', 'Any items that are offered as an option, as well as any items you might need to refresh or maintain a previous purchase can be found here.']],
-      'design': [['Templated Tribute', 'templates', 'Choose from two different styles of tributes. Layouts are pre-made, and all that is needed is to fill in what you want them to say!'], ['Custom Designed Tribute', 'design', 'Feel comfortable with getting into the nitty gritty? Get started with a custom designed tribute to have greater control over content presentation.'], ['T. I. Designed Tribute', 'design', 'Interested in a custom look, but want to leave it to someone else? Select a Tributes Inc. designed tribute and we’ll work with you to get you a feel that’s just right.']],
-      'templates': [['Templated Biography Tribute', 'product-design-a', 'A pre-designed tribute template that is used for large amounts of text in a biography style. Note: Users are able to create up to two templated tributes for free'], ['Templated Timeline Tribute', 'product-design-b', 'A pre-designed tribute template that is used for smaller amounts of text in a timeline style. Note: Users are able to create up to two templated tributes for free']]
+      'default': [['Design: Our Custom Products', 'design', "./img/design-prev.png", 'Here you’ll find our variety of à la carte products. From our professional tributes to our framed collages, start here to get designing.'], ['Customize: Tiered Packages', 'default', "", "Thinking about multiple items and want to design and ship everything conveniently? We have three different tier levels to get you what you want."], ['Order: Generic Items', 'default', "", 'Any items that are offered as an option, as well as any items you might need to refresh or maintain a previous purchase can be found here.']],
+      'design': [['Templated Tribute', 'templates', "./img/templates-prev.png", 'Choose from two different styles of tributes. Layouts are pre-made, and all that is needed is to fill in what you want them to say!'], ['Custom Designed Tribute', 'design', "", 'Feel comfortable with getting into the nitty gritty? Get started with a custom designed tribute to have greater control over content presentation.'], ['T. I. Designed Tribute', 'design', "", 'Interested in a custom look, but want to leave it to someone else? Select a Tributes Inc. designed tribute and we’ll work with you to get you a feel that’s just right.'], ['Physical Designs', 'design', "", "Here you'll find our physical offerings, for when you want something to have in your home or another place of prominence"]],
+      'templates': [['Templated Biography Tribute', 'product-design-a', "./img/temp-a-prev.png", 'A pre-designed tribute template that is used for large amounts of text in a biography style. Note: Users are able to create up to two templated tributes for free'], ['Templated Timeline Tribute', 'product-design-b', "./img/temp-b-prev.png", 'A pre-designed tribute template that is used for smaller amounts of text in a timeline style. Note: Users are able to create up to two templated tributes for free']]
     };
     this.stateList = [["AL", "Alabama"], ["AK", "Alaska"], ["AZ", "Arizona"], ["AR", "Arkansas"], ["CA", "California"], ["CO", "Colorado"], ["CT", "Connecticut"], ["DE", "Delaware"], ["FL", "Florida"], ["GA", "Georgia"], ["HI", "Hawaii"], ["ID", "Idaho"], ["IL", "Illinois"], ["IN", "Indiana"], ["IA", "Iowa"], ["KS", "Kansas"], ["KY", "Kentucky"], ["LA", "Louisiana"], ["ME", "Maine"], ["MD", "Maryland"], ["MA", "Massachusetts"], ["MI", "Michigan"], ["MN", "Minnesota"], ["MS", "Mississippi"], ["MO", "Missouri"], ["MT", "Montana"], ["NE", "Nebraska"], ["NV", "Nevada"], ["NH", "New Hampshire"], ["NJ", "New Jersey"], ["NM", "New Mexico"], ["NY", "New York"], ["NC", "North Carolina"], ["ND", "North Dakota"], ["OH", "Ohio"], ["OK", "Oklahoma"], ["OR", "Oregon"], ["PA", "Pennsylvania"], ["RI", "Rhode Island"], ["SC", "South Carolina"], ["SD", "South Dakota"], ["TN", "Tennessee"], ["TX", "Texas"], ["UT", "Utah"], ["VT", "Vermont"], ["VA", "Virginia"], ["WA", "Washington"], ["WV", "West Virginia"], ["WI", "Wisconsin"], ["WY", "Wyoming"]];
   }
@@ -74,7 +74,7 @@ class Account extends React.Component {
   profileOption() {
     return /*#__PURE__*/React.createElement("div", {
       id: "profile-display",
-      class: "border p-2 h-100"
+      class: "border p-2 acct-cont"
     }, /*#__PURE__*/React.createElement("h3", {
       class: "text-center"
     }, "Here's your profile information"), /*#__PURE__*/React.createElement("div", {
@@ -197,7 +197,14 @@ class Account extends React.Component {
       type: "text",
       id: "p-zip",
       class: "form-control"
-    })))))));
+    })))), /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      class: "btn btn-success",
+      disabled: true
+    }, "Save Info"), /*#__PURE__*/React.createElement("small", {
+      id: "emailHelp",
+      class: "form-text text-muted"
+    }, "Saving personal information is currently disabled."))));
   }
 
   stateDropdown(form) {
@@ -213,7 +220,7 @@ class Account extends React.Component {
   paymentOption() {
     return /*#__PURE__*/React.createElement("div", {
       id: "payment-display",
-      class: "border p-2 h-100"
+      class: "border p-2 acct-cont"
     }, /*#__PURE__*/React.createElement("h3", {
       class: "text-center"
     }, "Here's the payment options you've saved"), /*#__PURE__*/React.createElement("div", {
@@ -226,7 +233,7 @@ class Account extends React.Component {
   historyOption() {
     return /*#__PURE__*/React.createElement("div", {
       id: "history-display",
-      class: "border p-2 h-100"
+      class: "border p-2 acct-cont"
     }, /*#__PURE__*/React.createElement("h3", {
       class: "text-center"
     }, "Here's a list of your most recent orders"), /*#__PURE__*/React.createElement("div", {
@@ -239,7 +246,7 @@ class Account extends React.Component {
   contentOption() {
     return /*#__PURE__*/React.createElement("div", {
       id: "content-display",
-      class: "border p-2 h-100"
+      class: "border p-2 acct-cont"
     }, /*#__PURE__*/React.createElement("h3", {
       class: "text-center"
     }, "Here's the content you've created"), /*#__PURE__*/React.createElement("div", {
@@ -267,38 +274,45 @@ class Account extends React.Component {
       id: "content-list",
       class: "d-flex flex-column align-items-center text-center"
     }, /*#__PURE__*/React.createElement("div", {
-      class: "row w-100"
+      class: "row justify-content-center w-100"
     }, /*#__PURE__*/React.createElement("b", {
-      class: "my-3 col-3"
+      class: "my-3 col-2"
     }, "Name"), /*#__PURE__*/React.createElement("b", {
       class: "my-3 col-3"
     }, "Type"), /*#__PURE__*/React.createElement("b", {
-      class: "my-3 col-3"
+      class: "my-3 col-2"
     }, "Created On"), /*#__PURE__*/React.createElement("b", {
       class: "my-3 col-1"
-    }), /*#__PURE__*/React.createElement("b", {
+    }, "Approved?"), /*#__PURE__*/React.createElement("b", {
       class: "my-3 col-1"
     }), /*#__PURE__*/React.createElement("b", {
       class: "my-3 col-1"
-    })), contentList[0].name.startsWith('Hang') ? /*#__PURE__*/React.createElement("p", null, contentList[0].name) : contentList.map(value => /*#__PURE__*/React.createElement("div", {
-      class: "row justify-content-center w-100"
+    }), /*#__PURE__*/React.createElement("b", {
+      class: "my-3 col-1"
+    })), contentList.length === 0 ? /*#__PURE__*/React.createElement("p", null, "Nothing to display, yet!") : contentList[0].name.startsWith('Hang') ? /*#__PURE__*/React.createElement("p", null, contentList[0].name) : contentList.map(value => /*#__PURE__*/React.createElement("div", {
+      class: "row mb-1 align-items-center justify-content-center rounded border border-dark w-100"
     }, /*#__PURE__*/React.createElement("a", {
       key: value.name,
-      class: "tribute-link my-1 col-3",
+      class: "tribute-link my-1 col-2",
       href: `#${value.name.toLowerCase().split(' ').join('-')}`
     }, value.name), /*#__PURE__*/React.createElement("p", {
       class: "my-1 col-3"
     }, this.contentTypes[value.type]), /*#__PURE__*/React.createElement("p", {
-      class: "my-1 col-3"
-    }, value.created_on), /*#__PURE__*/React.createElement("button", {
+      class: "my-1 col-2"
+    }, new Date(value.created_on).toDateString()), /*#__PURE__*/React.createElement("p", {
+      class: "my-1 col-1"
+    }, value.approved ? "Yes" : "No"), /*#__PURE__*/React.createElement("button", {
       type: "button",
-      class: "btn btn-primary my-1 col-1"
+      class: "btn btn-primary my-1 col-1",
+      disabled: true
     }, "Edit"), /*#__PURE__*/React.createElement("button", {
       type: "button",
-      class: "btn btn-dark my-1 col-1"
+      class: "btn btn-dark my-1 col-1",
+      disabled: true
     }, "Hide"), /*#__PURE__*/React.createElement("button", {
       type: "button",
-      class: "btn btn-danger my-1 col-1"
+      class: "btn btn-danger my-1 col-1",
+      disabled: true
     }, "Delete"))));
   }
 
@@ -311,7 +325,7 @@ class Account extends React.Component {
 
     return /*#__PURE__*/React.createElement("div", {
       id: "create-display",
-      class: "border p-2 h-100"
+      class: "border p-2 acct-cont"
     }, /*#__PURE__*/React.createElement("h3", {
       class: "text-center"
     }, "Create or Buy"), /*#__PURE__*/React.createElement("div", {
@@ -322,18 +336,23 @@ class Account extends React.Component {
     }, productDisplay));
   }
 
-  returnCard(title, linkId, text) {
+  returnCard(title, linkId, img, text) {
     return /*#__PURE__*/React.createElement("button", {
       type: "button",
       id: linkId,
       class: "card mx-3 my-2",
       style: {
-        "width": "18rem"
+        "width": "18rem",
+        "opacity": img ? "100%" : "70%"
       },
-      onClick: this.handleClick
+      onClick: this.handleClick,
+      disabled: img ? null : "disabled"
     }, /*#__PURE__*/React.createElement("h5", {
       class: "card-title text-center"
-    }, title), /*#__PURE__*/React.createElement("svg", {
+    }, title), img ? /*#__PURE__*/React.createElement("img", {
+      src: img,
+      class: "card-img border border-dark"
+    }) : /*#__PURE__*/React.createElement("svg", {
       class: "bd-placeholder-img card-img-top",
       width: "100%",
       height: "180",
@@ -393,7 +412,7 @@ class Account extends React.Component {
       class: "btn btn-light mx-3 my-1 my-sm-0 col-sm option",
       id: "create-tab"
     }, "Create or Buy")), /*#__PURE__*/React.createElement("div", {
-      class: "mx-2 mt-2 h-100",
+      class: "mx-2 mt-2 acct-cont",
       id: "option-content"
     }, /*#__PURE__*/React.createElement(Option, null)));
   }

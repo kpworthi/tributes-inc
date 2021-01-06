@@ -31,7 +31,6 @@ class DesignTimeline extends React.Component {
     $('#palette').on("change", () => {
       this.loadPalette($('#palette option:selected')[0].value);
     });
-    $('.required').attr('required', true);
     $('#save-btn').click(this.submitHandler);
   }
 
@@ -52,7 +51,6 @@ class DesignTimeline extends React.Component {
     return fieldList.map((field, index) => {
       let elementId = `${index + 1}`;
       let placeholder = `Enter an event ${index > 2 ? '(Optional)' : '(Required)'}`;
-      let required = index < 3 ? 'required' : '';
       return /*#__PURE__*/React.createElement("div", {
         class: "form-row"
       }, /*#__PURE__*/React.createElement("div", {
@@ -63,7 +61,8 @@ class DesignTimeline extends React.Component {
         type: "text",
         id: `year${elementId}`,
         name: `year${elementId}`,
-        class: `form-control timeline ${required}`,
+        class: "form-control timeline",
+        required: index < 3 ? true : null,
         placeholder: "Year"
       })), /*#__PURE__*/React.createElement("div", {
         class: "form-group col-9"
@@ -73,7 +72,8 @@ class DesignTimeline extends React.Component {
         type: "text",
         id: `event${elementId}`,
         name: `event${elementId}`,
-        class: `form-control timeline ${required}`,
+        class: "form-control timeline",
+        required: index < 3 ? true : null,
         placeholder: placeholder
       })));
     });
@@ -100,7 +100,7 @@ class DesignTimeline extends React.Component {
         if (!yearValue) yearObj.css('border', '2px solid red');else eventObj.css('border', '2px solid red');
         validSubmission = false;
       } // also check that years are numbers only
-      else if (!yearValue.match(/^\d+$/)) {
+      else if (!yearValue.match(/^\d+$/) && yearValue !== '') {
           yearObj.css('border', '2px solid red');
           validSubmission = false;
         } // clear any field highlighting otherwise
