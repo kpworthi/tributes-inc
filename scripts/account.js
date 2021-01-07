@@ -68,7 +68,22 @@ class Account extends React.Component {
               subOption: clickedButton.id
             });
           }
-      }
+      } // if doing admin actions
+      else if (clickedButton.id.startsWith('db')) {
+          if (clickedButton.id === 'db-add-btn') {
+            $.post('/api/admin', {}).done(response => {
+              console.log(response);
+            }).fail();
+          } else if (clickedButton.id === 'db-rem-btn') {
+            $.ajax({
+              "type": "DELETE",
+              "url": '/api/admin',
+              "success": response => {
+                console.log(response);
+              }
+            });
+          }
+        }
   }
 
   profileOption() {
@@ -197,13 +212,15 @@ class Account extends React.Component {
       type: "text",
       id: "p-zip",
       class: "form-control"
-    })))), /*#__PURE__*/React.createElement("button", {
+    })))), /*#__PURE__*/React.createElement("p", {
+      class: "text-right"
+    }, /*#__PURE__*/React.createElement("button", {
       type: "button",
       class: "btn btn-success",
       disabled: true
-    }, "Save Info"), /*#__PURE__*/React.createElement("small", {
+    }, "Save Info")), /*#__PURE__*/React.createElement("small", {
       id: "emailHelp",
-      class: "form-text text-muted"
+      class: "form-text text-muted text-right"
     }, "Saving personal information is currently disabled."))));
   }
 
@@ -226,8 +243,25 @@ class Account extends React.Component {
     }, "Here's the payment options you've saved"), /*#__PURE__*/React.createElement("div", {
       class: "divider"
     }), /*#__PURE__*/React.createElement("div", {
-      id: "sub-container"
-    }));
+      id: "payment-list",
+      class: "d-flex flex-column align-items-center text-center"
+    }, /*#__PURE__*/React.createElement("div", {
+      class: "row justify-content-center w-100"
+    }, /*#__PURE__*/React.createElement("div", {
+      class: "col-5 row m-0"
+    }, /*#__PURE__*/React.createElement("b", {
+      class: "my-1 my-lg-3 col-lg-5"
+    }, "Name"), /*#__PURE__*/React.createElement("b", {
+      class: "my-1 my-lg-3 col-lg-7"
+    }, "Type")), /*#__PURE__*/React.createElement("div", {
+      class: "col-4 row m-0"
+    }, /*#__PURE__*/React.createElement("b", {
+      class: "my-1 my-lg-3 col-lg-8"
+    }, "Saved On"), /*#__PURE__*/React.createElement("b", {
+      class: "my-1 my-lg-3 col-lg-4"
+    }, "Default?")), /*#__PURE__*/React.createElement("b", {
+      class: "my-3 col-3"
+    })), /*#__PURE__*/React.createElement("p", null, "Nothing to display, yet!")));
   }
 
   historyOption() {
@@ -239,8 +273,25 @@ class Account extends React.Component {
     }, "Here's a list of your most recent orders"), /*#__PURE__*/React.createElement("div", {
       class: "divider"
     }), /*#__PURE__*/React.createElement("div", {
-      id: "sub-container"
-    }));
+      id: "history-list",
+      class: "d-flex flex-column align-items-center text-center"
+    }, /*#__PURE__*/React.createElement("div", {
+      class: "row justify-content-center w-100"
+    }, /*#__PURE__*/React.createElement("div", {
+      class: "col-5 row m-0"
+    }, /*#__PURE__*/React.createElement("b", {
+      class: "my-1 my-lg-3 col-lg-5"
+    }, "Name"), /*#__PURE__*/React.createElement("b", {
+      class: "my-1 my-lg-3 col-lg-7"
+    }, "Type")), /*#__PURE__*/React.createElement("div", {
+      class: "col-4 row m-0"
+    }, /*#__PURE__*/React.createElement("b", {
+      class: "my-1 my-lg-3 col-lg-8"
+    }, "Created On"), /*#__PURE__*/React.createElement("b", {
+      class: "my-1 my-lg-3 col-lg-4"
+    }, "Status")), /*#__PURE__*/React.createElement("b", {
+      class: "my-3 col-3"
+    })), /*#__PURE__*/React.createElement("p", null, "Nothing to display, yet!")));
   }
 
   contentOption() {
@@ -275,45 +326,51 @@ class Account extends React.Component {
       class: "d-flex flex-column align-items-center text-center"
     }, /*#__PURE__*/React.createElement("div", {
       class: "row justify-content-center w-100"
+    }, /*#__PURE__*/React.createElement("div", {
+      class: "col-5 row m-0"
     }, /*#__PURE__*/React.createElement("b", {
-      class: "my-3 col-2"
+      class: "my-1 my-lg-3 col-lg-5"
     }, "Name"), /*#__PURE__*/React.createElement("b", {
-      class: "my-3 col-3"
-    }, "Type"), /*#__PURE__*/React.createElement("b", {
-      class: "my-3 col-2"
+      class: "my-1 my-lg-3 col-lg-7"
+    }, "Type")), /*#__PURE__*/React.createElement("div", {
+      class: "col-4 row m-0"
+    }, /*#__PURE__*/React.createElement("b", {
+      class: "my-1 my-lg-3 col-lg-8"
     }, "Created On"), /*#__PURE__*/React.createElement("b", {
-      class: "my-3 col-1"
-    }, "Approved?"), /*#__PURE__*/React.createElement("b", {
-      class: "my-3 col-1"
-    }), /*#__PURE__*/React.createElement("b", {
-      class: "my-3 col-1"
-    }), /*#__PURE__*/React.createElement("b", {
-      class: "my-3 col-1"
+      class: "my-1 my-lg-3 col-lg-4"
+    }, "Approved?")), /*#__PURE__*/React.createElement("b", {
+      class: "my-3 col-3"
     })), contentList.length === 0 ? /*#__PURE__*/React.createElement("p", null, "Nothing to display, yet!") : contentList[0].name.startsWith('Hang') ? /*#__PURE__*/React.createElement("p", null, contentList[0].name) : contentList.map(value => /*#__PURE__*/React.createElement("div", {
       class: "row mb-1 align-items-center justify-content-center rounded border border-dark w-100"
+    }, /*#__PURE__*/React.createElement("div", {
+      class: "col-5 row m-0"
     }, /*#__PURE__*/React.createElement("a", {
       key: value.name,
-      class: "tribute-link my-1 col-2",
+      class: "tribute-link my-1 col-lg-5",
       href: `#${value.name.toLowerCase().split(' ').join('-')}`
     }, value.name), /*#__PURE__*/React.createElement("p", {
-      class: "my-1 col-3"
-    }, this.contentTypes[value.type]), /*#__PURE__*/React.createElement("p", {
-      class: "my-1 col-2"
+      class: "my-1 col-lg-7"
+    }, this.contentTypes[value.type])), /*#__PURE__*/React.createElement("div", {
+      class: "col-4 row m-0"
+    }, /*#__PURE__*/React.createElement("p", {
+      class: "my-2 my-lg-1 col-lg-8"
     }, new Date(value.created_on).toDateString()), /*#__PURE__*/React.createElement("p", {
-      class: "my-1 col-1"
-    }, value.approved ? "Yes" : "No"), /*#__PURE__*/React.createElement("button", {
+      class: "my-2 my-lg-1 col-lg-4"
+    }, value.approved ? "Yes" : "No")), /*#__PURE__*/React.createElement("div", {
+      class: "col-3 row m-0"
+    }, /*#__PURE__*/React.createElement("button", {
       type: "button",
-      class: "btn btn-primary my-1 col-1",
+      class: "btn btn-primary my-1 p-2 col-lg-4",
       disabled: true
     }, "Edit"), /*#__PURE__*/React.createElement("button", {
       type: "button",
-      class: "btn btn-dark my-1 col-1",
+      class: "btn btn-dark my-1 p-2 col-lg-4",
       disabled: true
     }, "Hide"), /*#__PURE__*/React.createElement("button", {
       type: "button",
-      class: "btn btn-danger my-1 col-1",
+      class: "btn btn-danger my-1 p-2 col-lg-4 text-center",
       disabled: true
-    }, "Delete"))));
+    }, "Delete")))));
   }
 
   createOption() {
@@ -388,7 +445,19 @@ class Account extends React.Component {
     }, "Welcome, ", this.username, "!"), /*#__PURE__*/React.createElement("h2", {
       class: "text-center",
       id: "subTitle"
-    }, "Please choose an option below"), /*#__PURE__*/React.createElement("div", {
+    }, "Please choose an option below"), this.username !== 'theTestaroo' ? null : /*#__PURE__*/React.createElement("div", {
+      class: "btn-group"
+    }, /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      class: "btn btn-danger",
+      id: "db-add-btn",
+      onClick: this.handleClick
+    }, "Add Admin Test Entries"), /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      class: "btn btn-danger",
+      id: "db-rem-btn",
+      onClick: this.handleClick
+    }, "Rem Admin Test Entries ")), /*#__PURE__*/React.createElement("div", {
       class: "row justify-content-center mt-5",
       id: "option-tabs"
     }, /*#__PURE__*/React.createElement("button", {

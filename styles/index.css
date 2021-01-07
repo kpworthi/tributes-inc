@@ -133,6 +133,10 @@ figure {
   }
 }
 
+#list-area {
+  width: 60%;
+}
+
 .acct-cont {
   min-height: 100%;
 }

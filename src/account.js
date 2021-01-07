@@ -74,56 +74,31 @@ class Account extends React.Component {
     }
 
     this.stateList = [
-      ["AL", "Alabama"],
-      ["AK", "Alaska"],
-      ["AZ", "Arizona"],
-      ["AR", "Arkansas"],
-      ["CA", "California"],
-      ["CO", "Colorado"],
-      ["CT", "Connecticut"],
-      ["DE", "Delaware"],
-      ["FL", "Florida"],
-      ["GA", "Georgia"],
-      ["HI", "Hawaii"],
-      ["ID", "Idaho"],
-      ["IL", "Illinois"],
-      ["IN", "Indiana"],
-      ["IA", "Iowa"],
-      ["KS", "Kansas"],
-      ["KY", "Kentucky"],
-      ["LA", "Louisiana"],
-      ["ME", "Maine"],
-      ["MD", "Maryland"],
-      ["MA", "Massachusetts"],
-      ["MI", "Michigan"],
-      ["MN", "Minnesota"],
-      ["MS", "Mississippi"],
-      ["MO", "Missouri"],
-      ["MT", "Montana"],
-      ["NE", "Nebraska"],
-      ["NV", "Nevada"],
-      ["NH", "New Hampshire"],
-      ["NJ", "New Jersey"],
-      ["NM", "New Mexico"],
-      ["NY", "New York"],
-      ["NC", "North Carolina"],
-      ["ND", "North Dakota"],
-      ["OH", "Ohio"],
-      ["OK", "Oklahoma"],
-      ["OR", "Oregon"],
-      ["PA", "Pennsylvania"],
-      ["RI", "Rhode Island"],
-      ["SC", "South Carolina"],
-      ["SD", "South Dakota"],
-      ["TN", "Tennessee"],
-      ["TX", "Texas"],
-      ["UT", "Utah"],
-      ["VT", "Vermont"],
-      ["VA", "Virginia"],
-      ["WA", "Washington"],
-      ["WV", "West Virginia"],
-      ["WI", "Wisconsin"],
-      ["WY", "Wyoming"]
+      ["AL", "Alabama"], ["AK", "Alaska"],
+      ["AZ", "Arizona"], ["AR", "Arkansas"],
+      ["CA", "California"], ["CO", "Colorado"],
+      ["CT", "Connecticut"], ["DE", "Delaware"],
+      ["FL", "Florida"], ["GA", "Georgia"],
+      ["HI", "Hawaii"], ["ID", "Idaho"],
+      ["IL", "Illinois"], ["IN", "Indiana"],
+      ["IA", "Iowa"], ["KS", "Kansas"],
+      ["KY", "Kentucky"], ["LA", "Louisiana"],
+      ["ME", "Maine"], ["MD", "Maryland"],
+      ["MA", "Massachusetts"], ["MI", "Michigan"],
+      ["MN", "Minnesota"], ["MS", "Mississippi"],
+      ["MO", "Missouri"], ["MT", "Montana"],
+      ["NE", "Nebraska"], ["NV", "Nevada"],
+      ["NH", "New Hampshire"], ["NJ", "New Jersey"],
+      ["NM", "New Mexico"], ["NY", "New York"],
+      ["NC", "North Carolina"], ["ND", "North Dakota"],
+      ["OH", "Ohio"], ["OK", "Oklahoma"],
+      ["OR", "Oregon"], ["PA", "Pennsylvania"],
+      ["RI", "Rhode Island"], ["SC", "South Carolina"],
+      ["SD", "South Dakota"], ["TN", "Tennessee"],
+      ["TX", "Texas"], ["UT", "Utah"],
+      ["VT", "Vermont"], ["VA", "Virginia"],
+      ["WA", "Washington"], ["WV", "West Virginia"],
+      ["WI", "Wisconsin"], ["WY", "Wyoming"]
     ]
 
   }
@@ -159,6 +134,21 @@ class Account extends React.Component {
       // otherwise set state to re-render and load new cards
       else {
         this.setState( { subOption: clickedButton.id } )
+      }
+    }
+    // if doing admin actions
+    else if ( clickedButton.id.startsWith('db')){
+      if( clickedButton.id === 'db-add-btn'){
+        $.post('/api/admin', {})
+          .done((response) => {console.log(response)})
+          .fail();
+      }
+      else if( clickedButton.id === 'db-rem-btn'){
+        $.ajax({
+          "type": "DELETE",
+          "url": '/api/admin',
+          "success": (response) => {console.log(response)}
+        });
       }
     }
   }
@@ -227,8 +217,8 @@ class Account extends React.Component {
                 </div>
               </div>
             </div>
-            <button type="button" class="btn btn-success" disabled>Save Info</button>
-            <small id="emailHelp" class="form-text text-muted">Saving personal information is currently disabled.</small>
+            <p class="text-right"><button type="button" class="btn btn-success" disabled>Save Info</button></p>
+            <small id="emailHelp" class="form-text text-muted text-right">Saving personal information is currently disabled.</small>
           </form>
 
         </div>
@@ -252,7 +242,19 @@ class Account extends React.Component {
       <div id="payment-display" class="border p-2 acct-cont">
         <h3 class="text-center">Here's the payment options you've saved</h3>
         <div class="divider"></div>
-        <div id="sub-container"></div>
+        <div id="payment-list" class="d-flex flex-column align-items-center text-center">
+          <div class="row justify-content-center w-100">
+            <div class="col-5 row m-0">
+              <b class="my-1 my-lg-3 col-lg-5">Name</b>
+              <b class="my-1 my-lg-3 col-lg-7">Type</b>
+            </div><div class="col-4 row m-0">
+              <b class="my-1 my-lg-3 col-lg-8">Saved On</b>
+              <b class="my-1 my-lg-3 col-lg-4">Default?</b>
+            </div>
+            <b class="my-3 col-3"></b>
+          </div>
+          <p>Nothing to display, yet!</p>
+        </div>
       </div>
     )
   }
@@ -262,7 +264,19 @@ class Account extends React.Component {
       <div id="history-display" class="border p-2 acct-cont">
         <h3 class="text-center">Here's a list of your most recent orders</h3>
         <div class="divider"></div>
-        <div id="sub-container"></div>
+        <div id="history-list" class="d-flex flex-column align-items-center text-center">
+          <div class="row justify-content-center w-100">
+            <div class="col-5 row m-0">
+              <b class="my-1 my-lg-3 col-lg-5">Name</b>
+              <b class="my-1 my-lg-3 col-lg-7">Type</b>
+            </div><div class="col-4 row m-0">
+              <b class="my-1 my-lg-3 col-lg-8">Created On</b>
+              <b class="my-1 my-lg-3 col-lg-4">Status</b>
+            </div>
+            <b class="my-3 col-3"></b>
+          </div>
+          <p>Nothing to display, yet!</p>
+        </div>
       </div>
     )
   }
@@ -294,25 +308,30 @@ class Account extends React.Component {
     return (
       <div id="content-list" class="d-flex flex-column align-items-center text-center">
         <div class="row justify-content-center w-100">
-          <b class="my-3 col-2">Name</b>
-          <b class="my-3 col-3">Type</b>
-          <b class="my-3 col-2">Created On</b>
-          <b class="my-3 col-1">Approved?</b>
-          <b class="my-3 col-1"></b>
-          <b class="my-3 col-1"></b>
-          <b class="my-3 col-1"></b>
+          <div class="col-5 row m-0">
+            <b class="my-1 my-lg-3 col-lg-5">Name</b>
+            <b class="my-1 my-lg-3 col-lg-7">Type</b>
+          </div><div class="col-4 row m-0">
+            <b class="my-1 my-lg-3 col-lg-8">Created On</b>
+            <b class="my-1 my-lg-3 col-lg-4">Approved?</b>
+          </div>
+          <b class="my-3 col-3"></b>
         </div>
         {contentList.length===0?<p>Nothing to display, yet!</p>:
         contentList[0].name.startsWith('Hang')?<p>{contentList[0].name}</p>:
         contentList.map((value) => 
           <div class="row mb-1 align-items-center justify-content-center rounded border border-dark w-100">
-            <a key={value.name} class="tribute-link my-1 col-2" href={`#${value.name.toLowerCase().split(' ').join('-')}`}>{value.name}</a>
-            <p class="my-1 col-3">{this.contentTypes[value.type]}</p>
-            <p class="my-1 col-2">{new Date(value.created_on).toDateString()}</p>  
-            <p class="my-1 col-1">{value.approved?"Yes":"No"}</p>
-            <button type="button" class="btn btn-primary my-1 col-1" disabled>Edit</button>
-            <button type="button" class="btn btn-dark my-1 col-1" disabled>Hide</button>
-            <button type="button" class="btn btn-danger my-1 col-1" disabled>Delete</button>
+            <div class="col-5 row m-0">
+              <a key={value.name} class="tribute-link my-1 col-lg-5" href={`#${value.name.toLowerCase().split(' ').join('-')}`}>{value.name}</a>
+              <p class="my-1 col-lg-7">{this.contentTypes[value.type]}</p>
+            </div><div class="col-4 row m-0">
+              <p class="my-2 my-lg-1 col-lg-8">{new Date(value.created_on).toDateString()}</p>  
+              <p class="my-2 my-lg-1 col-lg-4">{value.approved?"Yes":"No"}</p>
+            </div><div class="col-3 row m-0">
+              <button type="button" class="btn btn-primary my-1 p-2 col-lg-4" disabled>Edit</button>
+              <button type="button" class="btn btn-dark my-1 p-2 col-lg-4" disabled>Hide</button>
+              <button type="button" class="btn btn-danger my-1 p-2 col-lg-4 text-center" disabled>Delete</button>
+            </div>
           </div>
         )}
       </div>)
@@ -368,6 +387,11 @@ class Account extends React.Component {
       <div id="account-area" class="mx-3 mb-4 px-sm-3 px-1 main-area">
         <h1 class="text-center" id="title">Welcome, {this.username}!</h1>
         <h2 class="text-center" id="subTitle">Please choose an option below</h2>
+        {this.username!=='theTestaroo'?null:
+        <div class='btn-group'>
+          <button type="button" class="btn btn-danger" id="db-add-btn" onClick={this.handleClick}>Add Admin Test Entries</button>
+          <button type="button" class="btn btn-danger" id="db-rem-btn" onClick={this.handleClick}>Rem Admin Test Entries </button>
+        </div>}
 
         <div class="row justify-content-center mt-5" id="option-tabs" >
           <button type="button" class="btn btn-light mx-3 my-1 my-sm-0 col-sm option active" id='profile-tab'>Profile</button>

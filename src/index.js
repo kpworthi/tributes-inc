@@ -1,6 +1,9 @@
 import Footer from '../scripts/footer.js';
 import Header from '../scripts/header.js';
 
+const currentTimeEST = () =>
+  new Date().toLocaleString("en-US", { timeZone: "EST" }) + " EST";
+  
 class Main extends React.Component {
   constructor() {
     super();

@@ -3,6 +3,107 @@ const passport = require("passport");
 const bcrypt = require("bcrypt");
 const { ObjectId } = require("mongodb");
 
+const nameList = ["Francesca Holt",
+"Tracy Costa",
+"Earline Hogan",
+"Timothy Moses",
+"Lakeisha Schneider",
+"Oliver Ingram",
+"Brittney Dougherty",
+"Maritza Sutton",
+"Sydney Hernandez",
+"Courtney Ballard",
+"Aileen Bray",
+"Becky Luna",
+"Lawerence Larson",
+"Mike Frey",
+"Quentin Roach",
+"Rudolph Blair",
+"Tami Payne",
+"Estelle Reyes",
+"Kara Benjamin",
+"Arline Henderson",
+"Hallie Dudley",
+"Alonzo Jacobson",
+"Roscoe Todd",
+"Sybil Thomas",
+"Mabel Bowman",
+"Cordell Gregory",
+"Reyna Hendricks",
+"Percy Patel",
+"John Day",
+"Jeromy Cantrell",
+"Stuart Chang",
+"Hans Adams",
+"Geraldo Kline",
+"Lance Foley",
+"Buford Barnett",
+"Annette Kerr",
+"Mildred Simpson",
+"Chasity Oconnell",
+"Dexter Mcdowell",
+"Ted Koch",
+"Carlton Barnes",
+"Fern Wise",
+"Clifton Baldwin",
+"Oswaldo Haas",
+"Kendra Reeves",
+"Enrique Rose",
+"Ladonna Coleman",
+"Cruz Blake",
+"Neva Huang",
+"Sondra Roth",
+"Lee Wiggins",
+"Barney Hoover",
+"Isidro Potter",
+"Blanca Wong",
+"Lorenzo Graham",
+"Rolf Foster",
+"Lacy Schneider",
+"Chet Morris",
+"Debora Hood",
+"Elizabeth Chan",
+"Gary Baldwin",
+"Brigitte Mclaughlin",
+"Bridget Blackwell",
+"Elias Eaton",
+"Ivan Klein",
+"Rita Ritter",
+"Lindsey Higgins",
+"Johnnie Watkins",
+"Leona Whitehead",
+"Billy Lawrence",
+"Rhoda Boyer",
+"Karyn Hansen",
+"Stephan Mueller",
+"Lucas Clayton",
+"Andy Marsh",
+"Edgardo Hays",
+"Hattie Velazquez",
+"Blanche Lynn",
+"Henry Chapman",
+"Eduardo Parker",
+"Nelson Christian",
+"Kimberly Turner",
+"Lesley Walters",
+"Val Todd",
+"Francis Underwood",
+"Neil Wilson",
+"Brandy Cross",
+"Horace Ortega",
+"Thanh Hess",
+"Edmond Marshall",
+"Chester Hull",
+"Miquel Briggs",
+"Jo Faulkner",
+"Steve House",
+"Tina Myers",
+"Alberta Mcdowell",
+"Russell Hurley",
+"Monique Villanueva",
+"Marina Harvey",
+"Leigh Keller"]
+
 const currentTimeEST = () =>
   new Date().toLocaleString("en-US", { timeZone: "EST" }) + " EST";
 
@@ -263,7 +364,7 @@ function routes(app, database) {
 
       switch(reqType){
         case 'directory':
-          options.projection = {"name": 1, "approved": 1}
+          options.projection = {"name": 1, "username":1, "approved": 1}
           break;
         case 'user':
           query.username = req.body.username;
@@ -278,6 +379,52 @@ function routes(app, database) {
         res.send(resultsArray);
       })
     });
+
+  //db manipulation to fill out the directory
+  app.route("/api/admin")
+    .post((req, res) => {
+      let nameArray = nameList;
+      let tribArray = [];
+      tribArray = nameArray.map((value, index) => {return(
+        {
+        "name"       : value,
+        "name_lower" : value.toLowerCase(),
+        "tagline"    : `${value}'s sub-title`,
+        "img"        : './img/test-house.jpg',
+        "caption"    : `${value}'s caption`,
+        "quote"      : `${value}'s quote`,
+        "author"     : `${value}'s quote author`,
+        "palette"    : index%3===0?'classic':index%2===0?'cool':'warm',
+        "bio"        : index%2===0?[`${value}'s biography is nothing particularly exciting to behold, however we did not want them forgotten.`, 'Here is a little bit of extra text to help make sure that the entry is not too barren. We hope that you can appreciate their life as much as others in the world have.']:'',
+        "timeline"   : index%2===1?[['2000', `${value} was born`], ['2017', `${value} started their secondary education`], ['2021', `${value}'s timeline was created`]]:'',
+        "visible"    : true,
+        "link"       : `https://en.wikipedia.org/wiki/${value.split(' ').join('_')}`,
+        "type"       : index%2===0?'TemplateA':'TemplateB',
+        "approved"   : true,
+        "flagged"    : false,
+        "created_on" : currentTimeEST(),
+        "username"   : 'admin'
+        })
+      });
+      console.log(tribArray[0]);
+      console.log(tribArray[1]);
+      console.log(tribArray[2]);
+      console.log(tribArray[3]);
+      console.log(currentTimeEST());
+      database( async function (client) {
+        let insertResults = await client.db('tributes-inc').collection('tributes').insertMany(tribArray);
+        console.log(`${insertResults.insertedCount} entries added.`);
+        res.send(`${insertResults.insertedCount} entries added.`)
+      });
+    })
+    .delete((req,res) => {
+      database( async function (client) {
+        let deleteResults = await client.db('tributes-inc').collection('tributes').deleteMany({"username": "admin"})
+        console.log(`${deleteResults.deletedCount} entries deleted at ${currentTimeEST()}`);
+        res.send(`${deleteResults.deletedCount} entries deleted.`)
+      });
+  })
+  
 }
 
 module.exports = routes;
