@@ -77,6 +77,8 @@ app.route('/favicon.ico')
 // portofolio handler
 app.route('/portfolio/:file')
   .get(function (req, res) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'POST,GET,LINK');
     res.sendFile(process.cwd() + '/portfolio/' + req.params.file);
   }); 
 
