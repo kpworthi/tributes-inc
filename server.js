@@ -67,6 +67,12 @@ app.route('/')
   .get(function (req, res) {
     res.sendFile(process.cwd() + '/views/index.html');
   });
+  
+// favicon
+app.route('/favicon.ico')
+  .get(function (req, res) {
+    res.sendFile(process.cwd() + '/favicon.ico');
+  });
 
 // portofolio handler
 app.route('/portfolio/:file')

@@ -14,7 +14,7 @@ class Main extends React.Component {
       username: ''
     };
     this.loadPage = this.loadPage.bind(this);
-    this.handleClick = this.handleClick.bind(this);
+    this.handleHashChange = this.handleHashChange.bind(this);
     this.updateLoginState = this.updateLoginState.bind(this); // fetching is used for preventing multiple db/server queries when one might already be active
 
     this.fetching = false;
@@ -51,8 +51,11 @@ class Main extends React.Component {
         }, () => {
           // if there's already a session and user is on login, move them to account
           if (this.state.auth && linkHash === '#login') linkHash = '#account';
-          this.loadPage(linkHash.slice(1));
-          $(window).click(this.handleClick);
+          this.handleHashChange();
+          $(document).click(() => {
+            this.collapseNavbar();
+          });
+          $(window).on('hashchange', this.handleHashChange);
         });
       }).fail(function (err) {
         console.log(' Auth-check HTTP request failed. ' + currentTimeEST());
@@ -60,75 +63,81 @@ class Main extends React.Component {
     } // otherwise make sure there is or isn't an existing session asynchronously
     // after starting the page load
     else {
-        this.loadPage(linkHash.slice(1) || null);
+        this.handleHashChange();
         let submission = $.get('/api/login').done(response => {
           this.updateLoginState(response.auth, response.username ? response.username : '');
         }).fail(function (err) {
           console.log(' Auth-check HTTP request failed. ' + currentTimeEST());
         });
-        $(window).click(this.handleClick);
+        $(document).click(() => {
+          this.collapseNavbar();
+        });
+        $(window).on('hashchange', this.handleHashChange);
       }
   }
 
-  handleClick(event) {
-    let clicked = event.target;
-    if (clicked.id === 'ti-logo') clicked.href = "#home";
-    console.log(clicked.href); //not a link, do nothing but collapse the navbar
+  handleHashChange(event) {
+    let theHash = location.hash.slice(1).toLowerCase();
+    $(`#${this.state.viewing}-nav`).removeClass('active'); // if the new hash is a predefined page
 
-    if (!clicked.href) {
-      this.collapseNavbar();
-      return null;
-    } //handle going to a template or a tribute
-    else if (clicked.className && (clicked.className.includes('template-link') || clicked.className.includes('tribute-link')) && this.fetching === false) {
-        let searchObj = {};
-        this.fetching = true;
-        $(`#${this.state.viewing}-nav`).removeClass('active'); // prep the http request by assigning what to grab from the db
-        // based on if it's a template (mongo _id) or a tribute (tribute's name)
+    if (this.pages.includes(theHash) || this.securePages.includes(theHash)) {
+      //when logging out
+      if (theHash === 'logout') {
+        let submission = $.get('/api/logout').done(response => {
+          this.updateLoginState(false, '');
+          this.loadPage(theHash);
+        }).fail(function (err) {
+          console.log(' Log out HTTP request failed. ' + currentTimeEST());
+          this.updateLoginState(false, ''); //force user logout client-side, at least
 
-        if (clicked.classList.contains('template-link')) searchObj = {
-          name: '',
-          id: clicked.href.includes('template-a') ? "5fe10116f521bd2c36488286" : "5fe101d6f521bd2c36488288"
-        };else searchObj = {
-          name: clicked.textContent
+          this.loadPage(theHash);
+        });
+      } //when loading a template preview
+      else if (theHash.includes('template')) {
+          let searchObj = {
+            name: '',
+            id: theHash === 'template-a' ? "5fe10116f521bd2c36488286" : "5fe101d6f521bd2c36488288"
+          };
+          this.dbSearch(searchObj).done(response => {
+            this.dbEntry = response;
+            this.loadPage(theHash);
+          }).fail(function (err) {
+            console.log(' DB HTTP template request failed. ' + err);
+            this.loadPage('home');
+            return status.textContent = 'An error occurred during template fetch, please try again.';
+          });
+        } else this.loadPage(theHash);
+    } // else if the hash is possibly a template
+    else {
+        let searchObj = {
+          name: theHash.split('-').join(' ')
         };
-        let submission = $.post('/api/tribute', searchObj).done(response => {
-          this.dbEntry = response;
-
-          if (searchObj.id) {
-            this.loadPage(response.bio ? 'template-a' : 'template-b');
-          } else if (response.type === 'TemplateA') {
-            this.loadPage('template-a');
-          } else if (response.type === 'TemplateB') {
-            this.loadPage('template-b');
+        this.dbSearch(searchObj).done(response => {
+          if (response === 'No match found!') {
+            this.loadPage('home');
+            location.hash = 'home';
           }
 
-          return this.fetching = false;
+          this.dbEntry = response;
+          this.loadPage(response.type === 'TemplateA' ? 'template-a' : 'template-b');
         }).fail(function (err) {
           console.log(' DB HTTP template request failed. ' + err);
-          this.fetching = false;
           this.loadPage('home');
           return status.textContent = 'An error occurred during template fetch, please try again.';
         });
-        this.collapseNavbar();
-      } //logout path
-      else if (clicked.href.includes('#logout')) {
-          let submission = $.get('/api/logout').done(response => {
-            this.updateLoginState(false, '');
-          }).fail(function (err) {
-            console.log(' Log out HTTP request failed. ' + currentTimeEST());
-            this.updateLoginState(false, ''); //force user logout client-side, at least
-          });
-          this.collapseNavbar();
-        } //navbar path or clicking a product card in the account page
-        else if (clicked.href.includes('#')) {
-            $(`#${this.state.viewing}-nav`).removeClass('active');
-            this.collapseNavbar();
-            this.loadPage(clicked.href.split('#')[1]);
-          } //make sure to collapse the navbar otherwise
-          else {
-              this.collapseNavbar();
-              return null;
-            }
+      } //navbar path or clicking a product card in the account page
+
+    /*
+    else if( clicked.href.includes('#')) {
+      $( `#${this.state.viewing}-nav`).removeClass('active');
+      this.collapseNavbar();
+      this.loadPage( clicked.href.split('#')[1] );
+    }*/
+
+  }
+
+  dbSearch(searchObj) {
+    return $.post('/api/tribute', searchObj);
   }
 
   collapseNavbar() {
@@ -137,9 +146,10 @@ class Main extends React.Component {
 
   loadPage(page = 'home') {
     // if attempting to access 'secure' pages but not logged in
-    if (this.securePages.includes(page) && this.state.auth === false) page = 'login'; // if logging out, redirect to home
-    else if (page === 'logout' || page === null) page = 'home'; // if accessing a template or tribute outside of normal navigation (no db info)
-      else if ((page.includes('template') || page.includes('tribute')) && this.dbEntry.name == undefined) page = 'home'; // load the module if needed, update state, change browser location to reflect new area
+    if (this.securePages.includes(page) && this.state.auth === false) page = 'login'; // if hitting the login page but already logged in
+    else if (page === 'login' && this.state.auth === true) return location.hash = 'account'; // if logging out, redirect to home
+      else if (page === 'logout' || page === null) page = 'home'; // if accessing a template or tribute outside of normal navigation (no db info)
+        else if ((page.includes('template') || page.includes('tribute')) && this.dbEntry.name == undefined) page = 'home'; // load the module if needed, update state, change browser location to reflect new area
 
     $('#view-wrapper').css('opacity', 0);
     setTimeout(() => {
@@ -151,7 +161,6 @@ class Main extends React.Component {
         }, () => {
           $('#view-wrapper').css('opacity', 1);
         });
-        window.location.href = '#' + page;
       });
     }, 400);
   } // passed to components to update login section of index state
@@ -164,19 +173,9 @@ class Main extends React.Component {
     });
 
     if (isAuth && this.state.viewing === 'login') {
-      this.handleClick({
-        target: {
-          href: '#account',
-          hash: '#account'
-        }
-      });
+      location.href = '#account';
     } else if (!isAuth && this.state.viewing === 'account') {
-      this.handleClick({
-        target: {
-          href: '#login',
-          hash: '#login'
-        }
-      });
+      location.href = '#home';
     }
   }
 

@@ -175,14 +175,14 @@ function routes(app, database) {
       if ( req.body.id )
         searchTerm = { _id: new ObjectId(req.body.id) };
       //otherwise search by name
-      else searchTerm = { "name": req.body.name };
+      else searchTerm = { name_lower: req.body.name };
 
       database(async function (client) {
         let result = await client.db('tributes-inc').collection(req.body.id?'pages':'tributes').findOne(searchTerm);
 
         if (result === null){
           console.log("Couldn't find the requested tribute! " + req.body);
-          return null;
+          return res.send('No match found!');
         }
         else {
           console.log(`sending ${result}`);
@@ -364,6 +364,7 @@ function routes(app, database) {
 
       switch(reqType){
         case 'directory':
+          query.approved = true;
           options.projection = {"name": 1, "username":1, "approved": 1}
           break;
         case 'user':
