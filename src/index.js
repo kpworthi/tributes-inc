@@ -3,7 +3,7 @@ import Header from '../scripts/header.js';
 
 const currentTimeEST = () =>
   new Date().toLocaleString("en-US", { timeZone: "EST" }) + " EST";
-  
+
 class Main extends React.Component {
   constructor() {
     super();
@@ -24,7 +24,7 @@ class Main extends React.Component {
     this.pages       = ['home', 'products', 'directory', 'login', 'logout', 'account', 'template-a', 'template-b'];
     this.securePages = ['login', 'account', 'product-design-a', 'product-design-b'];
     this.pageView    = () => (
-      <div id="defaultLoad" class="mx-3 mb-4 px-sm-4 main-area" style={{"opacity": 1}}>
+      <div id="defaultLoad" class="mx-3 px-sm-4 main-area" style={{"opacity": 1}}>
         <h1 class="text-center" id="title">Welcome to Tributes Inc.!</h1>
         <h2 class="text-center" id="subTitle">We're glad you're here</h2>
         <p class="text-center">Hang in there while we get some things together....</p>
@@ -70,6 +70,8 @@ class Main extends React.Component {
 
   handleClick ( event ) {
     let clicked = event.target;
+    if (clicked.id==='ti-logo') clicked.href="#home";
+    console.log(clicked.href)
 
     //not a link, do nothing but collapse the navbar
     if ( !clicked.href ) {
@@ -150,17 +152,18 @@ class Main extends React.Component {
     else if ((page.includes('template') || page.includes('tribute')) && this.dbEntry.name == undefined) page = 'home';
 
     // load the module if needed, update state, change browser location to reflect new area
-    $( '#view-wrapper' ).fadeOut(()=>{
+    $( '#view-wrapper' ).css('opacity', 0);
+    setTimeout(() => {
       import(`../scripts/${page}.js`)
         .then(module => {
           this.pageView = module.default;
           $( `#${page}-nav` ).addClass('active');
           this.setState({ viewing: page }, ()=> {
-            $( '#view-wrapper' ).fadeIn();
+            $( '#view-wrapper' ).css('opacity', 1);
           });
           window.location.href = '#' + page;
         });
-    });
+    }, 400);
   }
 
   // passed to components to update login section of index state
@@ -182,7 +185,7 @@ class Main extends React.Component {
 
         <Header auth={this.state.auth} username={this.state.username} updateLoginState={this.updateLoginState} />
 
-        <div id="view-wrapper" class="h-100 w-100">
+        <div id="view-wrapper">
           <View updateLoginState={this.updateLoginState} 
                 username={this.state.username} 
                 dbEntry={this.dbEntry?this.dbEntry:null}

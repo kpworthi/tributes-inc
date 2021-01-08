@@ -438,7 +438,7 @@ class Account extends React.Component {
     let Option = this.options[this.state.currentTab.split('-')[0]];
     return /*#__PURE__*/React.createElement("div", {
       id: "account-area",
-      class: "mx-3 mb-4 px-sm-3 px-1 main-area"
+      class: "mx-3 px-sm-3 px-1 main-area"
     }, /*#__PURE__*/React.createElement("h1", {
       class: "text-center",
       id: "title"

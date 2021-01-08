@@ -8,10 +8,15 @@ class Directory extends React.Component {
       tributeList: [{
         "name": 'Hang in there while we get some things together....'
       }],
+      filterInput: '',
+      filterList: [{
+        "name": 'Hang in there while we get some things together....'
+      }],
       listSet: 0,
       maxSet: 0
     };
     this.getList = this.getList.bind(this);
+    this.handleChange = this.handleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.renderList = this.renderList.bind(this);
   }
@@ -26,11 +31,22 @@ class Directory extends React.Component {
     }).done(response => {
       this.setState({
         tributeList: response,
+        filterList: response,
         maxSet: Math.floor(response.length / 60)
       });
     }).fail(function (err) {
       console.log(' Directory HTTP request failed. ');
       return 'An error occurred during the request, please try again.';
+    });
+  }
+
+  handleChange(event) {
+    let newFilterList = this.state.tributeList.filter(value => value.name.toLowerCase().includes(event.target.value.toLowerCase()));
+    this.setState({
+      filterInput: event.target.value,
+      filterList: newFilterList,
+      listSet: 0,
+      maxSet: Math.floor(newFilterList.length / 60)
     });
   }
 
@@ -43,7 +59,7 @@ class Directory extends React.Component {
   }
 
   renderList() {
-    let tributeList = this.state.tributeList;
+    let tributeList = this.state.filterList;
     let indexMod = this.state.listSet * 60; // three column list, 20 items per column
 
     return /*#__PURE__*/React.createElement("div", {
@@ -52,7 +68,7 @@ class Directory extends React.Component {
     }, /*#__PURE__*/React.createElement("div", {
       class: "col-lg-3 col-sm-4",
       id: "list-col-1"
-    }, tributeList[0].name.startsWith('Hang') ? /*#__PURE__*/React.createElement("p", null, tributeList[0].name) : tributeList.filter((value, index) => index >= 0 + indexMod && index < 20 + indexMod).map(value => /*#__PURE__*/React.createElement("a", {
+    }, tributeList.length === 0 ? /*#__PURE__*/React.createElement("p", null, "No names seem to match your search") : tributeList[0].name.startsWith('Hang') ? /*#__PURE__*/React.createElement("p", null, tributeList[0].name) : tributeList.filter((value, index) => index >= 0 + indexMod && index < 20 + indexMod).map(value => /*#__PURE__*/React.createElement("a", {
       key: value.name,
       class: `tribute-link${value.username === 'admin' ? '' : ' font-weight-bold'}`,
       href: `#${value.name.toLowerCase().split(' ').join('-')}`
@@ -80,7 +96,7 @@ class Directory extends React.Component {
     let maxSet = this.state.maxSet;
     return /*#__PURE__*/React.createElement("div", {
       id: "directory-component",
-      class: "mx-3 mb-4 px-sm-3 px-1 main-area"
+      class: "mx-3 px-sm-3 px-1 main-area"
     }, /*#__PURE__*/React.createElement("h1", {
       class: "text-center",
       id: "title"
@@ -89,7 +105,15 @@ class Directory extends React.Component {
       id: "subTitle"
     }, "All the wonderful people we know about"), /*#__PURE__*/React.createElement("div", {
       class: "sub-divider"
-    }), /*#__PURE__*/React.createElement(List, null), tributeList.length < 60 ? null : /*#__PURE__*/React.createElement("div", {
+    }), /*#__PURE__*/React.createElement("label", {
+      for: "list-filter",
+      class: "align-self-center"
+    }, "Search by Name:", /*#__PURE__*/React.createElement("input", {
+      id: "list-filter",
+      class: "ml-3",
+      onChange: this.handleChange,
+      value: this.state.filterInput
+    })), /*#__PURE__*/React.createElement(List, null), tributeList.length < 60 ? null : /*#__PURE__*/React.createElement("div", {
       class: "btn-group mt-3 align-self-center",
       role: "group",
       "aria-label": "List Navigation"

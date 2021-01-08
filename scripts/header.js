@@ -39,7 +39,7 @@ class Header extends React.Component {
       id: "header",
       class: ""
     }, /*#__PURE__*/React.createElement("nav", {
-      class: "navbar navbar-dark navbar-expand-lg fixed-top"
+      class: "navbar navbar-dark navbar-expand-lg"
     }, /*#__PURE__*/React.createElement("button", {
       class: "navbar-toggler",
       type: "button",
@@ -55,6 +55,7 @@ class Header extends React.Component {
       href: "#home"
     }, /*#__PURE__*/React.createElement("img", {
       src: "./img/logo.png",
+      id: "ti-logo",
       href: "#home"
     })), /*#__PURE__*/React.createElement("div", {
       class: "collapse navbar-collapse",

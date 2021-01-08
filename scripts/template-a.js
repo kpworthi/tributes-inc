@@ -43,6 +43,7 @@ class TemplateA extends React.Component {
     $('.navbar').css('background-color', this.palette[palette].nav);
     $('.nav-link').css('border', `1px solid ${this.palette[palette].nav}`);
     $('body').css('background-color', this.palette[palette].page);
+    $('#footer').css('background-color', this.palette[palette].page);
     $('.main-area').css('background-color', this.palette[palette].container);
     $('.inset').css('background-color', this.palette[palette].content);
   }
@@ -90,7 +91,7 @@ class TemplateA extends React.Component {
       class: "d-flex flex-column justify-content-center col-lg-5"
     }, /*#__PURE__*/React.createElement("img", {
       src: this.content.img,
-      class: "rounded border template-a-pic"
+      class: "rounded border template-a-img"
     }), /*#__PURE__*/React.createElement("figcaption", {
       class: "text-center"
     }, this.content.caption))), /*#__PURE__*/React.createElement("div", {

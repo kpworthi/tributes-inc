@@ -7,13 +7,16 @@ class Directory extends React.Component {
     //maxSet is the number of sets available to flip between
     this.state = {
       tributeList: [{"name": 'Hang in there while we get some things together....'}],
+      filterInput: '',
+      filterList: [{"name": 'Hang in there while we get some things together....'}],
       listSet: 0,
       maxSet: 0
     }
 
-    this.getList     = this.getList.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-    this.renderList  = this.renderList.bind(this);
+    this.getList      = this.getList.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleClick  = this.handleClick.bind(this);
+    this.renderList   = this.renderList.bind(this);
   }
 
   componentDidMount () {
@@ -23,13 +26,23 @@ class Directory extends React.Component {
   getList () {
     $.post( "/api/list", {"type": "directory"} )
       .done( ( response ) => {
-        this.setState({tributeList: response, maxSet: Math.floor(response.length/60)})
+        this.setState({tributeList: response, filterList: response, maxSet: Math.floor(response.length/60)})
       })
       .fail( function ( err ) {
         console.log(' Directory HTTP request failed. ');
         return 'An error occurred during the request, please try again.';
       });
       
+  }
+
+  handleChange( event ){
+    let newFilterList = this.state.tributeList.filter(value => value.name.toLowerCase().includes(event.target.value.toLowerCase()));
+    this.setState({
+      filterInput: event.target.value, 
+      filterList: newFilterList,
+      listSet: 0,
+      maxSet: Math.floor(newFilterList.length/60)
+    });
   }
 
   handleClick( event ){
@@ -40,14 +53,15 @@ class Directory extends React.Component {
   }
 
   renderList(){
-    let tributeList = this.state.tributeList;
+    let tributeList = this.state.filterList;
     let indexMod = this.state.listSet*60;
     
     // three column list, 20 items per column
     return (
       <div id="list-area" class="row justify-content-center align-self-center">
         <div class="col-lg-3 col-sm-4" id="list-col-1">
-          {tributeList[0].name.startsWith('Hang')?<p>{tributeList[0].name}</p>:
+          {tributeList.length === 0?<p>No names seem to match your search</p>:
+          tributeList[0].name.startsWith('Hang')?<p>{tributeList[0].name}</p>:
           tributeList.filter((value,index) => index>=0+indexMod && index<20+indexMod)
             .map((value) => <a key={value.name} class={`tribute-link${value.username==='admin'?'':' font-weight-bold'}`} href={`#${value.name.toLowerCase().split(' ').join('-')}`}>{value.name}<br/></a>)}
         </div>
@@ -71,11 +85,13 @@ class Directory extends React.Component {
     let maxSet      = this.state.maxSet;
 
     return(
-      <div id="directory-component" class="mx-3 mb-4 px-sm-3 px-1 main-area">
+      <div id="directory-component" class="mx-3 px-sm-3 px-1 main-area">
         <h1 class="text-center" id="title">Tributes Inc. Directory</h1>
         <h2 class="text-center" id="subTitle">All the wonderful people we know about</h2>
 
         <div class="sub-divider"></div>
+        <label for="list-filter" class="align-self-center">Search by Name: 
+          <input id="list-filter" class="ml-3" onChange={this.handleChange} value={this.state.filterInput} /></label>
 
         <List />
         {tributeList.length<60?null:

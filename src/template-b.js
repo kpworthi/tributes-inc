@@ -32,6 +32,7 @@ class TemplateB extends React.Component {
     $('.navbar').css('background-color', this.palette[palette].nav);
     $('.nav-link').css('border', `1px solid ${this.palette[palette].nav}`)
     $('body').css('background-color', this.palette[palette].page);
+    $('#footer').css('background-color', this.palette[palette].page);
     $('.main-area').css('background-color', this.palette[palette].container);
     $('.inset').css('background-color', this.palette[palette].content);
   }

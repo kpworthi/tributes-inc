@@ -125,7 +125,7 @@ class Login extends React.Component {
 
   render () {
     return(
-      <div id="auth-component" class="mx-3 mb-4 px-sm-3 px-1 main-area">
+      <div id="auth-component" class="mx-3 px-sm-3 px-1 main-area">
         <h1 class="text-center" id="title">Let's get you logged in!</h1>
         <h2 class="text-center" id="subTitle"></h2>
 
