@@ -184,6 +184,7 @@ class DesignBio extends React.Component {
       for: "palette"
     }, "Choose a color scheme: "), /*#__PURE__*/React.createElement("select", {
       id: "palette",
+      class: "ml-3",
       name: "palette"
     }, /*#__PURE__*/React.createElement("option", {
       value: "classic",

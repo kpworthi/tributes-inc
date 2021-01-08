@@ -30,9 +30,16 @@ class TemplateA extends React.Component {
 
   componentDidMount() {
     this.loadPalette(this.content.palette);
-    if (this.preview) $('#color-select').on("change", () => {
-      this.loadPalette($('#color-select option:selected')[0].value);
-    });
+
+    if (this.preview) {
+      $('#color-select').on("change", () => {
+        this.loadPalette($('#color-select option:selected')[0].value);
+      });
+      $('#info-link').click(event => {
+        event.preventDefault();
+        event.stopPropagation();
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -107,6 +114,7 @@ class TemplateA extends React.Component {
     }, this.content.quote), /*#__PURE__*/React.createElement("footer", {
       class: "blockquote-footer"
     }, this.content.author), this.preview ? this.colorPreviewer() : null) : null, /*#__PURE__*/React.createElement(Bio, null), this.content.link ? /*#__PURE__*/React.createElement("a", {
+      id: "info-link",
       href: this.content.link
     }, `Click here to learn more about ${this.preview ? "[Your Tribute's Name] (Optional)" : this.content.name}`) : null)), /*#__PURE__*/React.createElement("div", {
       id: "lower-buffer",

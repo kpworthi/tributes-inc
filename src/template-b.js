@@ -18,10 +18,12 @@ class TemplateB extends React.Component {
 
   componentDidMount () {
     this.loadPalette( this.content.palette );
-    if (this.preview)
+    if (this.preview){
       $('#color-select').on("change", ()=>{
         this.loadPalette( $('#color-select option:selected')[0].value);
       });
+      $('#info-link').click((event)=>{event.preventDefault(); event.stopPropagation()});
+    }
   }
 
   componentWillUnmount () {

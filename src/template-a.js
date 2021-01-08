@@ -18,10 +18,12 @@ class TemplateA extends React.Component {
 
   componentDidMount () {
     this.loadPalette( this.content.palette );
-    if (this.preview)
+    if (this.preview){
       $('#color-select').on("change", ()=>{
         this.loadPalette( $('#color-select option:selected')[0].value);
       });
+      $('#info-link').click((event)=>{event.preventDefault(); event.stopPropagation()});
+    }
   }
 
   componentWillUnmount () {
@@ -91,7 +93,7 @@ class TemplateA extends React.Component {
             <Bio />
             
             {this.content.link?
-            <a href={this.content.link}>{`Click here to learn more about ${this.preview?"[Your Tribute's Name] (Optional)":this.content.name}`}</a>:null}
+            <a id="info-link" href={this.content.link}>{`Click here to learn more about ${this.preview?"[Your Tribute's Name] (Optional)":this.content.name}`}</a>:null}
           </div>
         </div>
 

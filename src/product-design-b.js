@@ -170,7 +170,7 @@ class DesignTimeline extends React.Component {
             <input id="author" name="author" type="text" class="form-control" placeholder="Author (Optional)" />
           </div><div class="form-group text-center">
             <label for="palette">Choose a color scheme: </label>
-            <select id="palette" name="palette">
+            <select id="palette" class="ml-3" name="palette">
               <option value="classic" selected="true">Tributes Classic</option>
               <option value="cool">Tributes Cool </option>
               <option value="warm">Tributes Warm </option>
