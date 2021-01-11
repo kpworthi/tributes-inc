@@ -107,7 +107,6 @@ class Account extends React.Component {
     this.getContentList();
 
     $( '.option' ).click(this.handleClick);
-    console.log('mount');
   }
   
   handleClick (event) {
@@ -129,7 +128,7 @@ class Account extends React.Component {
     else if ( clickedButton.classList.contains('card')){
       // if it's a product card, take to the product page
       if ( clickedButton.id.includes('product') ){
-        this.loadPage( clickedButton.id );
+        location.hash = `#${clickedButton.id}`;
       }
       // otherwise set state to re-render and load new cards
       else {

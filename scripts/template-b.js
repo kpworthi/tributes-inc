@@ -102,7 +102,7 @@ class TemplateB extends React.Component {
       class: "rounded border template-a-img"
     })), /*#__PURE__*/React.createElement("figcaption", null, this.content.caption)), /*#__PURE__*/React.createElement("div", {
       id: "right-block",
-      class: "d-flex flex-column justify-content-between col-lg-6 rounded inset"
+      class: "d-flex flex-column col-lg-6 rounded inset"
     }, this.content.quote && this.content.author ? /*#__PURE__*/React.createElement("blockquote", {
       class: "blockquote mt-3 text-center"
     }, /*#__PURE__*/React.createElement("p", {
@@ -110,6 +110,7 @@ class TemplateB extends React.Component {
     }, this.content.quote), /*#__PURE__*/React.createElement("footer", {
       class: "blockquote-footer"
     }, this.content.author), this.preview ? this.colorPreviewer() : null) : null, /*#__PURE__*/React.createElement(Timeline, null), this.content.link ? /*#__PURE__*/React.createElement("a", {
+      id: "info-link",
       href: this.content.link
     }, `Click here to learn more about ${this.preview ? "[Your Tribute's Name] (Optional)" : this.content.name}`) : null));
   }

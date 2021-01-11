@@ -80,7 +80,7 @@ class TemplateB extends React.Component {
           <figcaption>{this.content.caption}</figcaption>
         </div>
 
-        <div id="right-block" class="d-flex flex-column justify-content-between col-lg-6 rounded inset">
+        <div id="right-block" class="d-flex flex-column col-lg-6 rounded inset">
           {this.content.quote&&this.content.author?(
           <blockquote class="blockquote mt-3 text-center">
             <p class="mb-0">{this.content.quote}</p>
@@ -90,7 +90,7 @@ class TemplateB extends React.Component {
           <Timeline/>
                       
           {this.content.link?
-          <a href={this.content.link}>{`Click here to learn more about ${this.preview?"[Your Tribute's Name] (Optional)":this.content.name}`}</a>:null}
+          <a id="info-link" href={this.content.link}>{`Click here to learn more about ${this.preview?"[Your Tribute's Name] (Optional)":this.content.name}`}</a>:null}
         </div>
 
       </div>

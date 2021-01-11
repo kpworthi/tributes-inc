@@ -123,7 +123,7 @@ class DesignTimeline extends React.Component {
       $.post("/api/design", $("#design-b-component").serialize()).done(response => {
         if (response === 'Success! Tribute saved.') {
           setTimeout(() => {
-            $('#account-nav').click();
+            location.hash = "#account";
           }, 2000);
           clearTimeout(buttonTimeout);
           submit.disabled = true;

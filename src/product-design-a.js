@@ -64,7 +64,7 @@ class DesignBio extends React.Component {
         .done( ( response ) => {
           if ( response === 'Success! Tribute saved.' ) {
             setTimeout(() => {
-              $( '#account-nav' ).click();
+              location.hash = "#account";
             }, 2000);
             clearTimeout(buttonTimeout);
             submit.disabled = true;

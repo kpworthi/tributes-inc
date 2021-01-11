@@ -125,15 +125,7 @@ class Main extends React.Component {
           this.loadPage('home');
           return status.textContent = 'An error occurred during template fetch, please try again.';
         });
-      } //navbar path or clicking a product card in the account page
-
-    /*
-    else if( clicked.href.includes('#')) {
-      $( `#${this.state.viewing}-nav`).removeClass('active');
-      this.collapseNavbar();
-      this.loadPage( clicked.href.split('#')[1] );
-    }*/
-
+      }
   }
 
   dbSearch(searchObj) {
