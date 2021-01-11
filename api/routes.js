@@ -181,11 +181,11 @@ function routes(app, database) {
         let result = await client.db('tributes-inc').collection(req.body.id?'pages':'tributes').findOne(searchTerm);
 
         if (result === null){
-          console.log("Couldn't find the requested tribute! " + req.body);
+          console.log(`Page lookup: Could not find ${req.body.name_lower}! @ ${currentTimeEST()}`);
           return res.send('No match found!');
         }
         else {
-          console.log(`sending ${result}`);
+          console.log(`Page lookup: sending ${result} @ ${currentTimeEST()}`);
           return res.json(result);
         }
       });
@@ -229,7 +229,7 @@ function routes(app, database) {
   //User registration
   app.route("/api/register").post(
     (req, res, next) => {
-      console.log(`register request: ${req.body.username}. ${currentTimeEST()}`);
+      console.log(`Register request: ${req.body.username}. ${currentTimeEST()}`);
 
       const hash = bcrypt.hashSync(req.body.password, 12);
 
@@ -306,7 +306,7 @@ function routes(app, database) {
         req.body.bio = req.body.bio.replace(/\r\n/g, '\n').split('\n').filter((value)=> value)
       }
 
-      console.log(req.body.username + ' submitted a tribute ' + currentTimeEST());
+      console.log(`${req.body.username} submitted a tribute @ ${currentTimeEST()}`);
 
       database(async function (client) {
 
@@ -329,7 +329,7 @@ function routes(app, database) {
 
         if (findArray.length>1) validSubmission = false;
         // else list the number of tributes they have
-        else console.log(req.body.username + ' current total submissions ' + findArray.length);
+        else console.log(`${req.body.username}'s current total submissions ${findArray.length}`);
 
         // if it's still a valid submission, post it
         if (validSubmission) {
@@ -376,7 +376,7 @@ function routes(app, database) {
       database(async function (client) {
         let resultsArray = await client.db('tributes-inc').collection('tributes').find(query, options).toArray();
 
-        console.log(resultsArray);
+        console.log(`${reqType} list request @ ${currentTimeEST()}`);
         res.send(resultsArray);
       })
     });
@@ -407,11 +407,7 @@ function routes(app, database) {
         "username"   : 'admin'
         })
       });
-      console.log(tribArray[0]);
-      console.log(tribArray[1]);
-      console.log(tribArray[2]);
-      console.log(tribArray[3]);
-      console.log(currentTimeEST());
+      console.log(`Admin database entry creation @ ${currentTimeEST()}`);
       database( async function (client) {
         let insertResults = await client.db('tributes-inc').collection('tributes').insertMany(tribArray);
         console.log(`${insertResults.insertedCount} entries added.`);
@@ -419,6 +415,7 @@ function routes(app, database) {
       });
     })
     .delete((req,res) => {
+      console.log(`Admin database entry deletion @ ${currentTimeEST()}`);
       database( async function (client) {
         let deleteResults = await client.db('tributes-inc').collection('tributes').deleteMany({"username": "admin"})
         console.log(`${deleteResults.deletedCount} entries deleted at ${currentTimeEST()}`);

@@ -18,7 +18,7 @@ const routes       = require('./api/routes')
 const auth         = require('./api/auth');
 
 //const expect     = require('chai');
-const currentTimeEST = () => Date().toLocaleString('en-US', { timeZone: 'EST'}) + ' EST';
+const currentTimeEST = () => new Date().toLocaleString("en-US", { timeZone: "EST" }) + " EST";
 
 // helmet and other custom headers
 app.use(helmet());
@@ -49,7 +49,7 @@ app.use(session({
   saveUninitialized: true,
   proxy: true,
   cookie: { 
-    secure: false,
+    secure: true,
     maxAge: minutes*1000*60 
   }
 }));
@@ -65,6 +65,7 @@ auth(app, myDB);
 // index page
 app.route('/')
   .get(function (req, res) {
+    console.log(`Landing page GET @ ${currentTimeEST()}`);
     res.sendFile(process.cwd() + '/views/index.html');
   });
   
@@ -75,13 +76,19 @@ app.route('/favicon.ico')
   });
 
 // portofolio handler
+app.use('/portfolio', express.static(process.cwd() + '/portfolio'));
+app.route('/portfolio')
+  .get(function (req, res) {
+    res.sendFile(process.cwd() + '/portfolio/index.html');
+  });
+
 app.route('/portfolio/:file')
   .get(function (req, res) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'POST,GET,LINK');
     res.sendFile(process.cwd() + '/portfolio/' + req.params.file);
   }); 
-
+  
 app.use(function(req, res, next) {
   res.status(404)
     .type('text')
