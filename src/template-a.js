@@ -3,7 +3,7 @@ class TemplateA extends React.Component {
     super(props);
 
     this.content = props.dbEntry;
-    this.preview = true;
+    this.preview = this.content.name==="Your Tribute's Name"?true:false;
 
     this.palette = { 
       "classic": {nav: '#7E4A35', page: '#dbceb0', container: '#cab577', content: '#D4C391'},
@@ -18,10 +18,12 @@ class TemplateA extends React.Component {
 
   componentDidMount () {
     this.loadPalette( this.content.palette );
-    if (this.preview)
+    if (this.preview){
       $('#color-select').on("change", ()=>{
         this.loadPalette( $('#color-select option:selected')[0].value);
       });
+      $('#info-link').click((event)=>{event.preventDefault(); event.stopPropagation()});
+    }
   }
 
   componentWillUnmount () {
@@ -32,6 +34,7 @@ class TemplateA extends React.Component {
     $('.navbar').css('background-color', this.palette[palette].nav);
     $('.nav-link').css('border', `1px solid ${this.palette[palette].nav}`)
     $('body').css('background-color', this.palette[palette].page);
+    $('#footer').css('background-color', this.palette[palette].page);
     $('.main-area').css('background-color', this.palette[palette].container);
     $('.inset').css('background-color', this.palette[palette].content);
   }
@@ -49,7 +52,6 @@ class TemplateA extends React.Component {
   }
 
   renderBio(){
-    console.log(this.content);
     let bioText = this.content.bio;
     return (
       <div id="bio-text">
@@ -64,15 +66,18 @@ class TemplateA extends React.Component {
     let Bio = this.renderBio;
 
     return(
+      this.content.approved===false?
       <div id="template-a-component" class="mx-3 px-sm-3 px-1 main-area">
-
+        <p class="text-center">Hold on just a bit! This tribute hasn't been approved just yet.</p></div>:
+        
+      <div id="template-a-component" class="mx-3 px-sm-3 px-1 main-area">
         <div id="top-block" class="row mx-0 my-2 px-sm-5 py-1 justify-content-center rounded inset">
           <div id="title-area" class="d-flex flex-column justify-content-center col-lg-5 text-center">
             <h1>{this.content.name}</h1>
             {this.content.tagline?<p class="h2">{this.content.tagline}</p>:null}
           </div>
           <figure id="picture-area" class="d-flex flex-column justify-content-center col-lg-5">
-            <img src={this.content.img} class="rounded border template-a-pic"></img>
+            <img src={this.content.img} class="rounded border template-a-img"></img>
             <figcaption class="text-center">{this.content.caption}</figcaption>
           </figure>
 
@@ -88,9 +93,10 @@ class TemplateA extends React.Component {
               {this.preview?this.colorPreviewer():null}
             </blockquote>):null}
 
-            <Bio/>
+            <Bio />
             
-            <a href={this.content.link}>  Click here to learn more about [Your Tribute's Name] (Optional)</a>
+            {this.content.link?
+            <a id="info-link" href={this.content.link}>{`Click here to learn more about ${this.preview?"[Your Tribute's Name] (Optional)":this.content.name}`}</a>:null}
           </div>
         </div>
 

@@ -2,7 +2,7 @@ class TemplateA extends React.Component {
   constructor(props) {
     super(props);
     this.content = props.dbEntry;
-    this.preview = true;
+    this.preview = this.content.name === "Your Tribute's Name" ? true : false;
     this.palette = {
       "classic": {
         nav: '#7E4A35',
@@ -30,9 +30,16 @@ class TemplateA extends React.Component {
 
   componentDidMount() {
     this.loadPalette(this.content.palette);
-    if (this.preview) $('#color-select').on("change", () => {
-      this.loadPalette($('#color-select option:selected')[0].value);
-    });
+
+    if (this.preview) {
+      $('#color-select').on("change", () => {
+        this.loadPalette($('#color-select option:selected')[0].value);
+      });
+      $('#info-link').click(event => {
+        event.preventDefault();
+        event.stopPropagation();
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -43,6 +50,7 @@ class TemplateA extends React.Component {
     $('.navbar').css('background-color', this.palette[palette].nav);
     $('.nav-link').css('border', `1px solid ${this.palette[palette].nav}`);
     $('body').css('background-color', this.palette[palette].page);
+    $('#footer').css('background-color', this.palette[palette].page);
     $('.main-area').css('background-color', this.palette[palette].container);
     $('.inset').css('background-color', this.palette[palette].content);
   }
@@ -64,7 +72,6 @@ class TemplateA extends React.Component {
   }
 
   renderBio() {
-    console.log(this.content);
     let bioText = this.content.bio;
     return /*#__PURE__*/React.createElement("div", {
       id: "bio-text"
@@ -75,7 +82,12 @@ class TemplateA extends React.Component {
 
   render() {
     let Bio = this.renderBio;
-    return /*#__PURE__*/React.createElement("div", {
+    return this.content.approved === false ? /*#__PURE__*/React.createElement("div", {
+      id: "template-a-component",
+      class: "mx-3 px-sm-3 px-1 main-area"
+    }, /*#__PURE__*/React.createElement("p", {
+      class: "text-center"
+    }, "Hold on just a bit! This tribute hasn't been approved just yet.")) : /*#__PURE__*/React.createElement("div", {
       id: "template-a-component",
       class: "mx-3 px-sm-3 px-1 main-area"
     }, /*#__PURE__*/React.createElement("div", {
@@ -91,7 +103,7 @@ class TemplateA extends React.Component {
       class: "d-flex flex-column justify-content-center col-lg-5"
     }, /*#__PURE__*/React.createElement("img", {
       src: this.content.img,
-      class: "rounded border template-a-pic"
+      class: "rounded border template-a-img"
     }), /*#__PURE__*/React.createElement("figcaption", {
       class: "text-center"
     }, this.content.caption))), /*#__PURE__*/React.createElement("div", {
@@ -106,9 +118,10 @@ class TemplateA extends React.Component {
       class: "mb-0"
     }, this.content.quote), /*#__PURE__*/React.createElement("footer", {
       class: "blockquote-footer"
-    }, this.content.author), this.preview ? this.colorPreviewer() : null) : null, /*#__PURE__*/React.createElement(Bio, null), /*#__PURE__*/React.createElement("a", {
+    }, this.content.author), this.preview ? this.colorPreviewer() : null) : null, /*#__PURE__*/React.createElement(Bio, null), this.content.link ? /*#__PURE__*/React.createElement("a", {
+      id: "info-link",
       href: this.content.link
-    }, "  Click here to learn more about [Your Tribute's Name] (Optional)"))), /*#__PURE__*/React.createElement("div", {
+    }, `Click here to learn more about ${this.preview ? "[Your Tribute's Name] (Optional)" : this.content.name}`) : null)), /*#__PURE__*/React.createElement("div", {
       id: "lower-buffer",
       style: {
         "height": "100px"

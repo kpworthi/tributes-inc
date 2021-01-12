@@ -9,6 +9,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-y: show;
 }
 
 body {
@@ -24,82 +25,99 @@ h1 {
   border-radius: 5px;
 }
 
-.navbar {
+#header .navbar {
   background-color: #7e4a35;
 }
-.navbar img {
+#header .navbar img {
   border: 3px solid black;
   border-radius: 8px;
 }
-.navbar #logout-nav {
+@media (max-width: 992px), (max-height: 360px) {
+  #header .navbar img {
+    width: 75%;
+    height: auto;
+    border: 1px solid black;
+    border-radius: 5px;
+  }
+}
+#header .navbar #logout-nav {
   border: none !important;
 }
-.navbar .nav-link {
+#header .navbar .nav-link {
   border: 1px solid #7e4a35;
   border-radius: 5px;
 }
-.navbar .nav-link:hover {
+#header .navbar .nav-link:hover {
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 5px;
 }
-.navbar #nav-divide {
+#header .navbar #nav-divide {
   width: 1px;
   background-color: white;
 }
 @media (max-width: 991px) {
-  .navbar #nav-divide {
+  #header .navbar #nav-divide {
     width: 100%;
     background-color: #7e4a35;
   }
 }
 @media (min-width: 992px) {
-  .navbar .navbar-nav {
+  #header .navbar .navbar-nav {
     height: 50px;
   }
 }
 @media (min-width: 991px) {
-  .navbar #logout-nav, .navbar #login-nav, .navbar #account-nav {
+  #header .navbar #logout-nav, #header .navbar #login-nav, #header .navbar #account-nav {
     position: absolute;
     right: 15px;
   }
 }
 
-.main-area {
+#view-wrapper {
+  min-height: calc(100vh - 177px);
+  transition: opacity 0.4s;
+}
+#view-wrapper .main-area {
   display: flex;
   flex-direction: column;
-  margin-top: 100px;
-  margin-bottom: 100px;
   padding-top: 10px;
+  margin-top: 10px;
   background-color: #cab577;
-  height: calc(100vh - 200px);
-  max-height: calc(100vh - 200px);
+  height: calc(100vh - 177px);
+  max-height: calc(100vh - 177px);
   border-radius: 5px;
   overflow-y: auto;
   overflow-x: hidden;
 }
-.main-area .sub-divider {
+#view-wrapper .main-area .sub-divider {
   border: 1px solid black;
-  width: 50%;
+  width: 60%;
   align-self: center;
-  margin-top: 3rem;
-  margin-bottom: 3rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
-.main-area .vert-divider {
+#view-wrapper .main-area .vert-divider {
   border: 1px solid black;
   max-width: 2px;
   height: 50vh;
 }
-.main-area #home figure {
+#view-wrapper .main-area #home figure {
   min-width: 250px;
   min-height: 250px;
   text-align: center;
 }
-.main-area #home figure img {
+#view-wrapper .main-area #home figure img {
   border: 1px solid black;
   border-radius: 5px;
 }
-.main-area #option-content {
-  min-height: 300px;
+
+#footer {
+  height: 75px;
+}
+
+.card {
+  background-color: #D4C391;
+  box-shadow: 3px 3px rgba(0, 0, 0, 0.5);
 }
 
 .inset {
@@ -118,17 +136,29 @@ figure {
 #left-block {
   max-height: 100%;
 }
-@media (max-width: 991px) {
-  #left-block {
-    min-height: 400px;
-  }
-}
 
 @media (min-width: 992px) {
   #right-block {
     max-height: 100%;
     overflow-y: auto;
   }
+}
+
+#list-area {
+  width: 60%;
+}
+
+.acct-cont {
+  min-height: 100%;
+}
+
+.card-img {
+  width: 100%;
+  height: 180px;
+}
+
+.tribute-link {
+  color: #7E4A35;
 }
 
 /*# sourceMappingURL=index.css.map */

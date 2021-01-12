@@ -39,7 +39,7 @@ class Header extends React.Component {
       id: "header",
       class: ""
     }, /*#__PURE__*/React.createElement("nav", {
-      class: "navbar navbar-dark navbar-expand-lg fixed-top"
+      class: "navbar navbar-dark navbar-expand-lg"
     }, /*#__PURE__*/React.createElement("button", {
       class: "navbar-toggler",
       type: "button",
@@ -52,10 +52,11 @@ class Header extends React.Component {
       class: "navbar-toggler-icon"
     })), /*#__PURE__*/React.createElement("a", {
       class: "navbar-brand",
-      href: "#"
+      href: "#home"
     }, /*#__PURE__*/React.createElement("img", {
       src: "./img/logo.png",
-      class: ""
+      id: "ti-logo",
+      href: "#home"
     })), /*#__PURE__*/React.createElement("div", {
       class: "collapse navbar-collapse",
       id: "navbar-links"

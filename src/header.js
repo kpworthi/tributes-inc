@@ -35,11 +35,11 @@ class Header extends React.Component {
 
     return(
       <header id="header" class="">
-        <nav class="navbar navbar-dark navbar-expand-lg fixed-top">
+        <nav class="navbar navbar-dark navbar-expand-lg">
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-links" aria-controls="navbar-links" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon" />
           </button>
-          <a class="navbar-brand" href="#"><img src="./img/logo.png" class="" /></a>
+          <a class="navbar-brand" href="#home"><img src="./img/logo.png" id="ti-logo" href="#home" /></a>
 
           <div class="collapse navbar-collapse" id="navbar-links">
             <div class="navbar-nav text-center">

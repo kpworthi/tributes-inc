@@ -5,7 +5,7 @@ class Products extends React.Component {
   }
   render(){
     return(
-      <div id="products-component" class="mx-3 mb-4 px-sm-3 px-1 main-area">
+      <div id="products-component" class="mx-3 px-sm-3 px-1 main-area">
 
         <h1 class="text-center" id="title">Here's our line-up</h1>
         <h2 class="text-center" id="subTitle">We think we'll have just what you're looking for</h2>

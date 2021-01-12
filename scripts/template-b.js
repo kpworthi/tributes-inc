@@ -2,7 +2,7 @@ class TemplateB extends React.Component {
   constructor(props) {
     super(props);
     this.content = props.dbEntry;
-    this.preview = true;
+    this.preview = this.content.name === "Your Tribute's Name" ? true : false;
     this.palette = {
       "classic": {
         nav: '#7E4A35',
@@ -30,9 +30,16 @@ class TemplateB extends React.Component {
 
   componentDidMount() {
     this.loadPalette(this.content.palette);
-    if (this.preview) $('#color-select').on("change", () => {
-      this.loadPalette($('#color-select option:selected')[0].value);
-    });
+
+    if (this.preview) {
+      $('#color-select').on("change", () => {
+        this.loadPalette($('#color-select option:selected')[0].value);
+      });
+      $('#info-link').click(event => {
+        event.preventDefault();
+        event.stopPropagation();
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -43,6 +50,7 @@ class TemplateB extends React.Component {
     $('.navbar').css('background-color', this.palette[palette].nav);
     $('.nav-link').css('border', `1px solid ${this.palette[palette].nav}`);
     $('body').css('background-color', this.palette[palette].page);
+    $('#footer').css('background-color', this.palette[palette].page);
     $('.main-area').css('background-color', this.palette[palette].container);
     $('.inset').css('background-color', this.palette[palette].content);
   }
@@ -74,7 +82,12 @@ class TemplateB extends React.Component {
 
   render() {
     let Timeline = this.renderTimeline;
-    return /*#__PURE__*/React.createElement("div", {
+    return this.content.approved === false ? /*#__PURE__*/React.createElement("div", {
+      id: "template-b-component",
+      class: "mx-3 px-sm-3 px-1 main-area row flex-row justify-content-around"
+    }, /*#__PURE__*/React.createElement("p", {
+      class: "text-center"
+    }, "Hold on just a bit! This tribute hasn't been approved just yet.")) : /*#__PURE__*/React.createElement("div", {
       id: "template-b-component",
       class: "mx-3 px-sm-3 px-1 main-area row flex-row justify-content-around"
     }, /*#__PURE__*/React.createElement("div", {
@@ -96,15 +109,15 @@ class TemplateB extends React.Component {
       id: "right-block",
       class: "d-flex flex-column col-lg-6 rounded inset"
     }, this.content.quote && this.content.author ? /*#__PURE__*/React.createElement("blockquote", {
-      class: "blockquote text-center"
+      class: "blockquote mt-3 text-center"
     }, /*#__PURE__*/React.createElement("p", {
       class: "mb-0"
     }, this.content.quote), /*#__PURE__*/React.createElement("footer", {
       class: "blockquote-footer"
-    }, this.content.author), this.preview ? this.colorPreviewer() : null) : null, /*#__PURE__*/React.createElement(Timeline, null), /*#__PURE__*/React.createElement("a", {
-      href: this.content.link,
-      class: "text-center"
-    }, "  Click here to learn more about [Your Tribute's Name] (Optional)")));
+    }, this.content.author), this.preview ? this.colorPreviewer() : null) : null, /*#__PURE__*/React.createElement(Timeline, null), this.content.link ? /*#__PURE__*/React.createElement("a", {
+      id: "info-link",
+      href: this.content.link
+    }, `Click here to learn more about ${this.preview ? "[Your Tribute's Name] (Optional)" : this.content.name}`) : null));
   }
 
 }

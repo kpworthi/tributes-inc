@@ -6,7 +6,7 @@ class Home extends React.Component {
   render(){
     return(
 
-      <div id="home-component" class="mx-3 mb-4 px-sm-4 main-area">
+      <div id="home-component" class="mx-3 px-sm-4 main-area">
         <h1 class="text-center" id="title">Welcome to Tributes Inc.!</h1>
         <h2 class="text-center" id="subTitle">We're glad you're here</h2>
         <div class="sub-divider"></div>
