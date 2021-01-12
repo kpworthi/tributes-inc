@@ -1,3 +1,5 @@
+import Modal from '../scripts/modal.js';
+
 class Account extends React.Component {
   constructor(props){
     super(props);
