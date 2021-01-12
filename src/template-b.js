@@ -67,6 +67,10 @@ class TemplateB extends React.Component {
     let Timeline = this.renderTimeline;
 
     return(
+      this.content.approved===false?
+      <div id="template-b-component" class="mx-3 px-sm-3 px-1 main-area row flex-row justify-content-around">
+        <p class="text-center">Hold on just a bit! This tribute hasn't been approved just yet.</p></div>:
+        
       <div id="template-b-component" class="mx-3 px-sm-3 px-1 main-area row flex-row justify-content-around">
 
         <div id="left-block" class="d-flex flex-column col-lg-6 rounded inset text-center">

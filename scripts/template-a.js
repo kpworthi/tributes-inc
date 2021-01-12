@@ -82,7 +82,12 @@ class TemplateA extends React.Component {
 
   render() {
     let Bio = this.renderBio;
-    return /*#__PURE__*/React.createElement("div", {
+    return this.content.approved === false ? /*#__PURE__*/React.createElement("div", {
+      id: "template-a-component",
+      class: "mx-3 px-sm-3 px-1 main-area"
+    }, /*#__PURE__*/React.createElement("p", {
+      class: "text-center"
+    }, "Hold on just a bit! This tribute hasn't been approved just yet.")) : /*#__PURE__*/React.createElement("div", {
       id: "template-a-component",
       class: "mx-3 px-sm-3 px-1 main-area"
     }, /*#__PURE__*/React.createElement("div", {

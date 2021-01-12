@@ -66,8 +66,11 @@ class TemplateA extends React.Component {
     let Bio = this.renderBio;
 
     return(
+      this.content.approved===false?
       <div id="template-a-component" class="mx-3 px-sm-3 px-1 main-area">
-
+        <p class="text-center">Hold on just a bit! This tribute hasn't been approved just yet.</p></div>:
+        
+      <div id="template-a-component" class="mx-3 px-sm-3 px-1 main-area">
         <div id="top-block" class="row mx-0 my-2 px-sm-5 py-1 justify-content-center rounded inset">
           <div id="title-area" class="d-flex flex-column justify-content-center col-lg-5 text-center">
             <h1>{this.content.name}</h1>
