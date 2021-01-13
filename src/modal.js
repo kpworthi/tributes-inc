@@ -1,19 +1,20 @@
 class ConfirmModal {
 
-  constructor (text, btnYes, btnNo) {
-    this.modalText  = text;
-    this.btnYesText = btnYes;
-    this.btnNoText  = btnNo;
+  constructor (text, btnYes, btnNo, clickHandler) {
+    this.modalText    = text;
+    this.btnYesText   = btnYes;
+    this.btnNoText    = btnNo;
+    this.clickHandler = clickHandler;
   }
 
-  render () {
+  outputJSX () {
     return (
       <div id="modal-overlay" class="d-flex align-items-center justify-content-center modal-bg">
         <div id="modal-box" class="p-3 text-justify modal">
           <p id="modal-text" class="h2">{this.modalText}</p>
           <div class="btn-group">
-            <button type="button" class="btn btn-warning">{this.btnYesText}</button>
-            <button type="button" class="btn btn-success">{this.btnNoText}</button>
+            <button id="modal-yes" type="button" class="btn btn-warning" onClick={this.clickHandler}>{this.btnYesText}</button>
+            <button id="modal-no" type="button" class="btn btn-success" onClick={this.clickHandler}>{this.btnNoText}</button>
           </div>
         </div>
       </div>
@@ -21,4 +22,4 @@ class ConfirmModal {
   }
 }
 
-export default Modal;
+export default ConfirmModal;

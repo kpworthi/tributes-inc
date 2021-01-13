@@ -1,4 +1,4 @@
-import Modal from '../scripts/modal.js';
+import ConfirmModal from '../scripts/modal.js';
 
 class Account extends React.Component {
   constructor(props){
@@ -10,6 +10,8 @@ class Account extends React.Component {
       currentTab: 'profile-tab',
       subOption: 'default'
     }
+
+    this.manageMode = 'none';
 
     this.loadPage = props.loadPage;
 
@@ -151,6 +153,48 @@ class Account extends React.Component {
           "success": (response) => {console.log(response)}
         });
       }
+    }
+    // tribute modification
+    else if ( clickedButton.id.startsWith('t-') ){
+      switch( clickedButton.id.split('-')[1] ){
+        case 'edit':
+          break;
+        case 'hide':
+          break;
+        case 'delete':
+          console.log('delete button pushed');
+          let newModal = new ConfirmModal(`Are you sure you want to delete the tribute for ${ $( `#link${clickedButton.id.split('-')[1]}` ).text() }`, 
+                                          'Yes, delete', 
+                                          "No, don't delete", 
+                                          this.handleClick);
+          $( "#main" ).append(newModal.outputJSX());
+          break;
+      }
+    }
+    // modal handling
+    else if ( clickedButton.id.startsWith('modal') ){
+      if( this.manageMode.startsWith('delete') ) {
+        switch(clickedButton.id){
+          case 'modal-yes':
+            $.ajax({
+              "type": "DELETE",
+              "url": '/api/design',
+              "data": { userName: this.username, tributeName: $( `#link${clickedButton.id.split('-')[1]}` ).text() },
+              "success": (response) => {
+
+                console.log(response);
+              },
+              "fail": (response) => {
+                console.log(`Something went wrong with the HTTP request!`)
+              }
+            });
+            break;
+          case 'modal-no' :
+            break;
+        }
+      }
+
+      this.manageMode = 'none';
     }
   }
 
@@ -320,18 +364,18 @@ class Account extends React.Component {
         </div>
         {contentList.length===0?<p>Nothing to display, yet!</p>:
         contentList[0].name.startsWith('Hang')?<p>{contentList[0].name}</p>:
-        contentList.map((value) => 
+        contentList.map((value, index) => 
           <div class="row mb-1 align-items-center justify-content-center rounded border border-dark w-100">
             <div class="col-5 row m-0">
-              <a key={value.name} class="tribute-link my-1 col-lg-5" href={`#${value.name.toLowerCase().split(' ').join('-')}`}>{value.name}</a>
+              <a id={`link-${index}`} key={`link-${index}`} class="tribute-link my-1 col-lg-5" href={`#${value.name.toLowerCase().split(' ').join('-')}`}>{value.name}</a>
               <p class="my-1 col-lg-7">{this.contentTypes[value.type]}</p>
             </div><div class="col-4 row m-0">
               <p class="my-2 my-lg-1 col-lg-8">{new Date(value.created_on).toDateString()}</p>  
               <p class="my-2 my-lg-1 col-lg-4">{value.approved?"Yes":"No"}</p>
             </div><div class="col-3 row m-0">
-              <button type="button" class="btn btn-primary my-1 p-2 col-lg-4" disabled>Edit</button>
-              <button type="button" class="btn btn-dark my-1 p-2 col-lg-4" disabled>Hide</button>
-              <button type="button" class="btn btn-danger my-1 p-2 col-lg-4 text-center" disabled>Delete</button>
+              <button id={`t-edit-${index}`} type="button" class="btn btn-primary my-1 p-2 col-lg-4" disabled>Edit</button>
+              <button id={`t-hide-${index}`} type="button" class="btn btn-dark my-1 p-2 col-lg-4" disabled>Hide</button>
+              <button id={`t-delete-${index}`} type="button" class="btn btn-danger my-1 p-2 col-lg-4 text-center" onClick={this.handleClick}>Delete</button>
             </div>
           </div>
         )}

@@ -1,3 +1,5 @@
+import ConfirmModal from '../scripts/modal.js';
+
 class Account extends React.Component {
   constructor(props) {
     super(props);
@@ -9,6 +11,7 @@ class Account extends React.Component {
       currentTab: 'profile-tab',
       subOption: 'default'
     };
+    this.manageMode = 'none';
     this.loadPage = props.loadPage;
     this.handleClick = this.handleClick.bind(this);
     this.profileOption = this.profileOption.bind(this);
@@ -82,7 +85,49 @@ class Account extends React.Component {
               }
             });
           }
-        }
+        } // tribute modification
+        else if (clickedButton.id.startsWith('t-')) {
+            switch (clickedButton.id.split('-')[1]) {
+              case 'edit':
+                break;
+
+              case 'hide':
+                break;
+
+              case 'delete':
+                console.log('delete button pushed');
+                let newModal = new ConfirmModal(`Are you sure you want to delete the tribute for ${$(`#link${clickedButton.id.split('-')[1]}`).text()}`, 'Yes, delete', "No, don't delete", this.handleClick);
+                $("#main").append(newModal.outputJSX());
+                break;
+            }
+          } // modal handling
+          else if (clickedButton.id.startsWith('modal')) {
+              if (this.manageMode.startsWith('delete')) {
+                switch (clickedButton.id) {
+                  case 'modal-yes':
+                    $.ajax({
+                      "type": "DELETE",
+                      "url": '/api/design',
+                      "data": {
+                        userName: this.username,
+                        tributeName: $(`#link${clickedButton.id.split('-')[1]}`).text()
+                      },
+                      "success": response => {
+                        console.log(response);
+                      },
+                      "fail": response => {
+                        console.log(`Something went wrong with the HTTP request!`);
+                      }
+                    });
+                    break;
+
+                  case 'modal-no':
+                    break;
+                }
+              }
+
+              this.manageMode = 'none';
+            }
   }
 
   profileOption() {
@@ -339,12 +384,13 @@ class Account extends React.Component {
       class: "my-1 my-lg-3 col-lg-4"
     }, "Approved?")), /*#__PURE__*/React.createElement("b", {
       class: "my-3 col-3"
-    })), contentList.length === 0 ? /*#__PURE__*/React.createElement("p", null, "Nothing to display, yet!") : contentList[0].name.startsWith('Hang') ? /*#__PURE__*/React.createElement("p", null, contentList[0].name) : contentList.map(value => /*#__PURE__*/React.createElement("div", {
+    })), contentList.length === 0 ? /*#__PURE__*/React.createElement("p", null, "Nothing to display, yet!") : contentList[0].name.startsWith('Hang') ? /*#__PURE__*/React.createElement("p", null, contentList[0].name) : contentList.map((value, index) => /*#__PURE__*/React.createElement("div", {
       class: "row mb-1 align-items-center justify-content-center rounded border border-dark w-100"
     }, /*#__PURE__*/React.createElement("div", {
       class: "col-5 row m-0"
     }, /*#__PURE__*/React.createElement("a", {
-      key: value.name,
+      id: `link-${index}`,
+      key: `link-${index}`,
       class: "tribute-link my-1 col-lg-5",
       href: `#${value.name.toLowerCase().split(' ').join('-')}`
     }, value.name), /*#__PURE__*/React.createElement("p", {
@@ -358,17 +404,20 @@ class Account extends React.Component {
     }, value.approved ? "Yes" : "No")), /*#__PURE__*/React.createElement("div", {
       class: "col-3 row m-0"
     }, /*#__PURE__*/React.createElement("button", {
+      id: `t-edit-${index}`,
       type: "button",
       class: "btn btn-primary my-1 p-2 col-lg-4",
       disabled: true
     }, "Edit"), /*#__PURE__*/React.createElement("button", {
+      id: `t-hide-${index}`,
       type: "button",
       class: "btn btn-dark my-1 p-2 col-lg-4",
       disabled: true
     }, "Hide"), /*#__PURE__*/React.createElement("button", {
+      id: `t-delete-${index}`,
       type: "button",
       class: "btn btn-danger my-1 p-2 col-lg-4 text-center",
-      disabled: true
+      onClick: this.handleClick
     }, "Delete")))));
   }
 

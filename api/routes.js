@@ -353,7 +353,28 @@ function routes(app, database) {
       });
     })
     .put((req, res) => {})
-    .delete((req, res) => {});
+    .delete((req, res) => {
+      let user = req.body.userName;
+      let toDelete = req.body.tributeName;
+      
+      database(async function (client) {
+        let deleteResults = await client
+          .db("tributes-inc")
+          .collection("tributes")
+          .deleteOne({ name: toDelete });
+
+        if( deleteResults.deletedCount === 1) {
+          console.log( `Delete success @ ${currentTimeEST()}` );
+          console.log( `${user} : ${toDelete}` );
+          res.send(`Tribute successfully deleted.`);
+        }
+        else {
+          console.log( `Delete failure @ ${currentTimeEST()}` );
+          console.log( `${user} : ${toDelete}` );
+          res.send(`Deletion failure.`);
+        }
+      });
+    });
 
   //Tribute List Request
   app.route("/api/list")
