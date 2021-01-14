@@ -189,7 +189,6 @@ class Main extends React.Component {
         clickHandler: clickHandler
       }})
     }
-    console.log(Object.keys(this.state.modal));
   }
   
   render() {

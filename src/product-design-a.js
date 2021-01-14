@@ -58,6 +58,16 @@ class DesignBio extends React.Component {
       else $( this ).css('border', 'none');
     });
 
+    // make sure either both or none of quote/author are filled out
+    if ( ( $('#quote').val() && !$('#author').val() ) || ( $( '#author' ).val() && !$( '#quote' ).val() ) ){
+      $( '#quote' ).css('border','2px solid red');
+      $( '#author' ).css('border','2px solid red');
+      validSubmission = false;
+    } else {
+      $( '#quote' ).css('border','none');
+      $( '#author' ).css('border','none');
+    }
+
     if(validSubmission){
       $( '#submit-status' ).text('Saving...');
       $.post( "/api/design", $( "#design-a-component" ).serialize() )

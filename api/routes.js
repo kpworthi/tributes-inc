@@ -181,7 +181,7 @@ function routes(app, database) {
         let result = await client.db('tributes-inc').collection(req.body.id?'pages':'tributes').findOne(searchTerm);
 
         if (result === null){
-          console.log(`Page lookup: Could not find ${req.body.name_lower}! @ ${currentTimeEST()}`);
+          console.log(`Page lookup: Could not find ${req.body.name}! @ ${currentTimeEST()}`);
           return res.send('No match found!');
         }
         else {
