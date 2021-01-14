@@ -163,26 +163,32 @@ class Account extends React.Component {
       console.log(`${buttonType} button pushed`);
       this.manageMode = `${buttonType}-${buttonIndex}`;
       this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${ $( `#link-${buttonIndex}` ).text() }`, 
-                            'Yes, delete', 
-                            "No, don't delete", 
+                            `Yes, ${buttonType}`, 
+                            `No, don't ${buttonType}`, 
                             this.handleClick);
     }
     // modal handling
     else if ( clickedButton.id.startsWith('modal') ){
-      if( this.manageMode.startsWith('delete') ) {
+      let modeType = this.manageMode.split('-')[0];
+
+      if ( modeType === 'edit' ) {
+        // do nothing for now, will go to designer page with filled in info for resubmission
+      }
+      else if ( modeType === 'hide' || modeType === 'show' || modeType === 'delete') {
         switch(clickedButton.id){
           case 'modal-yes':
             $.ajax({
-              "type": "DELETE",
+              "type": modeType==='delete'?"DELETE":"PUT",
               "url": '/api/design',
-              "data": { userName: this.username, tributeName: $( `#link-${this.manageMode.split('-')[1]}` ).text() },
+              "data": { userName: this.username, 
+                        tributeName: $( `#link-${this.manageMode.split('-')[1]}` ).text(), 
+                        editType: modeType==='delete'?null:modeType},
               "success": (response) => {
                 this.getContentList();
                 this.updateModalState(response, 
                                       'Got it',
                                       null, 
                                       this.handleClick);
-                console.log(response);
               },
               "fail": (response) => {
                 console.log(`Something went wrong with the HTTP request!`)
@@ -374,9 +380,12 @@ class Account extends React.Component {
               <p class="my-2 my-lg-1 col-lg-8">{new Date(value.created_on).toDateString()}</p>  
               <p class="my-2 my-lg-1 col-lg-4">{value.approved?"Yes":"No"}</p>
             </div><div class="col-3 row m-0">
-              <button id={`t-edit-${index}`} type="button" class="btn btn-primary my-1 p-2 col-lg-4" disabled>Edit</button>
-              <button id={`t-hide-${index}`} type="button" class="btn btn-dark my-1 p-2 col-lg-4" disabled>Hide</button>
-              <button id={`t-delete-${index}`} type="button" class="btn btn-danger my-1 p-2 col-lg-4 text-center" onClick={this.handleClick}>Delete</button>
+              <button id={`t-edit-${index}`} type="button" class="btn btn-primary my-1 p-2 col-lg-4" 
+                      onClick={this.handleClick}>Edit</button>
+              <button id={`t-${value.visible?"hide":"show"}-${index}`} type="button" class="btn btn-dark my-1 p-2 col-lg-4" 
+                      onClick={this.handleClick}>{value.visible?"Hide":"Show"}</button>
+              <button id={`t-delete-${index}`} type="button" class="btn btn-danger my-1 p-2 col-lg-4 text-center" 
+                      onClick={this.handleClick}>Delete</button>
             </div>
           </div>
         )}

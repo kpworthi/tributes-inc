@@ -92,23 +92,26 @@ class Account extends React.Component {
                 buttonIndex = clickedButton.id.split('-')[2];
             console.log(`${buttonType} button pushed`);
             this.manageMode = `${buttonType}-${buttonIndex}`;
-            this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${$(`#link-${buttonIndex}`).text()}`, 'Yes, delete', "No, don't delete", this.handleClick);
+            this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${$(`#link-${buttonIndex}`).text()}`, `Yes, ${buttonType}`, `No, don't ${buttonType}`, this.handleClick);
           } // modal handling
           else if (clickedButton.id.startsWith('modal')) {
-              if (this.manageMode.startsWith('delete')) {
+              let modeType = this.manageMode.split('-')[0];
+
+              if (modeType === 'edit') {// do nothing for now, will go to designer page with filled in info for resubmission
+              } else if (modeType === 'hide' || modeType === 'show' || modeType === 'delete') {
                 switch (clickedButton.id) {
                   case 'modal-yes':
                     $.ajax({
-                      "type": "DELETE",
+                      "type": modeType === 'delete' ? "DELETE" : "PUT",
                       "url": '/api/design',
                       "data": {
                         userName: this.username,
-                        tributeName: $(`#link-${this.manageMode.split('-')[1]}`).text()
+                        tributeName: $(`#link-${this.manageMode.split('-')[1]}`).text(),
+                        editType: modeType === 'delete' ? null : modeType
                       },
                       "success": response => {
                         this.getContentList();
                         this.updateModalState(response, 'Got it', null, this.handleClick);
-                        console.log(response);
                       },
                       "fail": response => {
                         console.log(`Something went wrong with the HTTP request!`);
@@ -403,13 +406,13 @@ class Account extends React.Component {
       id: `t-edit-${index}`,
       type: "button",
       class: "btn btn-primary my-1 p-2 col-lg-4",
-      disabled: true
+      onClick: this.handleClick
     }, "Edit"), /*#__PURE__*/React.createElement("button", {
-      id: `t-hide-${index}`,
+      id: `t-${value.visible ? "hide" : "show"}-${index}`,
       type: "button",
       class: "btn btn-dark my-1 p-2 col-lg-4",
-      disabled: true
-    }, "Hide"), /*#__PURE__*/React.createElement("button", {
+      onClick: this.handleClick
+    }, value.visible ? "Hide" : "Show"), /*#__PURE__*/React.createElement("button", {
       id: `t-delete-${index}`,
       type: "button",
       class: "btn btn-danger my-1 p-2 col-lg-4 text-center",
