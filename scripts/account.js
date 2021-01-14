@@ -90,15 +90,17 @@ class Account extends React.Component {
         else if (clickedButton.id.startsWith('t-')) {
             let buttonType = clickedButton.id.split('-')[1],
                 buttonIndex = clickedButton.id.split('-')[2];
-            console.log(`${buttonType} button pushed`);
-            this.manageMode = `${buttonType}-${buttonIndex}`;
-            this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${$(`#link-${buttonIndex}`).text()}`, `Yes, ${buttonType}`, `No, don't ${buttonType}`, this.handleClick);
+
+            if (buttonType !== 'edit') {
+              this.manageMode = `${buttonType}-${buttonIndex}`;
+              this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${$(`#link-${buttonIndex}`).text()}`, `Yes, ${buttonType}`, `No, don't ${buttonType}`, this.handleClick);
+            } else if (buttonType === 'edit') {// do nothing for now, will go to designer page with filled in info for resubmission
+            }
           } // modal handling
           else if (clickedButton.id.startsWith('modal')) {
               let modeType = this.manageMode.split('-')[0];
 
-              if (modeType === 'edit') {// do nothing for now, will go to designer page with filled in info for resubmission
-              } else if (modeType === 'hide' || modeType === 'show' || modeType === 'delete') {
+              if (modeType === 'hide' || modeType === 'show' || modeType === 'delete') {
                 switch (clickedButton.id) {
                   case 'modal-yes':
                     $.ajax({
