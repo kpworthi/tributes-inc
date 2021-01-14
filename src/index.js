@@ -1,5 +1,6 @@
 import Footer from '../scripts/footer.js';
 import Header from '../scripts/header.js';
+import ConfirmModal from '../scripts/modal.js';
 
 const currentTimeEST = () =>
   new Date().toLocaleString("en-US", { timeZone: "EST" }) + " EST";
@@ -11,12 +12,14 @@ class Main extends React.Component {
     this.state = {
       viewing: 'default',
       auth: false,
-      username: ''
+      username: '',
+      modal: {}
     };
 
     this.loadPage          = this.loadPage.bind(this);
     this.handleHashChange  = this.handleHashChange.bind(this);
     this.updateLoginState  = this.updateLoginState.bind(this);
+    this.updateModalState  = this.updateModalState.bind(this);
 
     // fetching is used for preventing multiple db/server queries when one might already be active
     this.fetching    = false;
@@ -42,7 +45,9 @@ class Main extends React.Component {
         .done( ( response ) => {
           this.setState( {auth: response.auth, username: response.username?response.username:'' }, () => {
             // if there's already a session and user is on login, move them to account
-            if (this.state.auth && linkHash === '#login') linkHash = '#account';
+            if (this.state.auth && linkHash === '#login') window.location.hash = '#account';
+            // if there's no session
+            else if ( this.state.auth === false ) window.location.hash = '#login';
             this.handleHashChange();
             $( document ).click( () => {this.collapseNavbar();});
             $( window ).on('hashchange', this.handleHashChange );
@@ -171,6 +176,21 @@ class Main extends React.Component {
       location.href = '#home'
     }
   }
+
+  updateModalState ( modalText, modalYes, modalNo, clickHandler ) {
+    if ( !modalText ){
+      this.setState({ modal: {} })
+    }
+    else {
+      this.setState({ modal: {
+        text: modalText,
+        btnYes: modalYes,
+        btnNo: modalNo,
+        clickHandler: clickHandler
+      }})
+    }
+    console.log(Object.keys(this.state.modal));
+  }
   
   render() {
     let View = this.pageView;
@@ -180,8 +200,15 @@ class Main extends React.Component {
 
         <Header auth={this.state.auth} username={this.state.username} updateLoginState={this.updateLoginState} />
 
+        {Object.keys(this.state.modal).length===0?null:
+        <ConfirmModal text={this.state.modal.text}
+                      btnYes={this.state.modal.btnYes}
+                      btnNo={this.state.modal.btnNo}
+                      clickHandler={this.state.modal.clickHandler} />}
+
         <div id="view-wrapper">
-          <View updateLoginState={this.updateLoginState} 
+          <View updateLoginState={this.updateLoginState}
+                updateModalState={this.updateModalState}
                 username={this.state.username} 
                 dbEntry={this.dbEntry?this.dbEntry:null}
                 loadPage={this.loadPage}

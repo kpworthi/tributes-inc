@@ -13,6 +13,7 @@ class Account extends React.Component {
     };
     this.manageMode = 'none';
     this.loadPage = props.loadPage;
+    this.updateModalState = props.updateModalState;
     this.handleClick = this.handleClick.bind(this);
     this.profileOption = this.profileOption.bind(this);
     this.contentOption = this.contentOption.bind(this);
@@ -48,7 +49,7 @@ class Account extends React.Component {
 
   handleClick(event) {
     let clickedButton = event.currentTarget;
-    console.log(clickedButton.id.split('product-')[1]);
+    console.log(clickedButton.id);
     event.stopPropagation(); // if clicking on a main tab
 
     if (clickedButton.id.includes('tab')) {
@@ -87,19 +88,11 @@ class Account extends React.Component {
           }
         } // tribute modification
         else if (clickedButton.id.startsWith('t-')) {
-            switch (clickedButton.id.split('-')[1]) {
-              case 'edit':
-                break;
-
-              case 'hide':
-                break;
-
-              case 'delete':
-                console.log('delete button pushed');
-                let newModal = new ConfirmModal(`Are you sure you want to delete the tribute for ${$(`#link${clickedButton.id.split('-')[1]}`).text()}`, 'Yes, delete', "No, don't delete", this.handleClick);
-                $("#main").append(newModal.outputJSX());
-                break;
-            }
+            let buttonType = clickedButton.id.split('-')[1],
+                buttonIndex = clickedButton.id.split('-')[2];
+            console.log(`${buttonType} button pushed`);
+            this.manageMode = `${buttonType}-${buttonIndex}`;
+            this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${$(`#link-${buttonIndex}`).text()}`, 'Yes, delete', "No, don't delete", this.handleClick);
           } // modal handling
           else if (clickedButton.id.startsWith('modal')) {
               if (this.manageMode.startsWith('delete')) {
@@ -110,9 +103,11 @@ class Account extends React.Component {
                       "url": '/api/design',
                       "data": {
                         userName: this.username,
-                        tributeName: $(`#link${clickedButton.id.split('-')[1]}`).text()
+                        tributeName: $(`#link-${this.manageMode.split('-')[1]}`).text()
                       },
                       "success": response => {
+                        this.getContentList();
+                        this.updateModalState(response, 'Got it', null, this.handleClick);
                         console.log(response);
                       },
                       "fail": response => {
@@ -127,6 +122,7 @@ class Account extends React.Component {
               }
 
               this.manageMode = 'none';
+              this.updateModalState();
             }
   }
 
