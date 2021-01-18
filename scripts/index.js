@@ -190,8 +190,6 @@ class Main extends React.Component {
         }
       });
     }
-
-    console.log(Object.keys(this.state.modal));
   }
 
   render() {

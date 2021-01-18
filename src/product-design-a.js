@@ -165,12 +165,9 @@ class DesignBio extends React.Component {
 
             <button type="submit" id="save-btn" class="btn btn-success">Save Tribute</button>
             <p id="submit-status" class="" />
-
+            <div id="lower-inside-buffer" style={{"min-height": "100px"}}/>
           </div>
         </div>
-
-
-        <div id="lower-buffer" style={{"height": "200px"}}/>
 
       </form>
     )

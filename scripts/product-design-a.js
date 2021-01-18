@@ -239,12 +239,12 @@ class DesignBio extends React.Component {
     }, "Save Tribute"), /*#__PURE__*/React.createElement("p", {
       id: "submit-status",
       class: ""
-    }))), /*#__PURE__*/React.createElement("div", {
-      id: "lower-buffer",
+    }), /*#__PURE__*/React.createElement("div", {
+      id: "lower-inside-buffer",
       style: {
-        "height": "200px"
+        "min-height": "100px"
       }
-    }));
+    }))));
   }
 
 }
