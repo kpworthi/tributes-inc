@@ -93,7 +93,7 @@ class Account extends React.Component {
 
             if (buttonType !== 'edit') {
               this.manageMode = `${buttonType}-${buttonIndex}`;
-              this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${$(`#link-${buttonIndex}`).text()}`, `Yes, ${buttonType}`, `No, don't ${buttonType}`, this.handleClick);
+              this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${$(`#link-${buttonIndex}`).text()}?`, `Yes, ${buttonType}`, `No, don't ${buttonType}`, this.handleClick);
             } else if (buttonType === 'edit') {// do nothing for now, will go to designer page with filled in info for resubmission
             }
           } // modal handling
@@ -408,7 +408,8 @@ class Account extends React.Component {
       id: `t-edit-${index}`,
       type: "button",
       class: "btn btn-primary my-1 p-2 col-lg-4",
-      onClick: this.handleClick
+      onClick: this.handleClick,
+      disabled: true
     }, "Edit"), /*#__PURE__*/React.createElement("button", {
       id: `t-${value.visible ? "hide" : "show"}-${index}`,
       type: "button",

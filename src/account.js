@@ -162,7 +162,7 @@ class Account extends React.Component {
       
       if (buttonType !== 'edit' ) {
         this.manageMode = `${buttonType}-${buttonIndex}`;
-        this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${ $( `#link-${buttonIndex}` ).text() }`, 
+        this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${ $( `#link-${buttonIndex}` ).text() }?`, 
                               `Yes, ${buttonType}`, 
                               `No, don't ${buttonType}`, 
                               this.handleClick);
@@ -382,7 +382,7 @@ class Account extends React.Component {
               <p class="my-2 my-lg-1 col-lg-4">{value.approved?"Yes":"No"}</p>
             </div><div class="col-3 row m-0">
               <button id={`t-edit-${index}`} type="button" class="btn btn-primary my-1 p-2 col-lg-4" 
-                      onClick={this.handleClick}>Edit</button>
+                      onClick={this.handleClick} disabled>Edit</button>
               <button id={`t-${value.visible?"hide":"show"}-${index}`} type="button" class="btn btn-dark my-1 p-2 col-lg-4" 
                       onClick={this.handleClick}>{value.visible?"Hide":"Show"}</button>
               <button id={`t-delete-${index}`} type="button" class="btn btn-danger my-1 p-2 col-lg-4 text-center" 
