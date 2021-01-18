@@ -1,3 +1,5 @@
+import ConfirmModal from '../scripts/modal.js';
+
 class Account extends React.Component {
   constructor(props) {
     super(props);
@@ -9,7 +11,9 @@ class Account extends React.Component {
       currentTab: 'profile-tab',
       subOption: 'default'
     };
+    this.manageMode = 'none';
     this.loadPage = props.loadPage;
+    this.updateModalState = props.updateModalState;
     this.handleClick = this.handleClick.bind(this);
     this.profileOption = this.profileOption.bind(this);
     this.contentOption = this.contentOption.bind(this);
@@ -45,7 +49,7 @@ class Account extends React.Component {
 
   handleClick(event) {
     let clickedButton = event.currentTarget;
-    console.log(clickedButton.id.split('product-')[1]);
+    console.log(clickedButton.id);
     event.stopPropagation(); // if clicking on a main tab
 
     if (clickedButton.id.includes('tab')) {
@@ -82,7 +86,49 @@ class Account extends React.Component {
               }
             });
           }
-        }
+        } // tribute modification
+        else if (clickedButton.id.startsWith('t-')) {
+            let buttonType = clickedButton.id.split('-')[1],
+                buttonIndex = clickedButton.id.split('-')[2];
+
+            if (buttonType !== 'edit') {
+              this.manageMode = `${buttonType}-${buttonIndex}`;
+              this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${$(`#link-${buttonIndex}`).text()}?`, `Yes, ${buttonType}`, `No, don't ${buttonType}`, this.handleClick);
+            } else if (buttonType === 'edit') {// do nothing for now, will go to designer page with filled in info for resubmission
+            }
+          } // modal handling
+          else if (clickedButton.id.startsWith('modal')) {
+              let modeType = this.manageMode.split('-')[0];
+
+              if (modeType === 'hide' || modeType === 'show' || modeType === 'delete') {
+                switch (clickedButton.id) {
+                  case 'modal-yes':
+                    $.ajax({
+                      "type": modeType === 'delete' ? "DELETE" : "PUT",
+                      "url": '/api/design',
+                      "data": {
+                        userName: this.username,
+                        tributeName: $(`#link-${this.manageMode.split('-')[1]}`).text(),
+                        editType: modeType === 'delete' ? null : modeType
+                      },
+                      "success": response => {
+                        this.getContentList();
+                        this.updateModalState(response, 'Got it', null, this.handleClick);
+                      },
+                      "fail": response => {
+                        console.log(`Something went wrong with the HTTP request!`);
+                      }
+                    });
+                    break;
+
+                  case 'modal-no':
+                    break;
+                }
+              }
+
+              this.manageMode = 'none';
+              this.updateModalState();
+            }
   }
 
   profileOption() {
@@ -339,12 +385,13 @@ class Account extends React.Component {
       class: "my-1 my-lg-3 col-lg-4"
     }, "Approved?")), /*#__PURE__*/React.createElement("b", {
       class: "my-3 col-3"
-    })), contentList.length === 0 ? /*#__PURE__*/React.createElement("p", null, "Nothing to display, yet!") : contentList[0].name.startsWith('Hang') ? /*#__PURE__*/React.createElement("p", null, contentList[0].name) : contentList.map(value => /*#__PURE__*/React.createElement("div", {
+    })), contentList.length === 0 ? /*#__PURE__*/React.createElement("p", null, "Nothing to display, yet!") : contentList[0].name.startsWith('Hang') ? /*#__PURE__*/React.createElement("p", null, contentList[0].name) : contentList.map((value, index) => /*#__PURE__*/React.createElement("div", {
       class: "row mb-1 align-items-center justify-content-center rounded border border-dark w-100"
     }, /*#__PURE__*/React.createElement("div", {
       class: "col-5 row m-0"
     }, /*#__PURE__*/React.createElement("a", {
-      key: value.name,
+      id: `link-${index}`,
+      key: `link-${index}`,
       class: "tribute-link my-1 col-lg-5",
       href: `#${value.name.toLowerCase().split(' ').join('-')}`
     }, value.name), /*#__PURE__*/React.createElement("p", {
@@ -358,17 +405,21 @@ class Account extends React.Component {
     }, value.approved ? "Yes" : "No")), /*#__PURE__*/React.createElement("div", {
       class: "col-3 row m-0"
     }, /*#__PURE__*/React.createElement("button", {
+      id: `t-edit-${index}`,
       type: "button",
       class: "btn btn-primary my-1 p-2 col-lg-4",
+      onClick: this.handleClick,
       disabled: true
     }, "Edit"), /*#__PURE__*/React.createElement("button", {
+      id: `t-${value.visible ? "hide" : "show"}-${index}`,
       type: "button",
       class: "btn btn-dark my-1 p-2 col-lg-4",
-      disabled: true
-    }, "Hide"), /*#__PURE__*/React.createElement("button", {
+      onClick: this.handleClick
+    }, value.visible ? "Hide" : "Show"), /*#__PURE__*/React.createElement("button", {
+      id: `t-delete-${index}`,
       type: "button",
       class: "btn btn-danger my-1 p-2 col-lg-4 text-center",
-      disabled: true
+      onClick: this.handleClick
     }, "Delete")))));
   }
 

@@ -12,12 +12,27 @@ Create a multi-page website incorporating multiple functionalaties learned over 
 1. MongoDB is utilized for account authentication and user-created content
 1. Server to be created using Node.js and Express.js
 
-### 0.4.0 changes
-1. Users can now create a templated tribute page through their account page
-1. Two tribute templates are available, a biography style, and a timeline style
-1. Template previews are available from the products page
+### 0.4.1 changes
+1. Users can now delete a created tribute from their account page under the 'Your Content' tab
+1. Users can now hide or show a created tribute from their account page under the 'Your Content' tab
+   - Showing or hiding a tribute that has not yet been approved will have no noticeable affect
+   - Hidden tributes can still be viewed by direct link
+1. A confirmation pop-up/modal will display when a user attempts to hide, show, or delete their tribute
+1. Design pages will now appropriately flag a quote with no author or an author with no quote
 
-- Basic design in place for account:profile area
+### 0.4.0 changes
+1. Users can now create a templated tribute page through their account page under the 'Create or Buy' tab
+   - Two tribute templates are available, a biography style, and a timeline style
+   - Template previews are available from the products page
+   - After completion of a tribute page, the page requires review and approval by a site admin prior to being viewable
+   - Regardless of approval status, the page will appear in the user's account page under "Your Content"
+   - Once the tribute is approved, the tribute will be viewable by direct link, or by using the directory
+1. The directory has been updated to show all approved tributes, and includes a filter bar that can be used to search by name
+1. Page navigation has been reworked in the scripts so that forward/back browser navigation, as well as typing direct links, is now available
+
+- Forms for filling out personal information are now available on the user's account page under "Profile", but are otherwise non-functional
+- As payment information cannot be saved, and orders cannot be placed, Payment Information and History tabs only have light placeholder text
+- The 'Create or Buy' store has image in place for the active cards (navigable to the template designers) but the other cards are grayed out
 
 ### 0.3.4 changes
 1. Logo now points to the home page

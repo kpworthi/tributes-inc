@@ -181,7 +181,7 @@ function routes(app, database) {
         let result = await client.db('tributes-inc').collection(req.body.id?'pages':'tributes').findOne(searchTerm);
 
         if (result === null){
-          console.log(`Page lookup: Could not find ${req.body.name_lower}! @ ${currentTimeEST()}`);
+          console.log(`Page lookup: Could not find ${req.body.name}! @ ${currentTimeEST()}`);
           return res.send('No match found!');
         }
         else {
@@ -352,8 +352,59 @@ function routes(app, database) {
         }
       });
     })
-    .put((req, res) => {})
-    .delete((req, res) => {});
+    .put((req, res) => {
+      let editType  = req.body.editType;
+      let user      = req.body.userName;
+      let toEdit    = req.body.tributeName;
+      let modObject = {};
+
+      if ( editType === 'hide' ) modObject = {$set: {"visible": false} };
+      else if ( editType === 'show' ) modObject = {$set: {"visible": true} };
+      else {
+        res.send('Not yet available');
+        return null;
+      }
+
+      database(async function (client) {
+        let updateResults = await client
+          .db("tributes-inc")
+          .collection("tributes")
+          .updateOne({ name: toEdit }, modObject );
+
+        if ( updateResults.modifiedCount === 1) {
+          console.log(`Update success @ ${currentTimeEST()}` );
+          console.log(`${user} : ${editType} - ${toEdit}`);
+          res.send(`Tribute successfully updated.`);
+        }
+        else {
+          console.log(`Update failure @ ${currentTimeEST()}` );
+          console.log(`${user} : ${editType} - ${toEdit}`);
+          res.send(`Tribute did not update.`);
+        }
+      });
+    })
+    .delete((req, res) => {
+      let user = req.body.userName;
+      let toDelete = req.body.tributeName;
+      
+      database(async function (client) {
+        let deleteResults = await client
+          .db("tributes-inc")
+          .collection("tributes")
+          .deleteOne({ name: toDelete });
+
+        if( deleteResults.deletedCount === 1) {
+          console.log( `Delete success @ ${currentTimeEST()}` );
+          console.log( `${user} : ${toDelete}` );
+          res.send(`Tribute successfully deleted.`);
+        }
+        else {
+          console.log( `Delete failure @ ${currentTimeEST()}` );
+          console.log( `${user} : ${toDelete}` );
+          res.send(`Deletion failure, please try again.`);
+        }
+      });
+    });
 
   //Tribute List Request
   app.route("/api/list")
@@ -365,11 +416,12 @@ function routes(app, database) {
       switch(reqType){
         case 'directory':
           query.approved = true;
+          query.visible  = true;
           options.projection = {"name": 1, "username":1, "approved": 1}
           break;
         case 'user':
           query.username = req.body.username;
-          options.projection = {"name": 1, "approved": 1, "type": 1, "created_on": 1};
+          options.projection = {"name": 1, "approved": 1, "type": 1, "visible": 1, "created_on": 1};
           break;
       }
 

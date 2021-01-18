@@ -1,3 +1,5 @@
+import ConfirmModal from '../scripts/modal.js';
+
 class Account extends React.Component {
   constructor(props){
     super(props);
@@ -9,7 +11,10 @@ class Account extends React.Component {
       subOption: 'default'
     }
 
-    this.loadPage = props.loadPage;
+    this.manageMode = 'none';
+
+    this.loadPage          = props.loadPage;
+    this.updateModalState  = props.updateModalState;
 
     this.handleClick       = this.handleClick.bind(this);
     this.profileOption     = this.profileOption.bind(this);
@@ -111,7 +116,7 @@ class Account extends React.Component {
   
   handleClick (event) {
     let clickedButton = event.currentTarget;
-    console.log(clickedButton.id.split('product-')[1]);
+    console.log(clickedButton.id);
     event.stopPropagation();
 
     // if clicking on a main tab
@@ -149,6 +154,55 @@ class Account extends React.Component {
           "success": (response) => {console.log(response)}
         });
       }
+    }
+    // tribute modification
+    else if ( clickedButton.id.startsWith('t-') ){
+      let buttonType  = clickedButton.id.split('-')[1],
+          buttonIndex = clickedButton.id.split('-')[2]
+      
+      if (buttonType !== 'edit' ) {
+        this.manageMode = `${buttonType}-${buttonIndex}`;
+        this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${ $( `#link-${buttonIndex}` ).text() }?`, 
+                              `Yes, ${buttonType}`, 
+                              `No, don't ${buttonType}`, 
+                              this.handleClick);
+      }
+      else if ( buttonType === 'edit' ){
+        // do nothing for now, will go to designer page with filled in info for resubmission
+      }
+    }
+    // modal handling
+    else if ( clickedButton.id.startsWith('modal') ){
+      let modeType = this.manageMode.split('-')[0];
+
+      if ( modeType === 'hide' || modeType === 'show' || modeType === 'delete') {
+        switch(clickedButton.id){
+          case 'modal-yes':
+            $.ajax({
+              "type": modeType==='delete'?"DELETE":"PUT",
+              "url": '/api/design',
+              "data": { userName: this.username, 
+                        tributeName: $( `#link-${this.manageMode.split('-')[1]}` ).text(), 
+                        editType: modeType==='delete'?null:modeType},
+              "success": (response) => {
+                this.getContentList();
+                this.updateModalState(response, 
+                                      'Got it',
+                                      null, 
+                                      this.handleClick);
+              },
+              "fail": (response) => {
+                console.log(`Something went wrong with the HTTP request!`)
+              }
+            });
+            break;
+          case 'modal-no' :
+            break;
+        }
+      }
+
+      this.manageMode       = 'none';
+      this.updateModalState();
     }
   }
 
@@ -318,18 +372,21 @@ class Account extends React.Component {
         </div>
         {contentList.length===0?<p>Nothing to display, yet!</p>:
         contentList[0].name.startsWith('Hang')?<p>{contentList[0].name}</p>:
-        contentList.map((value) => 
+        contentList.map((value, index) => 
           <div class="row mb-1 align-items-center justify-content-center rounded border border-dark w-100">
             <div class="col-5 row m-0">
-              <a key={value.name} class="tribute-link my-1 col-lg-5" href={`#${value.name.toLowerCase().split(' ').join('-')}`}>{value.name}</a>
+              <a id={`link-${index}`} key={`link-${index}`} class="tribute-link my-1 col-lg-5" href={`#${value.name.toLowerCase().split(' ').join('-')}`}>{value.name}</a>
               <p class="my-1 col-lg-7">{this.contentTypes[value.type]}</p>
             </div><div class="col-4 row m-0">
               <p class="my-2 my-lg-1 col-lg-8">{new Date(value.created_on).toDateString()}</p>  
               <p class="my-2 my-lg-1 col-lg-4">{value.approved?"Yes":"No"}</p>
             </div><div class="col-3 row m-0">
-              <button type="button" class="btn btn-primary my-1 p-2 col-lg-4" disabled>Edit</button>
-              <button type="button" class="btn btn-dark my-1 p-2 col-lg-4" disabled>Hide</button>
-              <button type="button" class="btn btn-danger my-1 p-2 col-lg-4 text-center" disabled>Delete</button>
+              <button id={`t-edit-${index}`} type="button" class="btn btn-primary my-1 p-2 col-lg-4" 
+                      onClick={this.handleClick} disabled>Edit</button>
+              <button id={`t-${value.visible?"hide":"show"}-${index}`} type="button" class="btn btn-dark my-1 p-2 col-lg-4" 
+                      onClick={this.handleClick}>{value.visible?"Hide":"Show"}</button>
+              <button id={`t-delete-${index}`} type="button" class="btn btn-danger my-1 p-2 col-lg-4 text-center" 
+                      onClick={this.handleClick}>Delete</button>
             </div>
           </div>
         )}

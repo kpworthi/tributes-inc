@@ -161,4 +161,24 @@ figure {
   color: #7E4A35;
 }
 
+.modal-bg {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  left: 0;
+  top: 0;
+  background-color: rgba(255, 255, 255, 0.5);
+  z-index: 5;
+}
+.modal-bg .modal-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  box-shadow: 2px 2px 2px;
+}
+
 /*# sourceMappingURL=index.css.map */
