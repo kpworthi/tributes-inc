@@ -7,8 +7,6 @@ class Header extends React.Component {
     this.auth = props.auth;
     this.username = props.username;
 
-    this.updateLoginState = this.props.updateLoginState;
-
     this.userArea = this.userArea.bind(this);
     
   }

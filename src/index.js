@@ -18,8 +18,7 @@ class Main extends React.Component {
 
     this.loadPage          = this.loadPage.bind(this);
     this.handleHashChange  = this.handleHashChange.bind(this);
-    this.updateLoginState  = this.updateLoginState.bind(this);
-    this.updateModalState  = this.updateModalState.bind(this);
+    this.updateMainState   = this.updateMainState.bind(this);
 
     // fetching is used for preventing multiple db/server queries when one might already be active
     this.fetching    = false;
@@ -64,7 +63,7 @@ class Main extends React.Component {
 
       let submission = $.get( '/api/login' )
         .done( ( response ) => {
-          this.updateLoginState( response.auth, response.username?response.username:'' )
+          this.setState( {auth: response.auth, username: response.username?response.username:''} )
         })
         .fail( function ( err ) {
           console.log(' Auth-check HTTP request failed. ' + currentTimeEST());
@@ -86,13 +85,13 @@ class Main extends React.Component {
       if ( theHash === 'logout'){
         let submission = $.get( '/api/logout' )
           .done( ( response ) => {
-            this.updateLoginState( false, '' );
-            this.loadPage( theHash )
+            this.updateMainState( {auth: false, username: ''} );
+            window.location.href = "#home";
           })
           .fail( function ( err ) {
             console.log(' Log out HTTP request failed. ' + currentTimeEST());
-            this.updateLoginState( false, '' );//force user logout client-side, at least
-            this.loadPage( theHash );
+            this.updateMainState( {auth: false, username: ''} );//force user logout client-side, at least
+            window.location.href = "home";
           });
       }
       //when loading a template preview
@@ -166,38 +165,18 @@ class Main extends React.Component {
     }, 400);
   }
 
-  // passed to components to update login section of index state
-  updateLoginState ( isAuth, username = '' ) {
-    this.setState( { auth: isAuth, username: username } );
-    if ( isAuth && this.state.viewing === 'login' ) {
-      location.href = '#account';
-    }
-    else if ( !isAuth && this.state.viewing === 'account' ) {
-      location.href = '#home'
-    }
+  // passed to components to update index state
+  updateMainState ( updateObj ) {
+    this.setState( updateObj );
   }
 
-  updateModalState ( modalText, modalYes, modalNo, clickHandler ) {
-    if ( !modalText ){
-      this.setState({ modal: {} })
-    }
-    else {
-      this.setState({ modal: {
-        text: modalText,
-        btnYes: modalYes,
-        btnNo: modalNo,
-        clickHandler: clickHandler
-      }})
-    }
-  }
-  
   render() {
     let View = this.pageView;
 
     return (
       <main id="main" class="">
 
-        <Header auth={this.state.auth} username={this.state.username} updateLoginState={this.updateLoginState} />
+        <Header auth={this.state.auth} username={this.state.username} updateMainState={this.updateMainState} />
 
         {Object.keys(this.state.modal).length===0?null:
         <ConfirmModal text={this.state.modal.text}
@@ -206,8 +185,7 @@ class Main extends React.Component {
                       clickHandler={this.state.modal.clickHandler} />}
 
         <div id="view-wrapper">
-          <View updateLoginState={this.updateLoginState}
-                updateModalState={this.updateModalState}
+          <View updateMainState={this.updateMainState}
                 username={this.state.username} 
                 dbEntry={this.dbEntry?this.dbEntry:null}
                 loadPage={this.loadPage}

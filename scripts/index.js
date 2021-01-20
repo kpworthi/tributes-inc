@@ -17,8 +17,7 @@ class Main extends React.Component {
     };
     this.loadPage = this.loadPage.bind(this);
     this.handleHashChange = this.handleHashChange.bind(this);
-    this.updateLoginState = this.updateLoginState.bind(this);
-    this.updateModalState = this.updateModalState.bind(this); // fetching is used for preventing multiple db/server queries when one might already be active
+    this.updateMainState = this.updateMainState.bind(this); // fetching is used for preventing multiple db/server queries when one might already be active
 
     this.fetching = false;
     this.dbEntry = {};
@@ -69,7 +68,10 @@ class Main extends React.Component {
     else {
         this.handleHashChange();
         let submission = $.get('/api/login').done(response => {
-          this.updateLoginState(response.auth, response.username ? response.username : '');
+          this.setState({
+            auth: response.auth,
+            username: response.username ? response.username : ''
+          });
         }).fail(function (err) {
           console.log(' Auth-check HTTP request failed. ' + currentTimeEST());
         });
@@ -88,13 +90,19 @@ class Main extends React.Component {
       //when logging out
       if (theHash === 'logout') {
         let submission = $.get('/api/logout').done(response => {
-          this.updateLoginState(false, '');
-          this.loadPage(theHash);
+          this.updateMainState({
+            auth: false,
+            username: ''
+          });
+          window.location.href = "#home";
         }).fail(function (err) {
           console.log(' Log out HTTP request failed. ' + currentTimeEST());
-          this.updateLoginState(false, ''); //force user logout client-side, at least
+          this.updateMainState({
+            auth: false,
+            username: ''
+          }); //force user logout client-side, at least
 
-          this.loadPage(theHash);
+          window.location.href = "home";
         });
       } //when loading a template preview
       else if (theHash.includes('template')) {
@@ -159,37 +167,11 @@ class Main extends React.Component {
         });
       });
     }, 400);
-  } // passed to components to update login section of index state
+  } // passed to components to update index state
 
 
-  updateLoginState(isAuth, username = '') {
-    this.setState({
-      auth: isAuth,
-      username: username
-    });
-
-    if (isAuth && this.state.viewing === 'login') {
-      location.href = '#account';
-    } else if (!isAuth && this.state.viewing === 'account') {
-      location.href = '#home';
-    }
-  }
-
-  updateModalState(modalText, modalYes, modalNo, clickHandler) {
-    if (!modalText) {
-      this.setState({
-        modal: {}
-      });
-    } else {
-      this.setState({
-        modal: {
-          text: modalText,
-          btnYes: modalYes,
-          btnNo: modalNo,
-          clickHandler: clickHandler
-        }
-      });
-    }
+  updateMainState(updateObj) {
+    this.setState(updateObj);
   }
 
   render() {
@@ -200,7 +182,7 @@ class Main extends React.Component {
     }, /*#__PURE__*/React.createElement(Header, {
       auth: this.state.auth,
       username: this.state.username,
-      updateLoginState: this.updateLoginState
+      updateMainState: this.updateMainState
     }), Object.keys(this.state.modal).length === 0 ? null : /*#__PURE__*/React.createElement(ConfirmModal, {
       text: this.state.modal.text,
       btnYes: this.state.modal.btnYes,
@@ -209,8 +191,7 @@ class Main extends React.Component {
     }), /*#__PURE__*/React.createElement("div", {
       id: "view-wrapper"
     }, /*#__PURE__*/React.createElement(View, {
-      updateLoginState: this.updateLoginState,
-      updateModalState: this.updateModalState,
+      updateMainState: this.updateMainState,
       username: this.state.username,
       dbEntry: this.dbEntry ? this.dbEntry : null,
       loadPage: this.loadPage

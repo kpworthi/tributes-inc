@@ -12,7 +12,7 @@ class Account extends React.Component {
       subOption: 'default'
     };
     this.manageMode = 'none';
-    this.updateModalState = props.updateModalState;
+    this.updateMainState = props.updateMainState;
     this.handleClick = this.handleClick.bind(this);
     this.contentOption = this.contentOption.bind(this);
     this.createOption = this.createOption.bind(this);
@@ -88,7 +88,14 @@ class Account extends React.Component {
 
             if (buttonType !== 'edit') {
               this.manageMode = `${buttonType}-${buttonIndex}`;
-              this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${$(`#link-${buttonIndex}`).text()}?`, `Yes, ${buttonType}`, `No, don't ${buttonType}`, this.handleClick);
+              this.updateMainState({
+                modal: {
+                  text: `Are you sure you want to ${buttonType} the tribute for ${$(`#link-${buttonIndex}`).text()}?`,
+                  btnYes: `Yes, ${buttonType}`,
+                  btnNo: `No, don't ${buttonType}`,
+                  clickHandler: this.handleClick
+                }
+              });
             } else if (buttonType === 'edit') {// do nothing for now, will go to designer page with filled in info for resubmission
             }
           } // modal handling
@@ -108,7 +115,14 @@ class Account extends React.Component {
                       },
                       "success": response => {
                         this.getContentList();
-                        this.updateModalState(response, 'Got it', null, this.handleClick);
+                        this.updateMainState({
+                          modal: {
+                            text: response,
+                            btnYes: 'Got it',
+                            btnNo: null,
+                            clickHandler: this.handleClick
+                          }
+                        });
                       },
                       "fail": response => {
                         console.log(`Something went wrong with the HTTP request!`);
@@ -122,8 +136,24 @@ class Account extends React.Component {
               }
 
               this.manageMode = 'none';
-              this.updateModalState();
+              this.updateMainState({
+                modal: {}
+              });
             }
+  }
+
+  getContentList() {
+    $.post("/api/list", {
+      "type": "user",
+      "username": this.username
+    }).done(response => {
+      this.setState({
+        contentList: response
+      });
+    }).fail(function (err) {
+      console.log(' Directory HTTP request failed. ');
+      return 'An error occurred during the request, please try again.';
+    });
   }
 
   paymentOption() {
@@ -250,20 +280,6 @@ class Account extends React.Component {
       class: "btn btn-danger my-1 p-2 col-lg-4 text-center",
       onClick: this.handleClick
     }, "Delete"))))));
-  }
-
-  getContentList() {
-    $.post("/api/list", {
-      "type": "user",
-      "username": this.username
-    }).done(response => {
-      this.setState({
-        contentList: response
-      });
-    }).fail(function (err) {
-      console.log(' Directory HTTP request failed. ');
-      return 'An error occurred during the request, please try again.';
-    });
   }
 
   createOption() {

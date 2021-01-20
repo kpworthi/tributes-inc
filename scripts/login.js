@@ -4,7 +4,7 @@ class Login extends React.Component {
     this.handleButton = this.handleButton.bind(this);
     this.submitLogin = this.submitLogin.bind(this);
     this.submitRegister = this.submitRegister.bind(this);
-    this.updateLoginState = this.props.updateLoginState;
+    this.updateMainState = this.props.updateMainState;
   }
 
   handleButton(event) {
@@ -38,7 +38,11 @@ class Login extends React.Component {
       password: password
     }).done(response => {
       setTimeout(() => {
-        this.updateLoginState(response.auth, response.username);
+        this.updateMainState({
+          auth: response.auth,
+          username: response.username || ''
+        });
+        response.auth ? window.location.hash = "#account" : null;
       }, 2000);
       clearTimeout(buttonTimeout);
       clicked.disabled = response.auth;
@@ -70,7 +74,11 @@ class Login extends React.Component {
       password: password
     }).done(response => {
       setTimeout(() => {
-        this.updateLoginState(response.auth, response.username);
+        this.updateMainState({
+          auth: response.auth,
+          username: response.username || ''
+        });
+        response.auth ? window.location.hash = "#account" : null;
       }, 2000);
       clearTimeout(buttonTimeout);
       clicked.disabled = response.auth;

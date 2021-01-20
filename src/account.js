@@ -13,7 +13,7 @@ class Account extends React.Component {
 
     this.manageMode = 'none';
 
-    this.updateModalState  = props.updateModalState;
+    this.updateMainState  = props.updateMainState;
 
     this.handleClick       = this.handleClick.bind(this);
     this.contentOption     = this.contentOption.bind(this);
@@ -130,10 +130,14 @@ class Account extends React.Component {
       
       if (buttonType !== 'edit' ) {
         this.manageMode = `${buttonType}-${buttonIndex}`;
-        this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${ $( `#link-${buttonIndex}` ).text() }?`, 
-                              `Yes, ${buttonType}`, 
-                              `No, don't ${buttonType}`, 
-                              this.handleClick);
+        this.updateMainState( { 
+          modal: {
+            text: `Are you sure you want to ${buttonType} the tribute for ${$(`#link-${buttonIndex}`).text()}?`,
+            btnYes: `Yes, ${buttonType}`,
+            btnNo: `No, don't ${buttonType}`,
+            clickHandler: this.handleClick
+          }
+        });
       }
       else if ( buttonType === 'edit' ){
         // do nothing for now, will go to designer page with filled in info for resubmission
@@ -154,10 +158,14 @@ class Account extends React.Component {
                         editType: modeType==='delete'?null:modeType},
               "success": (response) => {
                 this.getContentList();
-                this.updateModalState(response, 
-                                      'Got it',
-                                      null, 
-                                      this.handleClick);
+                this.updateMainState({
+                  modal: {
+                    text: response,
+                    btnYes: 'Got it',
+                    btnNo: null,
+                    clickHandler: this.handleClick
+                  }
+                });
               },
               "fail": (response) => {
                 console.log(`Something went wrong with the HTTP request!`)
@@ -170,7 +178,7 @@ class Account extends React.Component {
       }
 
       this.manageMode       = 'none';
-      this.updateModalState();
+      this.updateMainState({ modal: {} });
     }
   }
 
