@@ -13,6 +13,7 @@ class Main extends React.Component {
       viewing: 'default',
       auth: false,
       username: '',
+      dbEntry: {},
       modal: {}
     };
 
@@ -22,7 +23,6 @@ class Main extends React.Component {
 
     // fetching is used for preventing multiple db/server queries when one might already be active
     this.fetching    = false;
-    this.dbEntry     = {};
     this.pages       = ['home', 'products', 'directory', 'login', 'logout', 'account', 'template-a', 'template-b'];
     this.securePages = ['login', 'account', 'product-design-a', 'product-design-b'];
     this.pageView    = () => (
@@ -100,8 +100,9 @@ class Main extends React.Component {
 
         this.dbSearch( searchObj )
           .done( ( response ) => {
-            this.dbEntry = response;
-            this.loadPage( theHash );
+            this.setState({dbEntry: response}, ()=>{
+              this.loadPage( theHash );
+            });
           })
           .fail( function ( err ) {
             console.log(' DB HTTP template request failed. ' + err);
@@ -121,8 +122,9 @@ class Main extends React.Component {
             this.loadPage('home');
             location.hash ='home';
           }
-          this.dbEntry = response;
-          this.loadPage( response.type==='TemplateA'?'template-a':'template-b' );
+          this.setState( { dbEntry: response }, ()=>{
+            this.loadPage( response.type==='TemplateA'?'template-a':'template-b' );
+          });
         })
         .fail( function ( err ) {
           console.log(' DB HTTP template request failed. ' + err);
@@ -149,7 +151,7 @@ class Main extends React.Component {
     // if logging out, redirect to home
     else if (page === 'logout' || page === null ) page = 'home';
     // if accessing a template or tribute outside of normal navigation (no db info)
-    else if ((page.includes('template') || page.includes('tribute')) && this.dbEntry.name == undefined) page = 'home';
+    else if ((page.includes('template') || page.includes('tribute')) && this.state.dbEntry.name == undefined) page = 'home';
 
     // load the module if needed, update state, change browser location to reflect new area
     $( '#view-wrapper' ).css('opacity', 0);
@@ -182,14 +184,15 @@ class Main extends React.Component {
         <ConfirmModal text={this.state.modal.text}
                       btnYes={this.state.modal.btnYes}
                       btnNo={this.state.modal.btnNo}
-                      clickHandler={this.state.modal.clickHandler} />}
+                      clickHandler={this.state.modal.clickHandler} 
+        />}
 
         <div id="view-wrapper">
           <View updateMainState={this.updateMainState}
                 username={this.state.username} 
-                dbEntry={this.dbEntry?this.dbEntry:null}
+                dbEntry={this.state.dbEntry||null}
                 loadPage={this.loadPage}
-                />
+          />
         </div>
 
         <Footer />

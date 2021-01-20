@@ -12,6 +12,10 @@ Create a multi-page website incorporating multiple functionalaties learned over 
 1. MongoDB is utilized for account authentication and user-created content
 1. Server to be created using Node.js and Express.js
 
+### 0.4.2 changes
+
+- Main state update handler passed to components has been simplified
+
 ### 0.4.1 changes
 1. Users can now delete a created tribute from their account page under the 'Your Content' tab
 1. Users can now hide or show a created tribute from their account page under the 'Your Content' tab

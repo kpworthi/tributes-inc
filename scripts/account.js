@@ -97,6 +97,7 @@ class Account extends React.Component {
                 }
               });
             } else if (buttonType === 'edit') {// do nothing for now, will go to designer page with filled in info for resubmission
+              //this.updateMainState( {} )
             }
           } // modal handling
           else if (clickedButton.id.startsWith('modal')) {

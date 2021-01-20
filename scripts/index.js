@@ -13,6 +13,7 @@ class Main extends React.Component {
       viewing: 'default',
       auth: false,
       username: '',
+      dbEntry: {},
       modal: {}
     };
     this.loadPage = this.loadPage.bind(this);
@@ -20,7 +21,6 @@ class Main extends React.Component {
     this.updateMainState = this.updateMainState.bind(this); // fetching is used for preventing multiple db/server queries when one might already be active
 
     this.fetching = false;
-    this.dbEntry = {};
     this.pages = ['home', 'products', 'directory', 'login', 'logout', 'account', 'template-a', 'template-b'];
     this.securePages = ['login', 'account', 'product-design-a', 'product-design-b'];
 
@@ -111,8 +111,11 @@ class Main extends React.Component {
             id: theHash === 'template-a' ? "5fe10116f521bd2c36488286" : "5fe101d6f521bd2c36488288"
           };
           this.dbSearch(searchObj).done(response => {
-            this.dbEntry = response;
-            this.loadPage(theHash);
+            this.setState({
+              dbEntry: response
+            }, () => {
+              this.loadPage(theHash);
+            });
           }).fail(function (err) {
             console.log(' DB HTTP template request failed. ' + err);
             this.loadPage('home');
@@ -130,8 +133,11 @@ class Main extends React.Component {
             location.hash = 'home';
           }
 
-          this.dbEntry = response;
-          this.loadPage(response.type === 'TemplateA' ? 'template-a' : 'template-b');
+          this.setState({
+            dbEntry: response
+          }, () => {
+            this.loadPage(response.type === 'TemplateA' ? 'template-a' : 'template-b');
+          });
         }).fail(function (err) {
           console.log(' DB HTTP template request failed. ' + err);
           this.loadPage('home');
@@ -153,7 +159,7 @@ class Main extends React.Component {
     if (this.securePages.includes(page) && this.state.auth === false) page = 'login'; // if hitting the login page but already logged in
     else if (page === 'login' && this.state.auth === true) return location.hash = 'account'; // if logging out, redirect to home
       else if (page === 'logout' || page === null) page = 'home'; // if accessing a template or tribute outside of normal navigation (no db info)
-        else if ((page.includes('template') || page.includes('tribute')) && this.dbEntry.name == undefined) page = 'home'; // load the module if needed, update state, change browser location to reflect new area
+        else if ((page.includes('template') || page.includes('tribute')) && this.state.dbEntry.name == undefined) page = 'home'; // load the module if needed, update state, change browser location to reflect new area
 
     $('#view-wrapper').css('opacity', 0);
     setTimeout(() => {
@@ -192,7 +198,7 @@ class Main extends React.Component {
     }, /*#__PURE__*/React.createElement(View, {
       updateMainState: this.updateMainState,
       username: this.state.username,
-      dbEntry: this.dbEntry ? this.dbEntry : null,
+      dbEntry: this.state.dbEntry || null,
       loadPage: this.loadPage
     })), /*#__PURE__*/React.createElement(Footer, null));
   }
