@@ -176,7 +176,7 @@ class Main extends React.Component {
     return (
       <main id="main" class="">
 
-        <Header auth={this.state.auth} username={this.state.username} updateMainState={this.updateMainState} />
+        <Header auth={this.state.auth} username={this.state.username} />
 
         {Object.keys(this.state.modal).length===0?null:
         <ConfirmModal text={this.state.modal.text}

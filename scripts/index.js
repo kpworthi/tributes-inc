@@ -181,8 +181,7 @@ class Main extends React.Component {
       class: ""
     }, /*#__PURE__*/React.createElement(Header, {
       auth: this.state.auth,
-      username: this.state.username,
-      updateMainState: this.updateMainState
+      username: this.state.username
     }), Object.keys(this.state.modal).length === 0 ? null : /*#__PURE__*/React.createElement(ConfirmModal, {
       text: this.state.modal.text,
       btnYes: this.state.modal.btnYes,
