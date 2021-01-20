@@ -1,4 +1,3 @@
-
 const ConfirmModal = ({ text, btnYes, btnNo, clickHandler }) => {
   return (
     <div id="modal-overlay" class="d-flex align-items-center justify-content-center modal-bg">

@@ -5,3 +5,4 @@ img/about.jpg
 img/history.jpg
 /priv-policy.txt
 .env
+.eslintrc
