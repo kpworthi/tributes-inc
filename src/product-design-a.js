@@ -3,6 +3,7 @@ class DesignBio extends React.Component {
     super(props);
 
     this.username = props.username;
+    this.dbEntry  = props.dbEntry;
 
     this.palette = { 
       "classic": {nav: '#7E4A35', page: '#dbceb0', container: '#cab577', content: '#D4C391'},
@@ -10,6 +11,7 @@ class DesignBio extends React.Component {
       "warm": {nav: '#B04517', page: '#F2E394', container: '#F2AE72', content: '#F4E1D2'}
     }
 
+    this.fillTextFields = this.fillTextFields.bind(this);
     this.loadPalette    = this.loadPalette.bind(this);
     this.submitHandler  = this.submitHandler.bind(this);
   }
@@ -22,10 +24,26 @@ class DesignBio extends React.Component {
     });
 
     $( '#save-btn' ).click(this.submitHandler);
+
+    // if we're editing an existing tribute, fill applicable fields
+    if ( this.dbEntry ) this.fillTextFields();
   }
 
   componentWillUnmount () {
     this.loadPalette( 'classic' );
+  }
+
+  fillTextFields () {
+    let keys = Object.keys(this.dbEntry);
+    keys.forEach( (value) => {
+      let fieldText = '';
+      //split the bio array items back into separate lines
+      if( value === 'bio' ) {
+        fieldText = this.dbEntry[value].join('\r\n')
+      }
+      else fieldText = this.dbEntry[value];
+      $( `#${value}` ).val( fieldText );
+    });
   }
 
   loadPalette( palette ) {
@@ -70,28 +88,61 @@ class DesignBio extends React.Component {
 
     if(validSubmission){
       $( '#submit-status' ).text('Saving...');
-      $.post( "/api/design", $( "#design-a-component" ).serialize() )
-        .done( ( response ) => {
-          if ( response === 'Success! Tribute saved.' ) {
-            setTimeout(() => {
-              location.hash = "#account";
-            }, 2000);
-            clearTimeout(buttonTimeout);
-            submit.disabled = true;
-            return submitStatus.textContent = response;
-          }
-          else {
-            clearTimeout(buttonTimeout);
+      // when editing an existing tribute
+      if ( this.dbEntry ) {
+        $.ajax({
+          "type": "PUT",
+          "url": '/api/design',
+          "data": $("#design-a-component" ).serialize(),
+          "success": (response) => {
+            if ( response === 'Tribute successfully updated.' ) {
+              setTimeout(() => {
+                location.hash = "#account";
+              }, 2000);
+              clearTimeout(buttonTimeout);
+              submit.disabled = true;
+              return submitStatus.textContent = response;
+            }
+            else {
+              clearTimeout(buttonTimeout);
+              submit.disabled = false;
+              return submitStatus.textContent = response;
+            }
+          },
+          "fail": (response) => {
+            console.log(' Tribute save HTTP request failed. ');
             submit.disabled = false;
-            return submitStatus.textContent = response;
+            clearTimeout(buttonTimeout);
+            return submitStatus.textContent = 'An error occurred during submission, please try again.';
           }
-        })
-        .fail( function ( err ) {
-          console.log(' Tribute save HTTP request failed. ');
-          submit.disabled = false;
-          clearTimeout(buttonTimeout);
-          return submitStatus.textContent = 'An error occurred during submission, please try again.';
         });
+
+      }
+      // when creating a new tribute
+      else {
+        $.post( "/api/design", $( "#design-a-component" ).serialize() )
+          .done( ( response ) => {
+            if ( response === 'Success! Tribute saved.' ) {
+              setTimeout(() => {
+                location.hash = "#account";
+              }, 2000);
+              clearTimeout(buttonTimeout);
+              submit.disabled = true;
+              return submitStatus.textContent = response;
+            }
+            else {
+              clearTimeout(buttonTimeout);
+              submit.disabled = false;
+              return submitStatus.textContent = response;
+            }
+          })
+          .fail( function ( err ) {
+            console.log(' Tribute save HTTP request failed. ');
+            submit.disabled = false;
+            clearTimeout(buttonTimeout);
+            return submitStatus.textContent = 'An error occurred during submission, please try again.';
+          });
+      }
     }
     else {
       $( '#submit-status' ).text('Please be sure to fill out all required fields!');

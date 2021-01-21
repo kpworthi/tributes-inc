@@ -96,8 +96,24 @@ class Account extends React.Component {
                   clickHandler: this.handleClick
                 }
               });
-            } else if (buttonType === 'edit') {// do nothing for now, will go to designer page with filled in info for resubmission
-              //this.updateMainState( {} )
+            } else if (buttonType === 'edit') {
+              $.post('/api/tribute', {
+                name: $(`#link-${buttonIndex}`).text()
+              }).done(response => {
+                if (response === 'No match found!') {
+                  console.log("Error loading page.");
+                } else {
+                  this.updateMainState({
+                    dbEntry: response
+                  }, () => {
+                    window.location.href = response.type === 'TemplateA' ? '#product-design-a' : '#product-design-b';
+                  });
+                }
+              }).fail(function (err) {
+                console.log(' DB HTTP template request failed. ' + err);
+                this.loadPage('home');
+                return status.textContent = 'An error occurred during template fetch, please try again.';
+              });
             }
           } // modal handling
           else if (clickedButton.id.startsWith('modal')) {
@@ -268,8 +284,7 @@ class Account extends React.Component {
       id: `t-edit-${index}`,
       type: "button",
       class: "btn btn-primary my-1 p-2 col-lg-4",
-      onClick: this.handleClick,
-      disabled: true
+      onClick: this.handleClick
     }, "Edit"), /*#__PURE__*/React.createElement("button", {
       id: `t-${value.visible ? "hide" : "show"}-${index}`,
       type: "button",

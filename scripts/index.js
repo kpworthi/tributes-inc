@@ -176,8 +176,8 @@ class Main extends React.Component {
   } // passed to components to update index state
 
 
-  updateMainState(updateObj) {
-    this.setState(updateObj);
+  updateMainState(updateObj, callback) {
+    this.setState(updateObj, callback);
   }
 
   render() {

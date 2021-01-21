@@ -36,42 +36,45 @@ class Account extends React.Component {
     }
 
     this.subOptions = {
-      'default':    [['Design: Our Custom Products', 
-                      'design',
-                      "./img/design-prev.png",
-                      'Here you’ll find our variety of à la carte products. From our professional tributes to our framed collages, start here to get designing.'],
-                     ['Customize: Tiered Packages',
-                      'default',
-                      "",
-                      "Thinking about multiple items and want to design and ship everything conveniently? We have three different tier levels to get you what you want."],
-                     ['Order: Generic Items',
-                      'default',
-                      "",
-                      'Any items that are offered as an option, as well as any items you might need to refresh or maintain a previous purchase can be found here.']],
-      'design':     [['Templated Tribute',
-                      'templates',
-                      "./img/templates-prev.png",
-                      'Choose from two different styles of tributes. Layouts are pre-made, and all that is needed is to fill in what you want them to say!'],
-                     ['Custom Designed Tribute',
-                      'design',
-                      "",
-                      'Feel comfortable with getting into the nitty gritty? Get started with a custom designed tribute to have greater control over content presentation.'],
-                     ['T. I. Designed Tribute',
-                      'design',
-                      "",
-                      'Interested in a custom look, but want to leave it to someone else? Select a Tributes Inc. designed tribute and we’ll work with you to get you a feel that’s just right.'],
-                     ['Physical Designs',
-                      'design',
-                      "",
-                      "Here you'll find our physical offerings, for when you want something to have in your home or another place of prominence"],],
-      'templates':  [['Templated Biography Tribute',
-                      'product-design-a',
-                      "./img/temp-a-prev.png",
-                      'A pre-designed tribute template that is used for large amounts of text in a biography style. Note: Users are able to create up to two templated tributes for free'],
-                     ['Templated Timeline Tribute',
-                      'product-design-b',
-                      "./img/temp-b-prev.png",
-                      'A pre-designed tribute template that is used for smaller amounts of text in a timeline style. Note: Users are able to create up to two templated tributes for free']]
+      'default':    [
+         ['Design: Our Custom Products', 
+          'design',
+          "./img/design-prev.png",
+          'Here you’ll find our variety of à la carte products. From our professional tributes to our framed collages, start here to get designing.'],
+         ['Customize: Tiered Packages',
+          'default',
+          "",
+          "Thinking about multiple items and want to design and ship everything conveniently? We have three different tier levels to get you what you want."],
+         ['Order: Generic Items',
+          'default',
+          "",
+          'Any items that are offered as an option, as well as any items you might need to refresh or maintain a previous purchase can be found here.']],
+      'design':     [
+         ['Templated Tribute',
+          'templates',
+          "./img/templates-prev.png",
+          'Choose from two different styles of tributes. Layouts are pre-made, and all that is needed is to fill in what you want them to say!'],
+         ['Custom Designed Tribute',
+          'design',
+          "",
+          'Feel comfortable with getting into the nitty gritty? Get started with a custom designed tribute to have greater control over content presentation.'],
+         ['T. I. Designed Tribute',
+          'design',
+          "",
+          'Interested in a custom look, but want to leave it to someone else? Select a Tributes Inc. designed tribute and we’ll work with you to get you a feel that’s just right.'],
+         ['Physical Designs',
+          'design',
+          "",
+          "Here you'll find our physical offerings, for when you want something to have in your home or another place of prominence"],],
+      'templates':  [
+         ['Templated Biography Tribute',
+          'product-design-a',
+          "./img/temp-a-prev.png",
+          'A pre-designed tribute template that is used for large amounts of text in a biography style. Note: Users are able to create up to two templated tributes for free'],
+         ['Templated Timeline Tribute',
+          'product-design-b',
+          "./img/temp-b-prev.png",
+          'A pre-designed tribute template that is used for smaller amounts of text in a timeline style. Note: Users are able to create up to two templated tributes for free']]
     }
 
   }
@@ -140,8 +143,22 @@ class Account extends React.Component {
         });
       }
       else if ( buttonType === 'edit' ){
-        // do nothing for now, will go to designer page with filled in info for resubmission
-        //this.updateMainState( {} )
+        $.post( '/api/tribute', {name: $(`#link-${buttonIndex}`).text()} )
+          .done( ( response ) => {
+            if (response==='No match found!'){
+              console.log("Error loading page.");
+            }
+            else {
+              this.updateMainState( { dbEntry: response }, ()=>{
+                window.location.href = response.type==='TemplateA'?'#product-design-a':'#product-design-b';
+              });
+            }
+          })
+          .fail( function ( err ) {
+            console.log(' DB HTTP template request failed. ' + err);
+            this.loadPage('home');
+            return status.textContent = 'An error occurred during template fetch, please try again.';
+          });
       }
     }
     // modal handling
@@ -270,7 +287,7 @@ class Account extends React.Component {
                 <p class="my-2 my-lg-1 col-lg-4">{value.approved?"Yes":"No"}</p>
               </div><div class="col-3 row m-0">
                 <button id={`t-edit-${index}`} type="button" class="btn btn-primary my-1 p-2 col-lg-4" 
-                        onClick={this.handleClick} disabled>Edit</button>
+                        onClick={this.handleClick}>Edit</button>
                 <button id={`t-${value.visible?"hide":"show"}-${index}`} type="button" class="btn btn-dark my-1 p-2 col-lg-4" 
                         onClick={this.handleClick}>{value.visible?"Hide":"Show"}</button>
                 <button id={`t-delete-${index}`} type="button" class="btn btn-danger my-1 p-2 col-lg-4 text-center" 

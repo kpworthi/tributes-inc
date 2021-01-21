@@ -168,6 +168,7 @@ function routes(app, database) {
     });
   }
 
+  // requesting tribute info for display
   app.route("/api/tribute")
     .post(function (req, res){
       let searchTerm = {};
@@ -175,10 +176,11 @@ function routes(app, database) {
       if ( req.body.id )
         searchTerm = { _id: new ObjectId(req.body.id) };
       //otherwise search by name
-      else searchTerm = { name_lower: req.body.name };
+      else searchTerm = { name_lower: req.body.name.toLowerCase() };
 
       database(async function (client) {
-        let result = await client.db('tributes-inc').collection(req.body.id?'pages':'tributes').findOne(searchTerm);
+        let result = await client.db('tributes-inc').collection(req.body.id?'pages':'tributes')
+          .findOne(searchTerm, {projection: {flagged: 0, visible: 0, created_on: 0, username: 0, name_lower: 0}});
 
         if (result === null){
           console.log(`Page lookup: Could not find ${req.body.name}! @ ${currentTimeEST()}`);
@@ -355,14 +357,28 @@ function routes(app, database) {
     .put((req, res) => {
       let editType  = req.body.editType;
       let user      = req.body.userName;
-      let toEdit    = req.body.tributeName;
+      let toEdit    = req.body.tributeName || req.body.name;
       let modObject = {};
 
       if ( editType === 'hide' ) modObject = {$set: {"visible": false} };
       else if ( editType === 'show' ) modObject = {$set: {"visible": true} };
       else {
-        res.send('Not yet available');
-        return null;
+        // format the timeline for db upload
+        if (req.body["year1"]) {
+          req.body.timeline = [];
+          Object.keys(req.body).forEach(key => {
+            // if it's a year and the year isn't empty
+            if (key.startsWith('year') && req.body[key]) {
+              // push the [year and event] into the timeline. event grabs the current number from the year 'index'
+              req.body.timeline.push([req.body[key], req.body[`event${key.split('r')[1]}`]]);
+            }
+          });
+        }
+        //format the biography for db upload
+        else {
+          req.body.bio = req.body.bio.replace(/\r\n/g, '\n').split('\n').filter((value) => value)
+        }
+        modObject = { $set: req.body }
       }
 
       database(async function (client) {
@@ -379,6 +395,7 @@ function routes(app, database) {
         else {
           console.log(`Update failure @ ${currentTimeEST()}` );
           console.log(`${user} : ${editType} - ${toEdit}`);
+          console.log(updateResults);
           res.send(`Tribute did not update.`);
         }
       });
