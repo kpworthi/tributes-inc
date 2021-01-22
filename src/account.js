@@ -171,8 +171,8 @@ class Account extends React.Component {
             $.ajax({
               "type": modeType==='delete'?"DELETE":"PUT",
               "url": '/api/design',
-              "data": { userName: this.username, 
-                        tributeName: $( `#link-${this.manageMode.split('-')[1]}` ).text(), 
+              "data": { username: this.username, 
+                        name: $( `#link-${this.manageMode.split('-')[1]}` ).text(), 
                         editType: modeType==='delete'?null:modeType},
               "success": (response) => {
                 this.getContentList();

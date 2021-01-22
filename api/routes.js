@@ -1,108 +1,7 @@
-
 const passport = require("passport");
 const bcrypt = require("bcrypt");
 const { ObjectId } = require("mongodb");
-
-const nameList = ["Francesca Holt",
-"Tracy Costa",
-"Earline Hogan",
-"Timothy Moses",
-"Lakeisha Schneider",
-"Oliver Ingram",
-"Brittney Dougherty",
-"Maritza Sutton",
-"Sydney Hernandez",
-"Courtney Ballard",
-"Aileen Bray",
-"Becky Luna",
-"Lawerence Larson",
-"Mike Frey",
-"Quentin Roach",
-"Rudolph Blair",
-"Tami Payne",
-"Estelle Reyes",
-"Kara Benjamin",
-"Arline Henderson",
-"Hallie Dudley",
-"Alonzo Jacobson",
-"Roscoe Todd",
-"Sybil Thomas",
-"Mabel Bowman",
-"Cordell Gregory",
-"Reyna Hendricks",
-"Percy Patel",
-"John Day",
-"Jeromy Cantrell",
-"Stuart Chang",
-"Hans Adams",
-"Geraldo Kline",
-"Lance Foley",
-"Buford Barnett",
-"Annette Kerr",
-"Mildred Simpson",
-"Chasity Oconnell",
-"Dexter Mcdowell",
-"Ted Koch",
-"Carlton Barnes",
-"Fern Wise",
-"Clifton Baldwin",
-"Oswaldo Haas",
-"Kendra Reeves",
-"Enrique Rose",
-"Ladonna Coleman",
-"Cruz Blake",
-"Neva Huang",
-"Sondra Roth",
-"Lee Wiggins",
-"Barney Hoover",
-"Isidro Potter",
-"Blanca Wong",
-"Lorenzo Graham",
-"Rolf Foster",
-"Lacy Schneider",
-"Chet Morris",
-"Debora Hood",
-"Elizabeth Chan",
-"Gary Baldwin",
-"Brigitte Mclaughlin",
-"Bridget Blackwell",
-"Elias Eaton",
-"Ivan Klein",
-"Rita Ritter",
-"Lindsey Higgins",
-"Johnnie Watkins",
-"Leona Whitehead",
-"Billy Lawrence",
-"Rhoda Boyer",
-"Karyn Hansen",
-"Stephan Mueller",
-"Lucas Clayton",
-"Andy Marsh",
-"Edgardo Hays",
-"Hattie Velazquez",
-"Blanche Lynn",
-"Henry Chapman",
-"Eduardo Parker",
-"Nelson Christian",
-"Kimberly Turner",
-"Lesley Walters",
-"Val Todd",
-"Francis Underwood",
-"Neil Wilson",
-"Brandy Cross",
-"Horace Ortega",
-"Thanh Hess",
-"Edmond Marshall",
-"Chester Hull",
-"Miquel Briggs",
-"Jo Faulkner",
-"Steve House",
-"Tina Myers",
-"Alberta Mcdowell",
-"Russell Hurley",
-"Monique Villanueva",
-"Marina Harvey",
-"Leigh Keller"]
+const { nameList } = require("./namelist");
 
 const currentTimeEST = () =>
   new Date().toLocaleString("en-US", { timeZone: "EST" }) + " EST";
@@ -356,12 +255,16 @@ function routes(app, database) {
     })
     .put((req, res) => {
       let editType  = req.body.editType;
-      let user      = req.body.userName;
-      let toEdit    = req.body.tributeName || req.body.name;
+      let user      = req.body.username;
+      let origin    = req.body.origin||req.body.name;
+      let toEdit    = req.body.name;
       let modObject = {};
+      let checkName = origin===toEdit?false:true; // flag to see if a changed name is already in db
 
+      // if hiding or showing
       if ( editType === 'hide' ) modObject = {$set: {"visible": false} };
       else if ( editType === 'show' ) modObject = {$set: {"visible": true} };
+      // if making an edit to an existing tribute
       else {
         // format the timeline for db upload
         if (req.body["year1"]) {
@@ -378,31 +281,61 @@ function routes(app, database) {
         else {
           req.body.bio = req.body.bio.replace(/\r\n/g, '\n').split('\n').filter((value) => value)
         }
-        modObject = { $set: req.body }
+        let updTemp = new Template(req.body);
+        delete updTemp.created_on;
+        modObject = { $set: updTemp }
       }
 
       database(async function (client) {
-        let updateResults = await client
-          .db("tributes-inc")
-          .collection("tributes")
-          .updateOne({ name: toEdit }, modObject );
+        if ( checkName ) {
+          let findResults = await client
+            .db("tributes-inc")
+            .collection("tributes")
+            .findOne({ name: toEdit })
 
-        if ( updateResults.modifiedCount === 1) {
-          console.log(`Update success @ ${currentTimeEST()}` );
-          console.log(`${user} : ${editType} - ${toEdit}`);
-          res.send(`Tribute successfully updated.`);
+          if ( findResults !== null ) {
+            console.log(`Update failure @ ${currentTimeEST()}` )
+            console.log(`${user} : Edit name - ${origin} -> ${toEdit}`);
+            res.send(`Cannot perform edit: your new tribute name already exists!`);
+          }
+          else {
+            checkName = false; // reset flag so that update can proceed
+          }
         }
-        else {
-          console.log(`Update failure @ ${currentTimeEST()}` );
-          console.log(`${user} : ${editType} - ${toEdit}`);
-          console.log(updateResults);
-          res.send(`Tribute did not update.`);
+
+        // use checkName again to proceed with update
+        if ( checkName === false ) {
+          let updateResults = await client
+            .db("tributes-inc")
+            .collection("tributes")
+            .updateOne({ name: toEdit }, modObject );
+
+          // if it was modified
+          if ( updateResults.modifiedCount === 1) {
+            console.log(`Update success @ ${currentTimeEST()}` );
+            console.log(`${user} : ${editType} - ${toEdit}`);
+            res.send(`Tribute successfully updated.`);
+          }
+          // if it matched but didn't edit ( likely no changes were made )
+          else if ( updateResults.modifiedCount === 0 && updateResults.matchedCount === 1) {
+            console.log(`Update failure @ ${currentTimeEST()}` );
+            console.log(`${user} : Edit - ${toEdit} - No changes were submitted`);
+            console.log(updateResults);
+            res.send(`Cannot perform edit: you did not make any changes!`);
+          }
+          // if it didn't match or if it otherwise had an error
+          else {
+            console.log(`Update failure @ ${currentTimeEST()}` );
+            console.log(`${user} : ${editType} - ${toEdit}`);
+            //console.log(updateResults); //optionally spit out the entire result if verbosity is needed
+            res.send(`Tribute did not update.`);
+          }
         }
       });
     })
     .delete((req, res) => {
-      let user = req.body.userName;
-      let toDelete = req.body.tributeName;
+      let user = req.body.username;
+      let toDelete = req.body.name;
       
       database(async function (client) {
         let deleteResults = await client

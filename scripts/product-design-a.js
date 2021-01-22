@@ -1,8 +1,14 @@
-class DesignBio extends React.Component {
+export default class DesignBio extends React.Component {
   constructor(props) {
     super(props);
     this.username = props.username;
-    this.dbEntry = props.dbEntry;
+    this.dbEntry = props.dbEntry; // load any pre-saved information
+
+    this.editing = Object.keys(props.dbEntry).length === 0 ? false : true; // edit mode based on empty object or not
+
+    this.origin = props.dbEntry.name; // track original name when editing so correct db entry is modified
+
+    this.updateMainState = props.updateMainState;
     this.palette = {
       "classic": {
         nav: '#7E4A35',
@@ -29,13 +35,15 @@ class DesignBio extends React.Component {
   }
 
   componentDidMount() {
-    this.loadPalette('classic');
+    this.updateMainState({
+      dbEntry: {}
+    });
     $('#palette').on("change", () => {
       this.loadPalette($('#palette option:selected')[0].value);
     });
-    $('#save-btn').click(this.submitHandler); // if we're editing an existing tribute, fill applicable fields
-
-    if (this.dbEntry) this.fillTextFields();
+    $('#save-btn').click(this.submitHandler);
+    if (this.editing) this.fillTextFields(); // if we're editing an existing tribute, fill applicable fields
+    else this.loadPalette('classic'); // when not editing, load default palette
   }
 
   componentWillUnmount() {
@@ -53,12 +61,14 @@ class DesignBio extends React.Component {
 
       $(`#${value}`).val(fieldText);
     });
+    this.loadPalette(this.dbEntry.palette);
   }
 
   loadPalette(palette) {
     $('.navbar').css('background-color', this.palette[palette].nav);
     $('.nav-link').css('border', `1px solid ${this.palette[palette].nav}`);
     $('body').css('background-color', this.palette[palette].page);
+    $('#footer').css('background-color', this.palette[palette].page);
     $('.main-area').css('background-color', this.palette[palette].container);
     $('.inset').css('background-color', this.palette[palette].content);
   }
@@ -72,32 +82,16 @@ class DesignBio extends React.Component {
       submit.disabled = false;
       return submitStatus.textContent = 'An error occurred during submission, please try again.';
     }, 4000);
-    let validSubmission = true; //make sure all required fields are filled
-
-    $(':required').each(function () {
-      if ($(this).val() === '') {
-        $(this).css('border', '2px solid red');
-        validSubmission = false;
-      } else $(this).css('border', 'none');
-    }); // make sure either both or none of quote/author are filled out
-
-    if ($('#quote').val() && !$('#author').val() || $('#author').val() && !$('#quote').val()) {
-      $('#quote').css('border', '2px solid red');
-      $('#author').css('border', '2px solid red');
-      validSubmission = false;
-    } else {
-      $('#quote').css('border', 'none');
-      $('#author').css('border', 'none');
-    }
+    let validSubmission = this.formErrorCheck();
 
     if (validSubmission) {
       $('#submit-status').text('Saving...'); // when editing an existing tribute
 
-      if (this.dbEntry) {
+      if (this.editing) {
         $.ajax({
           "type": "PUT",
           "url": '/api/design',
-          "data": $("#design-a-component").serialize(),
+          "data": $("#design-a-component").serialize() + `&origin=${this.origin.replace(' ', '%20')}`,
           "success": response => {
             if (response === 'Tribute successfully updated.') {
               setTimeout(() => {
@@ -146,6 +140,28 @@ class DesignBio extends React.Component {
       submit.disabled = false;
       clearTimeout(buttonTimeout);
     }
+  }
+
+  formErrorCheck() {
+    let validation = true; //make sure all required fields are filled
+
+    $(':required').each(function () {
+      if ($(this).val() === '') {
+        $(this).css('border', '2px solid red');
+        validation = false;
+      } else $(this).css('border', 'none');
+    }); // make sure either both or none of quote/author are filled out
+
+    if ($('#quote').val() && !$('#author').val() || $('#author').val() && !$('#quote').val()) {
+      $('#quote').css('border', '2px solid red');
+      $('#author').css('border', '2px solid red');
+      validation = false;
+    } else {
+      $('#quote').css('border', 'none');
+      $('#author').css('border', 'none');
+    }
+
+    return validation;
   }
 
   render() {
@@ -295,5 +311,3 @@ class DesignBio extends React.Component {
   }
 
 }
-
-export default DesignBio;

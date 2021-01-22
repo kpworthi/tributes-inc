@@ -3,8 +3,10 @@ class DesignTimeline extends React.Component {
     super(props);
 
     this.username = props.username;
-    this.dbEntry  = props.dbEntry;
-    
+    this.dbEntry  = props.dbEntry; // load any pre-saved information
+    this.editing  = Object.keys(props.dbEntry).length===0?false:true; // edit mode based on empty object or not
+    this.origin   = props.dbEntry.name; // track original name when editing so correct db entry is modified
+    this.updateMainState = props.updateMainState;
 
     this.palette = { 
       "classic": {nav: '#7E4A35', page: '#dbceb0', container: '#cab577', content: '#D4C391'},
@@ -18,6 +20,7 @@ class DesignTimeline extends React.Component {
   }
 
   componentDidMount () {
+    this.updateMainState({ dbEntry: {} });
     this.loadPalette( 'classic' );
 
     $('#palette').on("change", ()=>{
@@ -26,8 +29,7 @@ class DesignTimeline extends React.Component {
 
     $( '#save-btn' ).click(this.submitHandler);
 
-    // if we're editing an existing tribute, fill applicable fields
-    if ( this.dbEntry ) this.fillTextFields();
+    if ( this.editing ) this.fillTextFields(); // if we're editing an existing tribute, fill applicable fields
   }
 
   componentWillUnmount () {
@@ -39,18 +41,25 @@ class DesignTimeline extends React.Component {
     keys.forEach( (value) => {
       let fieldText = '';
       //re-build the timeline
-      if( value === 'bio' ) {
-        fieldText = this.dbEntry[value].join('\r\n')
+      if( value === 'timeline' ) {
+        this.dbEntry[value].forEach( (eventPair, index) => {
+          $( `#year${index+1}` ).val( eventPair[0] );
+          $( `#event${index+1}` ).val( eventPair[1] );
+        });
       }
-      else fieldText = this.dbEntry[value];
-      $( `#${value}` ).val( fieldText );
+      else {
+        fieldText = this.dbEntry[value];
+        $( `#${value}` ).val( fieldText );
+      }
     });
+    this.loadPalette( this.dbEntry.palette );
   }
 
   loadPalette( palette ) {
     $('.navbar').css('background-color', this.palette[palette].nav);
     $('.nav-link').css('border', `1px solid ${this.palette[palette].nav}`)
     $('body').css('background-color', this.palette[palette].page);
+    $('#footer').css('background-color', this.palette[palette].page);
     $('.main-area').css('background-color', this.palette[palette].container);
     $('.inset').css('background-color', this.palette[palette].content);
   }
@@ -87,58 +96,16 @@ class DesignTimeline extends React.Component {
       return submitStatus.textContent = 'An error occurred during submission, please try again.';
     }, 4000);
 
-    let validSubmission = true;
-
-    for ( let i=1; i<16; i++) {
-      let yearObj    = $( `#year${i}` ),
-          eventObj   = $( `#event${i}` ),
-          yearValue  = $( `#year${i}` ).val(),
-          eventValue = $( `#event${i}` ).val();
-      // make sure year and event fields are filled out as pairs
-      if (( !yearValue || !eventValue ) && yearValue !== eventValue ){
-        if ( !yearValue ) yearObj.css('border', '2px solid red');
-        else eventObj.css('border', '2px solid red');
-        validSubmission = false;
-      }
-      // also check that years are numbers only
-      else if( !yearValue.match(/^\d+$/) && yearValue !== '' ){
-        yearObj.css('border', '2px solid red');
-        validSubmission = false;
-      }
-      // clear any field highlighting otherwise
-      else {
-        yearObj.css('border', 'none');
-        eventObj.css('border', 'none');
-      }
-    }
-
-    // make sure all require fields are filled
-    $( ':required' ).each( function () {
-      if( $( this ).val() === '' ) {
-        $( this ).css('border','2px solid red');
-        validSubmission = false;
-      }
-      else $( this ).css('border', 'none');
-    });
-
-    // make sure either both or none of quote/author are filled out
-    if ( ( $('#quote').val() && !$('#author').val() ) || ( $( '#author' ).val() && !$( '#quote' ).val() ) ){
-      $( '#quote' ).css('border','2px solid red');
-      $( '#author' ).css('border','2px solid red');
-      validSubmission = false;
-    } else {
-      $( '#quote' ).css('border','none');
-      $( '#author' ).css('border','none');
-    }
+    let validSubmission = this.formErrorCheck();
 
     if (validSubmission) {
       $( '#submit-status' ).text('Saving...');
       // when editing an existing tribute
-      if ( this.dbEntry ) {
+      if ( this.editing ) {
         $.ajax({
           "type": "PUT",
           "url": '/api/design',
-          "data": $("#design-b-component" ).serialize(),
+          "data": $("#design-b-component" ).serialize() + `&origin=${this.origin.replace(' ', '%20')}`,
           "success": (response) => {
             if ( response === 'Tribute successfully updated.' ) {
               setTimeout(() => {
@@ -193,6 +160,54 @@ class DesignTimeline extends React.Component {
       submit.disabled = false;
       clearTimeout(buttonTimeout);
     }
+  }
+
+  formErrorCheck (){
+    let validation = true;
+
+    for ( let i=1; i<16; i++) {
+      let yearObj    = $( `#year${i}` ),
+          eventObj   = $( `#event${i}` ),
+          yearValue  = $( `#year${i}` ).val(),
+          eventValue = $( `#event${i}` ).val();
+      // make sure year and event fields are filled out as pairs
+      if (( !yearValue || !eventValue ) && yearValue !== eventValue ){
+        if ( !yearValue ) yearObj.css('border', '2px solid red');
+        else eventObj.css('border', '2px solid red');
+        validation = false;
+      }
+      // also check that years are numbers only
+      else if( !yearValue.match(/^\d+$/) && yearValue !== '' ){
+        yearObj.css('border', '2px solid red');
+        validation = false;
+      }
+      // clear any field highlighting otherwise
+      else {
+        yearObj.css('border', 'none');
+        eventObj.css('border', 'none');
+      }
+    }
+
+    // make sure all require fields are filled
+    $( ':required' ).each( function () {
+      if( $( this ).val() === '' ) {
+        $( this ).css('border','2px solid red');
+        validation = false;
+      }
+      else $( this ).css('border', 'none');
+    });
+
+    // make sure either both or none of quote/author are filled out
+    if ( ( $('#quote').val() && !$('#author').val() ) || ( $( '#author' ).val() && !$( '#quote' ).val() ) ){
+      $( '#quote' ).css('border','2px solid red');
+      $( '#author' ).css('border','2px solid red');
+      validation = false;
+    } else {
+      $( '#quote' ).css('border','none');
+      $( '#author' ).css('border','none');
+    }
+
+    return validation;
   }
 
   render(){
