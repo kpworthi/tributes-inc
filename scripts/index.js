@@ -13,15 +13,14 @@ class Main extends React.Component {
       viewing: 'default',
       auth: false,
       username: '',
+      dbEntry: {},
       modal: {}
     };
     this.loadPage = this.loadPage.bind(this);
     this.handleHashChange = this.handleHashChange.bind(this);
-    this.updateLoginState = this.updateLoginState.bind(this);
-    this.updateModalState = this.updateModalState.bind(this); // fetching is used for preventing multiple db/server queries when one might already be active
+    this.updateMainState = this.updateMainState.bind(this); // fetching is used for preventing multiple db/server queries when one might already be active
 
     this.fetching = false;
-    this.dbEntry = {};
     this.pages = ['home', 'products', 'directory', 'login', 'logout', 'account', 'template-a', 'template-b'];
     this.securePages = ['login', 'account', 'product-design-a', 'product-design-b'];
 
@@ -69,7 +68,10 @@ class Main extends React.Component {
     else {
         this.handleHashChange();
         let submission = $.get('/api/login').done(response => {
-          this.updateLoginState(response.auth, response.username ? response.username : '');
+          this.setState({
+            auth: response.auth,
+            username: response.username ? response.username : ''
+          });
         }).fail(function (err) {
           console.log(' Auth-check HTTP request failed. ' + currentTimeEST());
         });
@@ -88,13 +90,19 @@ class Main extends React.Component {
       //when logging out
       if (theHash === 'logout') {
         let submission = $.get('/api/logout').done(response => {
-          this.updateLoginState(false, '');
-          this.loadPage(theHash);
+          this.updateMainState({
+            auth: false,
+            username: ''
+          });
+          window.location.href = "#home";
         }).fail(function (err) {
           console.log(' Log out HTTP request failed. ' + currentTimeEST());
-          this.updateLoginState(false, ''); //force user logout client-side, at least
+          this.updateMainState({
+            auth: false,
+            username: ''
+          }); //force user logout client-side, at least
 
-          this.loadPage(theHash);
+          window.location.href = "home";
         });
       } //when loading a template preview
       else if (theHash.includes('template')) {
@@ -103,8 +111,11 @@ class Main extends React.Component {
             id: theHash === 'template-a' ? "5fe10116f521bd2c36488286" : "5fe101d6f521bd2c36488288"
           };
           this.dbSearch(searchObj).done(response => {
-            this.dbEntry = response;
-            this.loadPage(theHash);
+            this.setState({
+              dbEntry: response
+            }, () => {
+              this.loadPage(theHash);
+            });
           }).fail(function (err) {
             console.log(' DB HTTP template request failed. ' + err);
             this.loadPage('home');
@@ -122,8 +133,11 @@ class Main extends React.Component {
             location.hash = 'home';
           }
 
-          this.dbEntry = response;
-          this.loadPage(response.type === 'TemplateA' ? 'template-a' : 'template-b');
+          this.setState({
+            dbEntry: response
+          }, () => {
+            this.loadPage(response.type === 'TemplateA' ? 'template-a' : 'template-b');
+          });
         }).fail(function (err) {
           console.log(' DB HTTP template request failed. ' + err);
           this.loadPage('home');
@@ -145,7 +159,7 @@ class Main extends React.Component {
     if (this.securePages.includes(page) && this.state.auth === false) page = 'login'; // if hitting the login page but already logged in
     else if (page === 'login' && this.state.auth === true) return location.hash = 'account'; // if logging out, redirect to home
       else if (page === 'logout' || page === null) page = 'home'; // if accessing a template or tribute outside of normal navigation (no db info)
-        else if ((page.includes('template') || page.includes('tribute')) && this.dbEntry.name == undefined) page = 'home'; // load the module if needed, update state, change browser location to reflect new area
+        else if ((page.includes('template') || page.includes('tribute')) && this.state.dbEntry.name == undefined) page = 'home'; // load the module if needed, update state, change browser location to reflect new area
 
     $('#view-wrapper').css('opacity', 0);
     setTimeout(() => {
@@ -159,37 +173,11 @@ class Main extends React.Component {
         });
       });
     }, 400);
-  } // passed to components to update login section of index state
+  } // passed to components to update index state
 
 
-  updateLoginState(isAuth, username = '') {
-    this.setState({
-      auth: isAuth,
-      username: username
-    });
-
-    if (isAuth && this.state.viewing === 'login') {
-      location.href = '#account';
-    } else if (!isAuth && this.state.viewing === 'account') {
-      location.href = '#home';
-    }
-  }
-
-  updateModalState(modalText, modalYes, modalNo, clickHandler) {
-    if (!modalText) {
-      this.setState({
-        modal: {}
-      });
-    } else {
-      this.setState({
-        modal: {
-          text: modalText,
-          btnYes: modalYes,
-          btnNo: modalNo,
-          clickHandler: clickHandler
-        }
-      });
-    }
+  updateMainState(updateObj, callback) {
+    this.setState(updateObj, callback);
   }
 
   render() {
@@ -199,8 +187,7 @@ class Main extends React.Component {
       class: ""
     }, /*#__PURE__*/React.createElement(Header, {
       auth: this.state.auth,
-      username: this.state.username,
-      updateLoginState: this.updateLoginState
+      username: this.state.username
     }), Object.keys(this.state.modal).length === 0 ? null : /*#__PURE__*/React.createElement(ConfirmModal, {
       text: this.state.modal.text,
       btnYes: this.state.modal.btnYes,
@@ -209,10 +196,9 @@ class Main extends React.Component {
     }), /*#__PURE__*/React.createElement("div", {
       id: "view-wrapper"
     }, /*#__PURE__*/React.createElement(View, {
-      updateLoginState: this.updateLoginState,
-      updateModalState: this.updateModalState,
+      updateMainState: this.updateMainState,
       username: this.state.username,
-      dbEntry: this.dbEntry ? this.dbEntry : null,
+      dbEntry: this.state.dbEntry || null,
       loadPage: this.loadPage
     })), /*#__PURE__*/React.createElement(Footer, null));
   }

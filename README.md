@@ -2,7 +2,7 @@
 ### Fictional 'tribute' designer as a personal project
 
 ## Goal
-Create a multi-page website incorporating multiple functionalaties learned over the the legacy full-stack freeCodeCamp curriculum.
+Create a multi-page website incorporating multiple functionalaties learned over the legacy full-stack freeCodeCamp curriculum.
 
 ### User Stories:
 1. Have a landing page, a pricing/products page, and a directory page
@@ -11,6 +11,12 @@ Create a multi-page website incorporating multiple functionalaties learned over 
 1. Users can create up to two types of 'tribute' pages from pre-made templates
 1. MongoDB is utilized for account authentication and user-created content
 1. Server to be created using Node.js and Express.js
+
+### 0.4.2 changes
+1. Users can now edit their created tributes.
+1. Edits must be re-approved by an admin before being viewable again.
+
+- Main state update handler passed to components has been simplified
 
 ### 0.4.1 changes
 1. Users can now delete a created tribute from their account page under the 'Your Content' tab

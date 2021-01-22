@@ -1,4 +1,4 @@
-import ConfirmModal from '../scripts/modal.js';
+import Profile from '../scripts/account-profile.js';
 
 class Account extends React.Component {
   constructor(props) {
@@ -12,17 +12,13 @@ class Account extends React.Component {
       subOption: 'default'
     };
     this.manageMode = 'none';
-    this.loadPage = props.loadPage;
-    this.updateModalState = props.updateModalState;
+    this.updateMainState = props.updateMainState;
     this.handleClick = this.handleClick.bind(this);
-    this.profileOption = this.profileOption.bind(this);
     this.contentOption = this.contentOption.bind(this);
     this.createOption = this.createOption.bind(this);
-    this.stateDropdown = this.stateDropdown.bind(this);
     this.getContentList = this.getContentList.bind(this);
-    this.renderContentList = this.renderContentList.bind(this);
     this.options = {
-      'profile': this.profileOption,
+      'profile': Profile,
       'payment': this.paymentOption,
       'history': this.historyOption,
       'content': this.contentOption,
@@ -39,7 +35,6 @@ class Account extends React.Component {
       'design': [['Templated Tribute', 'templates', "./img/templates-prev.png", 'Choose from two different styles of tributes. Layouts are pre-made, and all that is needed is to fill in what you want them to say!'], ['Custom Designed Tribute', 'design', "", 'Feel comfortable with getting into the nitty gritty? Get started with a custom designed tribute to have greater control over content presentation.'], ['T. I. Designed Tribute', 'design', "", 'Interested in a custom look, but want to leave it to someone else? Select a Tributes Inc. designed tribute and we’ll work with you to get you a feel that’s just right.'], ['Physical Designs', 'design', "", "Here you'll find our physical offerings, for when you want something to have in your home or another place of prominence"]],
       'templates': [['Templated Biography Tribute', 'product-design-a', "./img/temp-a-prev.png", 'A pre-designed tribute template that is used for large amounts of text in a biography style. Note: Users are able to create up to two templated tributes for free'], ['Templated Timeline Tribute', 'product-design-b', "./img/temp-b-prev.png", 'A pre-designed tribute template that is used for smaller amounts of text in a timeline style. Note: Users are able to create up to two templated tributes for free']]
     };
-    this.stateList = [["AL", "Alabama"], ["AK", "Alaska"], ["AZ", "Arizona"], ["AR", "Arkansas"], ["CA", "California"], ["CO", "Colorado"], ["CT", "Connecticut"], ["DE", "Delaware"], ["FL", "Florida"], ["GA", "Georgia"], ["HI", "Hawaii"], ["ID", "Idaho"], ["IL", "Illinois"], ["IN", "Indiana"], ["IA", "Iowa"], ["KS", "Kansas"], ["KY", "Kentucky"], ["LA", "Louisiana"], ["ME", "Maine"], ["MD", "Maryland"], ["MA", "Massachusetts"], ["MI", "Michigan"], ["MN", "Minnesota"], ["MS", "Mississippi"], ["MO", "Missouri"], ["MT", "Montana"], ["NE", "Nebraska"], ["NV", "Nevada"], ["NH", "New Hampshire"], ["NJ", "New Jersey"], ["NM", "New Mexico"], ["NY", "New York"], ["NC", "North Carolina"], ["ND", "North Dakota"], ["OH", "Ohio"], ["OK", "Oklahoma"], ["OR", "Oregon"], ["PA", "Pennsylvania"], ["RI", "Rhode Island"], ["SC", "South Carolina"], ["SD", "South Dakota"], ["TN", "Tennessee"], ["TX", "Texas"], ["UT", "Utah"], ["VT", "Vermont"], ["VA", "Virginia"], ["WA", "Washington"], ["WV", "West Virginia"], ["WI", "Wisconsin"], ["WY", "Wyoming"]];
   }
 
   componentDidMount() {
@@ -93,8 +88,32 @@ class Account extends React.Component {
 
             if (buttonType !== 'edit') {
               this.manageMode = `${buttonType}-${buttonIndex}`;
-              this.updateModalState(`Are you sure you want to ${buttonType} the tribute for ${$(`#link-${buttonIndex}`).text()}?`, `Yes, ${buttonType}`, `No, don't ${buttonType}`, this.handleClick);
-            } else if (buttonType === 'edit') {// do nothing for now, will go to designer page with filled in info for resubmission
+              this.updateMainState({
+                modal: {
+                  text: `Are you sure you want to ${buttonType} the tribute for ${$(`#link-${buttonIndex}`).text()}?`,
+                  btnYes: `Yes, ${buttonType}`,
+                  btnNo: `No, don't ${buttonType}`,
+                  clickHandler: this.handleClick
+                }
+              });
+            } else if (buttonType === 'edit') {
+              $.post('/api/tribute', {
+                name: $(`#link-${buttonIndex}`).text()
+              }).done(response => {
+                if (response === 'No match found!') {
+                  console.log("Error loading page.");
+                } else {
+                  this.updateMainState({
+                    dbEntry: response
+                  }, () => {
+                    window.location.href = response.type === 'TemplateA' ? '#product-design-a' : '#product-design-b';
+                  });
+                }
+              }).fail(function (err) {
+                console.log(' DB HTTP template request failed. ' + err);
+                this.loadPage('home');
+                return status.textContent = 'An error occurred during template fetch, please try again.';
+              });
             }
           } // modal handling
           else if (clickedButton.id.startsWith('modal')) {
@@ -107,13 +126,20 @@ class Account extends React.Component {
                       "type": modeType === 'delete' ? "DELETE" : "PUT",
                       "url": '/api/design',
                       "data": {
-                        userName: this.username,
-                        tributeName: $(`#link-${this.manageMode.split('-')[1]}`).text(),
+                        username: this.username,
+                        name: $(`#link-${this.manageMode.split('-')[1]}`).text(),
                         editType: modeType === 'delete' ? null : modeType
                       },
                       "success": response => {
                         this.getContentList();
-                        this.updateModalState(response, 'Got it', null, this.handleClick);
+                        this.updateMainState({
+                          modal: {
+                            text: response,
+                            btnYes: 'Got it',
+                            btnNo: null,
+                            clickHandler: this.handleClick
+                          }
+                        });
                       },
                       "fail": response => {
                         console.log(`Something went wrong with the HTTP request!`);
@@ -127,156 +153,24 @@ class Account extends React.Component {
               }
 
               this.manageMode = 'none';
-              this.updateModalState();
+              this.updateMainState({
+                modal: {}
+              });
             }
   }
 
-  profileOption() {
-    return /*#__PURE__*/React.createElement("div", {
-      id: "profile-display",
-      class: "border p-2 acct-cont"
-    }, /*#__PURE__*/React.createElement("h3", {
-      class: "text-center"
-    }, "Here's your profile information"), /*#__PURE__*/React.createElement("div", {
-      class: "divider"
-    }), /*#__PURE__*/React.createElement("div", {
-      id: "sub-container"
-    }, /*#__PURE__*/React.createElement("form", {
-      id: "profile-info"
-    }, /*#__PURE__*/React.createElement("div", {
-      id: "personal-info",
-      class: "form-row text-center"
-    }, /*#__PURE__*/React.createElement("div", {
-      class: "form-group col-md-4"
-    }, /*#__PURE__*/React.createElement("label", {
-      for: "first-name"
-    }, "First Name"), /*#__PURE__*/React.createElement("input", {
-      id: "first-name",
-      type: "text",
-      class: "form-control"
-    })), /*#__PURE__*/React.createElement("div", {
-      class: "form-group col-md-4"
-    }, /*#__PURE__*/React.createElement("label", {
-      for: "last-name"
-    }, "Last Name"), /*#__PURE__*/React.createElement("input", {
-      id: "last-name",
-      type: "text",
-      class: "form-control"
-    })), /*#__PURE__*/React.createElement("div", {
-      class: "form-group col-md-4"
-    }, /*#__PURE__*/React.createElement("label", {
-      for: "email"
-    }, "E-mail Address"), /*#__PURE__*/React.createElement("input", {
-      id: "email",
-      type: "email",
-      class: "form-control"
-    }))), /*#__PURE__*/React.createElement("div", {
-      id: "address-forms",
-      class: "row"
-    }, /*#__PURE__*/React.createElement("div", {
-      id: "shipping-address",
-      class: "col-md-6"
-    }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Default Shipping Address")), /*#__PURE__*/React.createElement("div", {
-      class: "form-group"
-    }, /*#__PURE__*/React.createElement("label", {
-      for: "s-street-one"
-    }, "Street Address Line 1"), /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      id: "s-street-one",
-      class: "form-control",
-      placeholder: "123 Street Rd."
-    })), /*#__PURE__*/React.createElement("div", {
-      class: "form-group"
-    }, /*#__PURE__*/React.createElement("label", {
-      for: "s-street-two"
-    }, "Street Address Line 2"), /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      id: "s-street-two",
-      class: "form-control",
-      placeholder: "Apt A"
-    })), /*#__PURE__*/React.createElement("div", {
-      class: "form-group"
-    }, /*#__PURE__*/React.createElement("label", {
-      for: "s-city"
-    }, "City"), /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      id: "s-city",
-      class: "form-control",
-      placeholder: "City-ville"
-    })), /*#__PURE__*/React.createElement("div", {
-      class: "form-group"
-    }, /*#__PURE__*/React.createElement("label", {
-      for: "s-state-select"
-    }, "State", this.stateDropdown('s'))), /*#__PURE__*/React.createElement("div", {
-      class: "form-group"
-    }, /*#__PURE__*/React.createElement("label", {
-      for: "s-zip"
-    }, "Zip Code"), /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      id: "s-zip",
-      class: "form-control"
-    }))), /*#__PURE__*/React.createElement("div", {
-      id: "billing-address",
-      class: "col-md-6"
-    }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Default Billing Address")), /*#__PURE__*/React.createElement("div", {
-      class: "form-group"
-    }, /*#__PURE__*/React.createElement("label", {
-      for: "p-street-one"
-    }, "Street Address Line 1"), /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      id: "p-street-one",
-      class: "form-control",
-      placeholder: "123 Street Rd."
-    })), /*#__PURE__*/React.createElement("div", {
-      class: "form-group"
-    }, /*#__PURE__*/React.createElement("label", {
-      for: "p-street-two"
-    }, "Street Address Line 2"), /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      id: "p-street-two",
-      class: "form-control",
-      placeholder: "Apt A"
-    })), /*#__PURE__*/React.createElement("div", {
-      class: "form-group"
-    }, /*#__PURE__*/React.createElement("label", {
-      for: "p-city"
-    }, "City"), /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      id: "p-city",
-      class: "form-control",
-      placeholder: "City-ville"
-    })), /*#__PURE__*/React.createElement("div", {
-      class: "form-group"
-    }, /*#__PURE__*/React.createElement("label", {
-      for: "p-state-select"
-    }, "State", this.stateDropdown('p'))), /*#__PURE__*/React.createElement("div", {
-      class: "form-group"
-    }, /*#__PURE__*/React.createElement("label", {
-      for: "p-zip"
-    }, "Zip Code"), /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      id: "p-zip",
-      class: "form-control"
-    })))), /*#__PURE__*/React.createElement("p", {
-      class: "text-right"
-    }, /*#__PURE__*/React.createElement("button", {
-      type: "button",
-      class: "btn btn-success",
-      disabled: true
-    }, "Save Info")), /*#__PURE__*/React.createElement("small", {
-      id: "emailHelp",
-      class: "form-text text-muted text-right"
-    }, "Saving personal information is currently disabled."))));
-  }
-
-  stateDropdown(form) {
-    return /*#__PURE__*/React.createElement("select", {
-      id: `${form}-state-select`,
-      class: "form-control"
-    }, this.stateList.map((arrayVal, ind) => /*#__PURE__*/React.createElement("option", {
-      key: ind,
-      value: arrayVal[0]
-    }, arrayVal[1])));
+  getContentList() {
+    $.post("/api/list", {
+      "type": "user",
+      "username": this.username
+    }).done(response => {
+      this.setState({
+        contentList: response
+      });
+    }).fail(function (err) {
+      console.log(' Directory HTTP request failed. ');
+      return 'An error occurred during the request, please try again.';
+    });
   }
 
   paymentOption() {
@@ -340,6 +234,7 @@ class Account extends React.Component {
   }
 
   contentOption() {
+    let contentList = this.state.contentList;
     return /*#__PURE__*/React.createElement("div", {
       id: "content-display",
       class: "border p-2 acct-cont"
@@ -347,26 +242,7 @@ class Account extends React.Component {
       class: "text-center"
     }, "Here's the content you've created"), /*#__PURE__*/React.createElement("div", {
       class: "divider"
-    }), this.renderContentList());
-  }
-
-  getContentList() {
-    $.post("/api/list", {
-      "type": "user",
-      "username": this.username
-    }).done(response => {
-      this.setState({
-        contentList: response
-      });
-    }).fail(function (err) {
-      console.log(' Directory HTTP request failed. ');
-      return 'An error occurred during the request, please try again.';
-    });
-  }
-
-  renderContentList() {
-    let contentList = this.state.contentList;
-    return /*#__PURE__*/React.createElement("div", {
+    }), /*#__PURE__*/React.createElement("div", {
       id: "content-list",
       class: "d-flex flex-column align-items-center text-center"
     }, /*#__PURE__*/React.createElement("div", {
@@ -408,8 +284,7 @@ class Account extends React.Component {
       id: `t-edit-${index}`,
       type: "button",
       class: "btn btn-primary my-1 p-2 col-lg-4",
-      onClick: this.handleClick,
-      disabled: true
+      onClick: this.handleClick
     }, "Edit"), /*#__PURE__*/React.createElement("button", {
       id: `t-${value.visible ? "hide" : "show"}-${index}`,
       type: "button",
@@ -420,14 +295,55 @@ class Account extends React.Component {
       type: "button",
       class: "btn btn-danger my-1 p-2 col-lg-4 text-center",
       onClick: this.handleClick
-    }, "Delete")))));
+    }, "Delete"))))));
   }
 
   createOption() {
     let productDisplay = [];
 
+    const returnCard = (title, linkId, img, text) => {
+      return /*#__PURE__*/React.createElement("button", {
+        type: "button",
+        id: linkId,
+        class: "card mx-3 my-2",
+        style: {
+          "width": "18rem",
+          "opacity": img ? "100%" : "70%"
+        },
+        onClick: this.handleClick,
+        disabled: img ? null : "disabled"
+      }, /*#__PURE__*/React.createElement("h5", {
+        class: "card-title text-center"
+      }, title), img ? /*#__PURE__*/React.createElement("img", {
+        src: img,
+        class: "card-img border border-dark"
+      }) : /*#__PURE__*/React.createElement("svg", {
+        class: "bd-placeholder-img card-img-top",
+        width: "100%",
+        height: "180",
+        xmlns: "http://www.w3.org/2000/svg",
+        preserveAspectRatio: "xMidYMid slice",
+        focusable: "false",
+        role: "img",
+        "aria-label": "Placeholder: Preview Image"
+      }, /*#__PURE__*/React.createElement("title", null, "Placeholder"), /*#__PURE__*/React.createElement("rect", {
+        width: "100%",
+        height: "100%",
+        fill: "#868e96"
+      }), /*#__PURE__*/React.createElement("text", {
+        x: "50%",
+        y: "50%",
+        fill: "#dee2e6",
+        dy: ".3em"
+      }, "Coming soon")), /*#__PURE__*/React.createElement("div", {
+        class: "card-body"
+      }, /*#__PURE__*/React.createElement("p", {
+        class: "card-text"
+      }, text)));
+    };
+
     for (let each of this.subOptions[this.state.subOption]) {
-      productDisplay.push(this.returnCard(...each));
+      productDisplay.push(returnCard(...each));
     }
 
     return /*#__PURE__*/React.createElement("div", {
@@ -441,47 +357,6 @@ class Account extends React.Component {
       id: "sub-container",
       class: "d-flex flex-wrap justify-content-center"
     }, productDisplay));
-  }
-
-  returnCard(title, linkId, img, text) {
-    return /*#__PURE__*/React.createElement("button", {
-      type: "button",
-      id: linkId,
-      class: "card mx-3 my-2",
-      style: {
-        "width": "18rem",
-        "opacity": img ? "100%" : "70%"
-      },
-      onClick: this.handleClick,
-      disabled: img ? null : "disabled"
-    }, /*#__PURE__*/React.createElement("h5", {
-      class: "card-title text-center"
-    }, title), img ? /*#__PURE__*/React.createElement("img", {
-      src: img,
-      class: "card-img border border-dark"
-    }) : /*#__PURE__*/React.createElement("svg", {
-      class: "bd-placeholder-img card-img-top",
-      width: "100%",
-      height: "180",
-      xmlns: "http://www.w3.org/2000/svg",
-      preserveAspectRatio: "xMidYMid slice",
-      focusable: "false",
-      role: "img",
-      "aria-label": "Placeholder: Preview Image"
-    }, /*#__PURE__*/React.createElement("title", null, "Placeholder"), /*#__PURE__*/React.createElement("rect", {
-      width: "100%",
-      height: "100%",
-      fill: "#868e96"
-    }), /*#__PURE__*/React.createElement("text", {
-      x: "50%",
-      y: "50%",
-      fill: "#dee2e6",
-      dy: ".3em"
-    }, "Coming soon")), /*#__PURE__*/React.createElement("div", {
-      class: "card-body"
-    }, /*#__PURE__*/React.createElement("p", {
-      class: "card-text"
-    }, text)));
   }
 
   render() {

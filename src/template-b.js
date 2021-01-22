@@ -2,8 +2,9 @@ class TemplateB extends React.Component {
   constructor(props){
     super(props);
 
-    this.content = props.dbEntry;
-    this.preview = this.content.name==="Your Tribute's Name"?true:false;
+    this.content         = props.dbEntry;
+    this.updateMainState = props.updateMainState;
+    this.preview         = this.content.name==="Your Tribute's Name"?true:false;
 
     this.palette = { 
       "classic": {nav: '#7E4A35', page: '#dbceb0', container: '#cab577', content: '#D4C391'},
@@ -24,6 +25,7 @@ class TemplateB extends React.Component {
       });
       $('#info-link').click((event)=>{event.preventDefault(); event.stopPropagation()});
     }
+    this.updateMainState({ dbEntry: {} }) // remove from state to prevent accidental editing
   }
 
   componentWillUnmount () {

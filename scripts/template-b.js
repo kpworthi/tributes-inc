@@ -2,6 +2,7 @@ class TemplateB extends React.Component {
   constructor(props) {
     super(props);
     this.content = props.dbEntry;
+    this.updateMainState = props.updateMainState;
     this.preview = this.content.name === "Your Tribute's Name" ? true : false;
     this.palette = {
       "classic": {
@@ -40,6 +41,10 @@ class TemplateB extends React.Component {
         event.stopPropagation();
       });
     }
+
+    this.updateMainState({
+      dbEntry: {}
+    }); // remove from state to prevent accidental editing
   }
 
   componentWillUnmount() {

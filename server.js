@@ -76,18 +76,7 @@ app.route('/favicon.ico')
   });
 
 // portofolio handler
-app.use('/portfolio', express.static(process.cwd() + '/portfolio'));
-app.route('/portfolio')
-  .get(function (req, res) {
-    res.sendFile(process.cwd() + '/portfolio/index.html');
-  });
-
-app.route('/portfolio/:file')
-  .get(function (req, res) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'POST,GET,LINK');
-    res.sendFile(process.cwd() + '/portfolio/' + req.params.file);
-  }); 
+app.use('/portfolio', (req, res, next) => {console.log(`Portfolio GET @ ${currentTimeEST()}`); next();}, express.static(process.cwd() + '/portfolio'));
   
 app.use(function(req, res, next) {
   res.status(404)
