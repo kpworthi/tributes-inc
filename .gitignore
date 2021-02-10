@@ -6,3 +6,4 @@ img/history.jpg
 /priv-policy.txt
 .env
 .eslintrc
+dockerfile
