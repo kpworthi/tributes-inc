@@ -7,7 +7,7 @@ console.log = function () {
 } // silence logs
 
 const currentTimeEST = () =>
-  new Date().toLocaleString("en-US", { timeZone: "EST" }) + " EST";
+  new Date().toLocaleString();
 
 function routes(app, database) {
   class User {
