@@ -2,9 +2,6 @@ const passport = require("passport");
 const bcrypt = require("bcrypt");
 const { ObjectId } = require("mongodb");
 const { nameList } = require("./namelist");
-console.log = function () {
-  return;
-} // silence logs
 
 const currentTimeEST = () =>
   new Date().toLocaleString();

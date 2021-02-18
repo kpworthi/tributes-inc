@@ -16,9 +16,19 @@ chai.should();
 const tUsername = process.env.TEST_USERNAME;
 const tPassword = process.env.TEST_PASSWORD;
 
+
+describe('Test Opt: Silence server logs', function () {
+  it('should silence server logging', function () {
+    console.log = function () {
+      return null;
+    }
+    console.log.should.be.a('function');
+  });
+})
+
 //basic server.js tests
 
-describe('Server.js Checks', function () {
+describe('Test Cat: Server.js Checks', function () {
     
   it('should get the index file', (done) => {
     chai.request(server)
@@ -56,7 +66,7 @@ describe('Server.js Checks', function () {
 
 //api tests
 
-describe('API Tests', function () {
+describe('Test Cat: API Tests', function () {
 
   describe('API - dbConnection.js', function () {
     it('should establish a proper connection', (done) => {
@@ -89,7 +99,7 @@ describe('API Tests', function () {
   // api/design   - POST, PUT, DELETE
   // api/list     - POST
   // api/admin    - POST, DELETE (optional)
-  describe('API - routes.js', function (){
+  describe('Test Cat: API - routes.js', function (){
     describe('Log-in Tests', function() {
       // ensuring username / password are both filled out is handled client-side
 

@@ -8,7 +8,8 @@
     "sass": "sass scss:styles",
     "build": "npm run babel && npm run sass",
     "start": "nodemon server.js",
-    "test": "mocha --require @babel/register testing/*.mjs --exit"
+    "test": "mocha --require @babel/register testing/*.mjs --exit --grep Test",
+    "test-verbose": "mocha --require @babel/register testing/*.mjs --exit --grep Cat"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
