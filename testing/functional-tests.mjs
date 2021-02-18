@@ -285,7 +285,7 @@ describe('API Tests', function () {
       });
 
       describe('Template editing', function () {
-        it('should hide templates appropriately'/*, function (done) {
+        it('should hide templates appropriately', function (done) {
           chai.request(server)
             .put('/api/design')
             .send({ 
@@ -298,13 +298,14 @@ describe('API Tests', function () {
               res.text.should.equal(`Tribute successfully updated.`);
 
               connection( async function (client) {
-                let result = await client.db('tributes-inc').collection('users').findOne({"name": 'Bio Test'});
+                let result = await client.db('tributes-inc').collection('tributes').findOne({"name": 'Bio Test'});
                 result.should.not.equal(null);
                 result.visible.should.equal(false);
                 done();
               });
-        }*/);
-        it('will show a tribute again when requested'/*, function (done) {
+            });
+        });
+        it('will show a tribute again when requested', function (done) {
           chai.request(server)
             .put('/api/design')
             .send({ 
@@ -317,31 +318,38 @@ describe('API Tests', function () {
               res.text.should.equal(`Tribute successfully updated.`);
 
               connection( async function (client) {
-                let result = await client.db('tributes-inc').collection('users').findOne({"name": 'Bio Test'});
+                let result = await client.db('tributes-inc').collection('tributes').findOne({"name": 'Bio Test'});
                 result.should.not.equal(null);
                 result.visible.should.equal(true);
                 done();
               });
-        }*/);
-        it('will make textual changes'/*, function (done) {
+            });
+        });
+        it('will make textual changes', function (done) {
           chai.request(server)
             .put('/api/design')
             .send({ 
-              username: "Mocha", 
-              name: "Bio Test", 
-              editType: "hide"
+              "name"       : "Template Test",
+              "tagline"    : `Template Test's sub-title`,    "img"        : './img/test-house.jpg',
+              "caption"    : `A new caption!`,      "quote"      : `Template Test's quote`,
+              "author"     : `Template Test's quote author`, "palette"    : 'warm',
+              "year1": '2000', "event1": `Template Test was born`, "year2": '2017', "event2": `Template Test started their secondary education`,
+              "year3": '2021', "event3": `Template Test's timeline was created`,
+              "link"       : `https://en.wikipedia.org/wiki/${"Template Test".split(' ').join('_')}`,
+              "type"       : 'TemplateB', "username"   : 'Mocha'
             })
             .end((err, res) => {
               res.should.have.status(200);
               res.text.should.equal(`Tribute successfully updated.`);
 
               connection( async function (client) {
-                let result = await client.db('tributes-inc').collection('users').findOne({"name": 'Template Test'});
+                let result = await client.db('tributes-inc').collection('tributes').findOne({"name": 'Template Test'});
                 result.should.not.equal(null);
-                result.caption.should.equal("A new caption! ");
+                result.caption.should.equal("A new caption!");
                 done();
               });
-        }*/);
+            });
+        });
       });
 
       describe('Template Deletion', function () {

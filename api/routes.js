@@ -2,6 +2,9 @@ const passport = require("passport");
 const bcrypt = require("bcrypt");
 const { ObjectId } = require("mongodb");
 const { nameList } = require("./namelist");
+console.log = function () {
+  return;
+} // silence logs
 
 const currentTimeEST = () =>
   new Date().toLocaleString("en-US", { timeZone: "EST" }) + " EST";
@@ -321,7 +324,7 @@ function routes(app, database) {
             console.log(`Update failure @ ${currentTimeEST()}` );
             console.log(`${user} : Edit - ${toEdit} - No changes were submitted`);
             console.log(updateResults);
-            res.send(`Cannot perform edit: you did not make any changes!`);
+            res.send(`Cannot perform edit: it looks like you did not make any changes!`);
           }
           // if it didn't match or if it otherwise had an error
           else {
